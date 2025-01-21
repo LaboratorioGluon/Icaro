@@ -22,6 +22,14 @@ Dentro de las misiones concretas está:
 - Añadir panel solar 
 - Poner un ESP32 a la intemperie y ver cuando deja de funcionar.
 
+## Enlaces rápidos
+
+- [Diseño General](Docs/Design.md)
+- Modulos:
+    - [SupplyBoard](Modules/SupplyBoard/Doc/SupplyBoard.md)
+    - [SensorBoard](Modules/SensorBoard/Doc/SensorBoard.md)
+    - [CamBoard](Modules/CamBoard/Doc/CameraBoard.md)
+
 ## Estructura de carpetas
 
 ```

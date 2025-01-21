@@ -15,7 +15,7 @@ Los ficheros de documentación se escribirán en `UpperCamelCase`
 ## Software
  
 - **Naming**: usaremos `lowerCamelCase` para los nombres de variables, y `UpperCamelCase` para tipos/enumerados/clases/funciones.
-```c 
+```cpp
 class Test{ // UpperCamelCase
     
     void runTest(); // lowerCamelCase
