@@ -18,7 +18,7 @@ Los ficheros de documentación se escribirán en `UpperCamelCase`
 ```cpp
 class Test{ // UpperCamelCase
     
-    void runTest(); // lowerCamelCase
+    void RunTest(); // UpperCamelCase
 
     uint8_t internalVariable; //lowerCamelCase
 };
