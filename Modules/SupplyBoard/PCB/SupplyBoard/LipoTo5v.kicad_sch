@@ -1,0 +1,41 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "31e1cfff-6427-4c56-b569-acfa8dae963d")
+	(paper "A4")
+	(lib_symbols)
+	(hierarchical_label "ENABLE"
+		(shape input)
+		(at 78.74 77.47 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "20856cc9-723c-4a8d-84b6-42713e5b38f9")
+	)
+	(hierarchical_label "5V_OUT"
+		(shape output)
+		(at 196.85 67.31 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "58aefda4-1834-4830-9831-f632c2a773df")
+	)
+	(hierarchical_label "LIPO_IN"
+		(shape input)
+		(at 78.74 67.31 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "5f90db7a-505c-4d9f-8852-7321c39c5f66")
+	)
+)

@@ -578,6 +578,18 @@
     [
       "e0885a0e-6910-46ab-84fb-bbb29c8999bc",
       "Root"
+    ],
+    [
+      "51098744-09f0-4457-9943-7f94628fee2f",
+      "LIPO_TO_5V"
+    ],
+    [
+      "f5e7eb9e-43b7-435c-bd57-64fe16023cad",
+      "LIPO_TO_3V"
+    ],
+    [
+      "776d4cab-a686-43f5-8e7f-34c0894ddc11",
+      "Controlador"
     ]
   ],
   "text_variables": {}
