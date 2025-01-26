@@ -16,6 +16,7 @@ La Supply Board tiene que ser capaz de a partir de el voltaje de una batería de
 
 - Procesador: `STM32L031`
 - Buck-Boost: `TPS63070`
+- Buck converter para 3V3: `TPS564257`
 
 ## Specificaciones
 
@@ -30,7 +31,7 @@ La Supply Board tiene que ser capaz de a partir de el voltaje de una batería de
 ### Conectores
 | ID | Nombre | Voltaje | Corriente | Connector | Desc |
 |-|-| :--: | :--: | :--: | - |
-| `J1` | `CI_BATT` | `3.3 V - 9.0 V` | `2 A` | XT-30 | Connector de entrada de batería.|
+| `J1` | `CI_BATT` | `3.3 V - 15.0 V` | `2 A` | XT-30 | Connector de entrada de batería.|
 | `J2` | `CI_USB` | `5 V` | `300 mA` | micro-USB | Conector de carga USB.
 | `J3` | `CIO_MAIN_CONNECTOR`| `-` | `-` | 02x08 H2.0 | Connector principal al resto de placas|
 
@@ -38,10 +39,10 @@ La Supply Board tiene que ser capaz de a partir de el voltaje de una batería de
 
 | Nombre | Voltaje | Corriente | Interfaz | Desc |
 |-| :--: | :--: | :--: | - |
-| `VI_BATT` | `3.3 V - 9.0 V` | `2 A` | `CI_BATT` | Connector de entrada de batería.|
+| `VI_BATT` | `3.3 V - 15.0 V` | `2 A` | `CI_BATT` | Connector de entrada de batería.|
 | `VI_USB` | `5 V` | `300 mA` | `CI_USB` | Conector de carga USB.
-| `VO_5V` | `5 V` | `500 mA`| `CIO_MAIN_CONNECTOR` | Salida de 5 V |
-| `VO_3V3` | `3.3 V` | `500 mA`| `CIO_MAIN_CONNECTOR` | Salida de 3.3 V |
+| `VO_5V` | `5 V` | `1000 mA`| `CIO_MAIN_CONNECTOR` | Salida de 5 V |
+| `VO_3V3` | `3.3 V` | `1000 mA`| `CIO_MAIN_CONNECTOR` | Salida de 3.3 V |
 | `VO_BYPASS` | Igual que `VI_BATT` | `2 A` | `CIO_MAIN_CONNECTOR` | Bypass de la alimentación |
 
 ###
