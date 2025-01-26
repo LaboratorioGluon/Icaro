@@ -12,7 +12,7 @@ En cualquier caso, el conector y pinout será compartido por todas las tarjetas 
 
 - **Sensor Board** [**[+Info]**](../Modules/SensorBoard/Doc/SensorBoard.md): Tarjeta con los sensores básicos de telemetría.
 - **Supply Board** [**[+Info]**](../Modules/SupplyBoard/Doc/SupplyBoard.md): Encargada de convertir el voltaje de la batería en 3.3 V y 5 V.
-- **Camera Board** [**[+Info]**](../Modules/CamBoard/Doc/CameraBoard.md): Encargada de convertir el voltaje de la batería en 3.3 V y 5 V.
+- **Camera Board** [**[+Info]**](../Modules/CamBoard/Doc/CameraBoard.md): Encargada de procesar y enviar la señal de video.
 
 ## Comunicación
 
