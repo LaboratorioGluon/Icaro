@@ -620,6 +620,18 @@
     [
       "776d4cab-a686-43f5-8e7f-34c0894ddc11",
       "Controlador"
+    ],
+    [
+      "a340e86c-d881-417a-83c0-e7c56f625c6c",
+      "CurrentSense_Lipo"
+    ],
+    [
+      "d9766b38-4ee2-4338-b601-caafb894792f",
+      "CurrentSense_regulated"
+    ],
+    [
+      "44081136-783b-4e57-8d7a-50eebc1e87d0",
+      "BATT_BYPASS_SW"
     ]
   ],
   "text_variables": {}

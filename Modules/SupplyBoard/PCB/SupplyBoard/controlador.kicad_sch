@@ -1005,7 +1005,7 @@
 		)
 		(uuid "40483930-def6-4ea5-a8db-0ab13c0c0093")
 	)
-	(hierarchical_label "LIPO_INPUT"
+	(hierarchical_label "BATT_INPUT"
 		(shape input)
 		(at 78.74 74.93 180)
 		(effects
