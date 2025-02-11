@@ -36,7 +36,6 @@ private:
     ImsInterface *iface;
 };
 
-
 template<typename T>
 uint8_t Ims::send(const uint8_t dst, const uint8_t cmd, const T &msg)
 {
