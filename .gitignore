@@ -31,4 +31,4 @@
 
 *.code-workspace
 
-**/.zip
+**/*.zip
