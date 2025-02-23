@@ -13,9 +13,12 @@ Dentro de las misiones concretas está:
     - Mejorar antenas 2.4Ghz
     - Implementar código de lectura y envío de vídeo por wifi en el ESP32.
 - Registro de datos de telemetría de la súbida, y comunicación de estos mediante LoRa.
+    - Lectura de BMI160, BME280, 2x PT1000 y GPS.
+    - Envío por LoRa e intentar conectarnos a TinyGS
 - Creación de PCBs modulares para:
     - La lectura de sensores GPS/IMU/Temp/Barómetro/...
     - Regulación de voltajes.
+    - Comunicaciones
 
 **Otras ideas** que se han planteado:
 - Añadir un control a la antena para que apunte siempre al globo.
