@@ -1,14 +1,18 @@
 (kicad_sch
-	(version 20231120)
+	(version 20250114)
 	(generator "eeschema")
-	(generator_version "8.0")
+	(generator_version "9.0")
 	(uuid "31e1cfff-6427-4c56-b569-acfa8dae963d")
 	(paper "A4")
 	(lib_symbols
 		(symbol "Device:C_Polarized_Small"
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
-				(offset 0.254) hide)
+				(offset 0.254)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -77,17 +81,6 @@
 			)
 			(symbol "C_Polarized_Small_0_1"
 				(rectangle
-					(start -1.524 -0.3048)
-					(end 1.524 -0.6858)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(rectangle
 					(start -1.524 0.6858)
 					(end 1.524 0.3048)
 					(stroke
@@ -96,6 +89,17 @@
 					)
 					(fill
 						(type none)
+					)
+				)
+				(rectangle
+					(start -1.524 -0.3048)
+					(end 1.524 -0.6858)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
 					)
 				)
 				(polyline
@@ -161,11 +165,16 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "Device:C_Small"
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
-				(offset 0.254) hide)
+				(offset 0.254)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -235,10 +244,10 @@
 			(symbol "C_Small_0_1"
 				(polyline
 					(pts
-						(xy -1.524 -0.508) (xy 1.524 -0.508)
+						(xy -1.524 0.508) (xy 1.524 0.508)
 					)
 					(stroke
-						(width 0.3302)
+						(width 0.3048)
 						(type default)
 					)
 					(fill
@@ -247,10 +256,10 @@
 				)
 				(polyline
 					(pts
-						(xy -1.524 0.508) (xy 1.524 0.508)
+						(xy -1.524 -0.508) (xy 1.524 -0.508)
 					)
 					(stroke
-						(width 0.3048)
+						(width 0.3302)
 						(type default)
 					)
 					(fill
@@ -296,11 +305,16 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "Device:R_Small"
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
-				(offset 0.254) hide)
+				(offset 0.254)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -418,6 +432,7 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "IcaroLib:TPS63070RNMR"
 			(exclude_from_sim no)
@@ -519,42 +534,6 @@
 			)
 			(symbol "TPS63070RNMR_1_1"
 				(pin input line
-					(at -11.43 -12.7 0)
-					(length 2.54)
-					(name "PS/SYNC"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin input line
-					(at 1.27 -24.13 90)
-					(length 2.54)
-					(name "PGND"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "10"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin input line
 					(at -11.43 6.35 0)
 					(length 2.54)
 					(name "L1"
@@ -591,24 +570,6 @@
 					)
 				)
 				(pin input line
-					(at -11.43 -10.16 0)
-					(length 2.54)
-					(name "EN"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "14"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin input line
 					(at -11.43 -5.08 0)
 					(length 2.54)
 					(name "VSEL"
@@ -627,16 +588,34 @@
 					)
 				)
 				(pin input line
-					(at 10.16 -12.7 180)
+					(at -11.43 -10.16 0)
 					(length 2.54)
-					(name "PG"
+					(name "EN"
 						(effects
 							(font
 								(size 1.27 1.27)
 							)
 						)
 					)
-					(number "2"
+					(number "14"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -11.43 -12.7 0)
+					(length 2.54)
+					(name "PS/SYNC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -681,6 +660,60 @@
 					)
 				)
 				(pin input line
+					(at 1.27 -24.13 90)
+					(length 2.54)
+					(name "PGND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "10"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 10.16 6.35 180)
+					(length 2.54)
+					(name "L2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 10.16 0 180)
+					(length 2.54)
+					(name "VOUT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
 					(at 10.16 -5.08 180)
 					(length 2.54)
 					(name "FB"
@@ -717,34 +750,16 @@
 					)
 				)
 				(pin input line
-					(at 10.16 0 180)
+					(at 10.16 -12.7 180)
 					(length 2.54)
-					(name "VOUT"
+					(name "PG"
 						(effects
 							(font
 								(size 1.27 1.27)
 							)
 						)
 					)
-					(number "7"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin input line
-					(at 10.16 6.35 180)
-					(length 2.54)
-					(name "L2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "9"
+					(number "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -753,11 +768,16 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "PCM_Elektuur:L"
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
-				(offset 0) hide)
+				(offset 0)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -836,9 +856,9 @@
 			)
 			(symbol "L_1_0"
 				(arc
-					(start 0 -3.4036)
-					(mid 0.762 -2.5146)
-					(end 0 -1.6256)
+					(start 0 3.302)
+					(mid 0.6604 2.5146)
+					(end 0 1.7272)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -848,20 +868,8 @@
 					)
 				)
 				(arc
-					(start 0 -3.302)
-					(mid 0.6604 -2.5146)
-					(end 0 -1.7272)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 0 -1.7272)
-					(mid 0.762 -0.8382)
+					(start 0 1.6256)
+					(mid 0.6604 0.8382)
 					(end 0 0.0508)
 					(stroke
 						(width 0.254)
@@ -872,8 +880,44 @@
 					)
 				)
 				(arc
-					(start 0 -1.6256)
+					(start 0 -0.0508)
 					(mid 0.6604 -0.8382)
+					(end 0 -1.6256)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -1.7272)
+					(mid 0.6604 -2.5146)
+					(end 0 -3.302)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 3.4036)
+					(mid 0.762 2.5146)
+					(end 0 1.6256)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 1.7272)
+					(mid 0.762 0.8382)
 					(end 0 -0.0508)
 					(stroke
 						(width 0.254)
@@ -884,9 +928,21 @@
 					)
 				)
 				(arc
-					(start 0 -0.0508)
-					(mid 0.762 0.8382)
-					(end 0 1.7272)
+					(start 0 0.0508)
+					(mid 0.762 -0.8382)
+					(end 0 -1.7272)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -1.6256)
+					(mid 0.762 -2.5146)
+					(end 0 -3.4036)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -897,31 +953,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0 -3.302) (xy 0 -3.5052)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -1.6256) (xy 0 -1.7272)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0.0508) (xy 0 -0.0508)
+						(xy 0 3.5052) (xy 0 3.302)
 					)
 					(stroke
 						(width 0.254)
@@ -945,7 +977,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0 3.5052) (xy 0 3.302)
+						(xy 0 0.0508) (xy 0 -0.0508)
 					)
 					(stroke
 						(width 0.254)
@@ -955,10 +987,10 @@
 						(type none)
 					)
 				)
-				(arc
-					(start 0 0.0508)
-					(mid 0.6604 0.8382)
-					(end 0 1.6256)
+				(polyline
+					(pts
+						(xy 0 -1.6256) (xy 0 -1.7272)
+					)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -967,22 +999,10 @@
 						(type none)
 					)
 				)
-				(arc
-					(start 0 1.6256)
-					(mid 0.762 2.5146)
-					(end 0 3.4036)
-					(stroke
-						(width 0.254)
-						(type default)
+				(polyline
+					(pts
+						(xy 0 -3.302) (xy 0 -3.5052)
 					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 0 1.7272)
-					(mid 0.6604 2.5146)
-					(end 0 3.302)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -1043,19 +1063,8 @@
 			)
 			(symbol "L_1_3"
 				(rectangle
-					(start 1.524 -1.9304)
-					(end 1.9812 -3.0988)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(rectangle
-					(start 1.524 -0.254)
-					(end 1.9812 -1.4224)
+					(start 1.524 3.0988)
+					(end 1.9812 1.9304)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -1076,8 +1085,19 @@
 					)
 				)
 				(rectangle
-					(start 1.524 3.0988)
-					(end 1.9812 1.9304)
+					(start 1.524 -0.254)
+					(end 1.9812 -1.4224)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(rectangle
+					(start 1.524 -1.9304)
+					(end 1.9812 -3.0988)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -1087,12 +1107,17 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "power:GND"
 			(power)
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
-				(offset 0) hide)
+				(offset 0)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -1183,7 +1208,53 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
+	)
+	(rectangle
+		(start 167.64 64.77)
+		(end 199.39 78.74)
+		(stroke
+			(width 0.254)
+			(type dash)
+			(color 204 102 0 1)
+		)
+		(fill
+			(type none)
+		)
+		(uuid 8621210b-c22a-4615-a8fc-a8037b03022e)
+	)
+	(text "As close as possible to Vout"
+		(exclude_from_sim no)
+		(at 168.91 67.056 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "a8540ad5-c84c-4498-b658-b7be5daff757")
+	)
+	(text_box "Notas\n\nR_{2} = R_{3} ( V_{OUT}/0.8V - 1)\nI_{Peak(Coil)} = 2 A (aprox)"
+		(exclude_from_sim yes)
+		(at 162.56 92.71 0)
+		(size 33.02 17.78)
+		(margins 1.0795 1.0795 1.0795 1.0795)
+		(stroke
+			(width 0.254)
+			(type solid)
+		)
+		(fill
+			(type color)
+			(color 0 0 0 0)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left top)
+		)
+		(uuid "6d6514af-49d4-4525-ba05-289a1532ff11")
 	)
 	(junction
 		(at 124.46 99.06)
@@ -2045,50 +2116,6 @@
 		)
 		(uuid "f8055ae4-6dd4-4a52-a486-90681159d2de")
 	)
-	(rectangle
-		(start 167.64 64.77)
-		(end 199.39 78.74)
-		(stroke
-			(width 0.254)
-			(type dash)
-			(color 204 102 0 1)
-		)
-		(fill
-			(type none)
-		)
-		(uuid 8621210b-c22a-4615-a8fc-a8037b03022e)
-	)
-	(text_box "Notas\n\nR_{2} = R_{3} ( V_{OUT}/0.8V - 1)\nI_{Peak(Coil)} = 2 A (aprox)"
-		(exclude_from_sim yes)
-		(at 162.56 92.71 0)
-		(size 33.02 17.78)
-		(stroke
-			(width 0.254)
-			(type solid)
-		)
-		(fill
-			(type color)
-			(color 0 0 0 0)
-		)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left top)
-		)
-		(uuid "6d6514af-49d4-4525-ba05-289a1532ff11")
-	)
-	(text "As close as possible to Vout"
-		(exclude_from_sim no)
-		(at 168.91 67.056 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "a8540ad5-c84c-4498-b658-b7be5daff757")
-	)
 	(label "AUX"
 		(at 107.95 87.63 0)
 		(effects
@@ -2836,7 +2863,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:CP_Elec_6.3x5.4"
+		(property "Footprint" "Capacitor_Tantalum_SMD:CP_EIA-3216-18_Kemet-A_Pad1.58x1.35mm_HandSolder"
 			(at 201.93 73.66 0)
 			(effects
 				(font
@@ -3893,7 +3920,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:CP_Elec_6.3x5.4"
+		(property "Footprint" "Capacitor_Tantalum_SMD:CP_EIA-3216-18_Kemet-A_Pad1.58x1.35mm_HandSolder"
 			(at 212.09 73.66 0)
 			(effects
 				(font

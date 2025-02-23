@@ -1,0 +1,27 @@
+AR checking written on:
+'/media/labgluon/LaboratorioGluon/LaboratorioGluon/Proyectos/036.Icaro/Modules/SupplyBoard/PCB/SupplyBoard/SupplyBoard_AR-Check.txt'
+'action_menu_annular_check.py'
+version = 1.7.2
+Testing PCB for Annular Rings
+TH Pads >= 0.125 Vias >= 0.125
+PHD margin on PTH = 0
+
+AR Via violation of 0.075 at XY 99.2,62.8
+AR Via violation of 0.075 at XY 99.214845,76.843922
+AR Via violation of 0.075 at XY 103.55,75.4125
+AR Via violation of 0.075 at XY 104.05,74.9125
+AR Via violation of 0.075 at XY 103.55,76.0125
+AR Via violation of 0.075 at XY 101.775002,74.9125
+AR Via violation of 0.075 at XY 102.35,76.0125
+AR Via violation of 0.075 at XY 102.35,75.4125
+AR Via violation of 0.075 at XY 102.5625,61.3625
+AR Via violation of 0.075 at XY 100.75,76.5125
+AR Via violation of 0.075 at XY 105.9375,88.7
+AR Via violation of 0.075 at XY 105.1375,88.1
+AR Via violation of 0.075 at XY 104.3375,88.1
+AR Via violation of 0.075 at XY 105.9375,88.1
+AR Via violation of 0.075 at XY 104.3375,88.7
+AR Via violation of 0.075 at XY 105.1375,88.7
+VIAS that Pass = 14; Fails = 16
+TH PADS that Pass = 9; Fails = 0
+NPTH PADS that Pass = 0; Fails = 0
