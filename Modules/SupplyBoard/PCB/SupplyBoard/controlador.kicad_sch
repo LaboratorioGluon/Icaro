@@ -3718,7 +3718,7 @@
 		(uuid "5ecb80b6-1c7b-41b2-a0c5-c8f67de6ee9d")
 	)
 	(label "SPI.MOSI"
-		(at 109.22 87.63 0)
+		(at 109.22 90.17 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3738,7 +3738,7 @@
 		(uuid "7152104e-e82e-4fd3-8f98-d4a11cfa7636")
 	)
 	(label "SPI.MISO"
-		(at 109.22 90.17 0)
+		(at 109.22 87.63 0)
 		(effects
 			(font
 				(size 1.27 1.27)

@@ -12,7 +12,7 @@ Tarjeta encargada de recoger datos de los sensores y telemetría
 | ESP32-WROOM-32D/E | Todos | Microcontrolador principal |
 | BMI160 | SPI/I2C `(TBD)` | IMU |
 | BME280 | I2C | Sensor humedad y temperatura |
-| `(TBD)` | 
+| `(TBD)` | `(TBD)` | Lector PT100/PT1000 |
 
 
 | Externo | Conector | Interfaz | Desc. |
