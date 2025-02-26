@@ -1073,6 +1073,26 @@
 		(at 214.63 66.04)
 		(uuid "a0b4cd07-b83a-44ca-9d5e-659ed900a16e")
 	)
+	(bus
+		(pts
+			(xy 105.41 135.89) (xy 105.41 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1363564d-e94b-4b04-bc90-6505f3d0b597")
+	)
+	(bus
+		(pts
+			(xy 97.79 135.89) (xy 105.41 135.89)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "231d5b6c-ac01-46f2-99c3-934e3ea07c84")
+	)
 	(wire
 		(pts
 			(xy 210.82 68.58) (xy 214.63 68.58)
@@ -1103,6 +1123,16 @@
 		)
 		(uuid "3abf2a46-1021-4feb-b544-18950c137d55")
 	)
+	(bus
+		(pts
+			(xy 109.22 88.9) (xy 114.3 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8107d04c-0e3e-4246-8f53-71c84fbffa24")
+	)
 	(wire
 		(pts
 			(xy 240.03 68.58) (xy 245.11 68.58)
@@ -1123,6 +1153,16 @@
 		)
 		(uuid "ad9741f3-2c05-4968-872c-7df3f27daed3")
 	)
+	(bus
+		(pts
+			(xy 97.79 142.24) (xy 109.22 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c1ab2ad2-b201-4c68-8642-7258c8ed5a6e")
+	)
 	(wire
 		(pts
 			(xy 240.03 71.12) (xy 245.11 71.12)
@@ -1142,6 +1182,26 @@
 			(type default)
 		)
 		(uuid "d6added8-ba60-47a2-a914-ee4131fae4e5")
+	)
+	(bus
+		(pts
+			(xy 109.22 142.24) (xy 109.22 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e3f95dd8-ae39-4878-aafc-7167030a871d")
+	)
+	(bus
+		(pts
+			(xy 105.41 78.74) (xy 114.3 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fb2b109f-26a4-4619-b378-c6f02ae46654")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -1370,7 +1430,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_JST:JST_PH_S4B-PH-K_1x04_P2.00mm_Horizontal"
+		(property "Footprint" "Connector_JST:JST_ZH_S6B-ZR-SM4A-TF_1x06-1MP_P1.50mm_Horizontal"
 			(at 67.31 86.36 0)
 			(effects
 				(font
@@ -1821,7 +1881,7 @@
 		)
 	)
 	(sheet
-		(at 67.945 22.86)
+		(at 68.58 22.86)
 		(size 29.21 24.13)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1837,7 +1897,7 @@
 		)
 		(uuid "3b7a1f5d-723d-48a0-b5b1-eb6f60cd6fcc")
 		(property "Sheetname" "PT100"
-			(at 67.945 22.1484 0)
+			(at 68.58 22.1484 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1846,7 +1906,7 @@
 			)
 		)
 		(property "Sheetfile" "pt100.kicad_sch"
-			(at 67.945 47.5746 0)
+			(at 68.58 47.5746 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1863,8 +1923,8 @@
 		)
 	)
 	(sheet
-		(at 113.665 66.675)
-		(size 38.1 33.655)
+		(at 114.3 67.31)
+		(size 38.1 33.02)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1879,7 +1939,7 @@
 		)
 		(uuid "77fd28f0-bf2b-4d38-a46b-c7466bc06c3f")
 		(property "Sheetname" "Microcontroller"
-			(at 113.665 65.9634 0)
+			(at 114.3 66.5984 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1888,12 +1948,32 @@
 			)
 		)
 		(property "Sheetfile" "microcontroller.kicad_sch"
-			(at 113.665 100.9146 0)
+			(at 114.3 101.5496 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(justify left top)
+			)
+		)
+		(pin "I2C_BME{SDA SCL}" input
+			(at 114.3 78.74 180)
+			(uuid "c021517e-fcdd-46b5-a5f9-8719e897feea")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "SPI_IMU{MOSI MISO SCK CS0}" bidirectional
+			(at 114.3 88.9 180)
+			(uuid "e414fcce-a5af-4cd6-a03a-e6e4070e4f9e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 			)
 		)
 		(instances
@@ -1905,8 +1985,8 @@
 		)
 	)
 	(sheet
-		(at 67.945 128.905)
-		(size 29.21 24.13)
+		(at 57.15 129.54)
+		(size 40.64 17.78)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1921,7 +2001,7 @@
 		)
 		(uuid "b6d62be8-6230-46e7-ab2b-f5043389658b")
 		(property "Sheetname" "SensoresInternos"
-			(at 67.945 128.1934 0)
+			(at 57.15 128.8284 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1930,12 +2010,32 @@
 			)
 		)
 		(property "Sheetfile" "sensoresInternos.kicad_sch"
-			(at 67.945 153.6196 0)
+			(at 57.15 147.9046 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(justify left top)
+			)
+		)
+		(pin "I2C_BME{SDA SCL}" input
+			(at 97.79 135.89 0)
+			(uuid "d9930592-ef0e-492c-b047-f536a2951205")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "SPI_IMU{MOSI MISO SCK CS0}" bidirectional
+			(at 97.79 142.24 0)
+			(uuid "1a8b1e35-69a9-4dfc-a5fa-3e1d4a9328e3")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 			)
 		)
 		(instances

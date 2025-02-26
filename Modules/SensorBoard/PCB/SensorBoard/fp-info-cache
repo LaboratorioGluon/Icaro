@@ -1,4 +1,4 @@
-25059306362264354
+25064234613475459
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -58442,6 +58442,27 @@ Connector_Icaro_Edge_tarjeta
 0
 24
 24
+IcaroFootprints
+LogoGluon_12mm
+
+
+0
+0
+0
+IcaroFootprints
+LogoGluon_25mm
+
+
+0
+0
+0
+IcaroFootprints
+LogoGluon_400px
+
+
+0
+0
+0
 IcaroFootprints
 PDFN3.3x3.3
 
