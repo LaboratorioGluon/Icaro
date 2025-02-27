@@ -1,0 +1,42 @@
+STEP translation to Solid Edge
+Date: jueves,febrero 27,2025 11:26
+Source File: C:\Users\Carlo\Mi unidad\Proyectos\Icaro\Modules\Common\Kicad\3dModels\ESp32-WROOM-32U v3.step
+Author: javiher9310
+Organization: Unknown
+Source System: Autodesk Translation Framework v7.6.0.251
+
+Hardware:
+Processor: 11th Gen Intel(R) Core(TM) i5-11300H @ 3.10GHz
+Operating System: Windows 11 Professional Version:24H2 Build:26100 System Type:64-bit
+Installed Memory: 7.80 GB
+
+Software Information
+Parasolid Version: 36.0.142
+PSBodyShop Version: 36.0.108
+Step Adapter Version: 13.0.163
+Solid Edge Version: 224.00.00.101 x64
+
+Step Import Options
+Import Faceted Bodies: On
+Import Check Bodies: Off
+Import Curves: On
+Import DoNotSave: On
+Import Multiple Bodies As Single Part File: On
+Import Optimize:Off
+Import Stitch Surfaces: On
+Import Boolean Solids: On
+Make Base Feature: On
+Simplify Geometry: On
+Import Imprint Curves: On
+Import Drive: C:
+Import Stitch Surfaces: On
+Import Surfaces: On
+Import Output Path: C:\Users\Carlo\Mi unidad\Proyectos\Icaro\Modules\Common\Kicad\3dModels
+Import Enable Default Output Path: On
+Import PMI: Off
+Import As Internal Components: Off
+Import Path: 
+
+Translating to Parasolid data types...
+Translation process completed
+Total time required to translate and post process:00 : 00 : 03
