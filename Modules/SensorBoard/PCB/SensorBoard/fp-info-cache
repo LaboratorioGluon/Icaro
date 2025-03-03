@@ -1,4 +1,4 @@
-24735605853038407
+25066333926861521
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -58435,6 +58435,104 @@ heatsink
 0
 0
 0
+IcaroFootprints
+Connector_Icaro_Edge_tarjeta
+
+
+0
+24
+24
+IcaroFootprints
+LogoGluon_12mm
+
+
+0
+0
+0
+IcaroFootprints
+LogoGluon_25mm
+
+
+0
+0
+0
+IcaroFootprints
+LogoGluon_400px
+
+
+0
+0
+0
+IcaroFootprints
+PDFN3.3x3.3
+
+
+0
+0
+0
+IcaroFootprints
+PSPCA_D43_Series
+
+
+0
+2
+2
+IcaroFootprints
+RNM0015A
+
+TPS630701RNMR 
+0
+15
+15
+IcaroFootprints
+SOIC-12
+
+
+0
+12
+12
+IcaroFootprints
+SideSwitch_2.7_4.65
+
+
+0
+4
+2
+IcaroFootprints
+TPS564242DRLR_TEX
+
+XTPS564257DRLR 
+0
+6
+6
+IcaroFootprints
+TPS564242DRLR_TEX-L
+
+XTPS564257DRLR 
+0
+6
+6
+IcaroFootprints
+TPS564242DRLR_TEX-M
+
+XTPS564257DRLR 
+0
+6
+6
+IcaroFootprints
+WheelSwitch
+
+
+0
+10
+4
+IcaroFootprints
+microSD-Receptacle-SelfEject
+TFP09-2-12B
+SD TF TransFlash Card
+0
+13
+10
 Inductor_SMD
 L_6.3x6.3_H3
 Choke, SMD, 6.3x6.3mm 3mm height
@@ -69796,6 +69894,1238 @@ DIL DIP PDIP 2.54mm 7.62mm 300mil
 0
 4
 4
+PCM_Elektuur
+Pad_0.048in_Drill0.028in
+Single round THT pad ⌀ 0.048 in, hole ⌀ 0.028 in, nominal trace width 0.020 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_0.058in_Drill0.036in
+Single round THT pad ⌀ 0.058 in, hole ⌀ 0.036 in, nominal trace width 0.024 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_0.060in_Drill0.034in
+Single round THT pad ⌀ 0.060 in, hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_0.060x0.043in_Drill0.034in
+Single obround THT pad 0.060×0.043 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+5
+1
+PCM_Elektuur
+Pad_0.063in_Drill0.039in
+Single round THT pad ⌀ 0.063 in, hole ⌀ 0.039 in, nominal trace width 0.026 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_0.072in_Drill0.040in
+Single round THT pad ⌀ 0.072 in, hole ⌀ 0.040 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_0.072in_Drill0.052in
+Single round THT pad ⌀ 0.072 in, hole ⌀ 0.052 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_0.097in_Drill0.040in
+Single round THT pad ⌀ 0.097 in, hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_0.097x0.068in_Drill0.040in
+Single obround THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+5
+1
+PCM_Elektuur
+Pad_0.097x0.068in_Drill0.040in_Offset
+Single obround THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in, offset hole
+
+0
+5
+1
+PCM_Elektuur
+Pad_0.121in_Drill0.048in
+Single round THT pad ⌀ 0.121 in, hole ⌀ 0.048 in, nominal trace width 0.050 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_1.21mm_Drill0.7mm
+Single round THT pad ⌀ 1.21 mm, hole ⌀ 0.7 mm, nominal trace width 0.5 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_1.45mm_Drill0.9mm
+Single round THT pad ⌀ 1.45 mm, hole ⌀ 0.9 mm, nominal trace width 0.6 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_1.51mm_Drill0.8mm
+Single round THT pad ⌀ 1.51 mm, hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_1.51x1.07mm_Drill0.8mm
+Single obround THT pad 1.51×1.07 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+5
+1
+PCM_Elektuur
+Pad_1.57mm_Drill1.0mm
+Single round THT pad ⌀ 1.57 mm, hole ⌀ 0.975 mm, nominal trace width 0.65 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_1.81mm_Drill1.0mm
+Single round THT pad ⌀ 1.81 mm, hole ⌀ 1 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_1.81mm_Drill1.3mm
+Single round THT pad ⌀ 1.81 mm, hole ⌀ 1.3 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_2.41mm_Drill1.0mm
+Single round THT pad ⌀ 2.41 mm, hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_2.41x1.71mm_Drill1.0mm
+Single obround THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+5
+1
+PCM_Elektuur
+Pad_2.41x1.71mm_Drill1.0mm_Offset
+Single obround THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm, offset hole
+
+0
+5
+1
+PCM_Elektuur
+Pad_3.02mm_Drill1.2mm
+Single round THT pad ⌀ 3.02 mm, hole ⌀ 1.2 mm, nominal trace width 1.25 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_0.048x0.048in_Drill0.028in
+Single chamfered THT pad 0.048×0.048 in², hole ⌀ 0.028 in, nominal trace width 0.020 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_0.058x0.058in_Drill0.036in
+Single chamfered THT pad 0.058×0.058 in², hole ⌀ 0.036 in, nominal trace width 0.024 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_0.060x0.043in_Drill0.034in
+Single chamfered THT pad 0.060×0.043 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+5
+1
+PCM_Elektuur
+Pad_Chamfer_0.060x0.060in_Drill0.034in
+Single chamfered THT pad 0.060×0.060 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_0.063x0.063in_Drill0.039in
+Single chamfered THT pad 0.063×0.063 in², hole ⌀ 0.039 in, nominal trace width 0.026 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_0.072x0.072in_Drill0.040in
+Single chamfered THT pad 0.072×0.072 in², hole ⌀ 0.040 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_0.072x0.072in_Drill0.052in
+Single chamfered THT pad 0.072×0.072 in², hole ⌀ 0.052 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_0.097x0.068in_Drill0.040in
+Single chamfered THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+5
+1
+PCM_Elektuur
+Pad_Chamfer_0.097x0.068in_Drill0.040in_Offset
+Single chamfered THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in, offset hole
+
+0
+5
+1
+PCM_Elektuur
+Pad_Chamfer_0.097x0.097in_Drill0.040in
+Single chamfered THT pad 0.097×0.097 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_0.121x0.121in_Drill0.048in
+Single chamfered THT pad 0.121×0.121 in², hole ⌀ 0.048 in, nominal trace width 0.050 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_1.21x1.21mm_Drill0.7mm
+Single chamfered THT pad 1.21×1.21 mm², hole ⌀ 0.7 mm, nominal trace width 0.5 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_1.45x1.45mm_Drill0.9mm
+Single chamfered THT pad 1.45×1.45 mm², hole ⌀ 0.9 mm, nominal trace width 0.6 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_1.51x1.07mm_Drill0.8mm
+Single chamfered THT pad 1.51×1.07 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+5
+1
+PCM_Elektuur
+Pad_Chamfer_1.51x1.51mm_Drill0.8mm
+Single chamfered THT pad 1.51×1.51 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_1.57x1.57mm_Drill1.0mm
+Single chamfered THT pad 1.57×1.57 mm², hole ⌀ 0.975 mm, nominal trace width 0.65 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_1.81x1.81mm_Drill1.0mm
+Single chamfered THT pad 1.81×1.81 mm², hole ⌀ 1 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_1.81x1.81mm_Drill1.3mm
+Single chamfered THT pad 1.81×1.81 mm², hole ⌀ 1.3 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_2.41x1.71mm_Drill1.0mm
+Single chamfered THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+5
+1
+PCM_Elektuur
+Pad_Chamfer_2.41x1.71mm_Drill1.0mm_Offset
+Single chamfered THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm, offset hole
+
+0
+5
+1
+PCM_Elektuur
+Pad_Chamfer_2.41x2.41mm_Drill1.0mm
+Single chamfered THT pad 2.41×2.41 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Chamfer_3.02x3.02mm_Drill1.2mm
+Single chamfered THT pad 3.02×3.02 mm², hole ⌀ 1.2 mm, nominal trace width 1.25 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_0.048x0.048in_Drill0.028in
+Single octagonal THT pad 0.048×0.048 in², hole ⌀ 0.028 in, nominal trace width 0.020 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_0.058x0.058in_Drill0.036in
+Single octagonal THT pad 0.058×0.058 in², hole ⌀ 0.036 in, nominal trace width 0.024 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_0.060x0.043in_Drill0.034in
+Single octagonal THT pad 0.060×0.043 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+5
+1
+PCM_Elektuur
+Pad_Octa_0.060x0.060in_Drill0.034in
+Single octagonal THT pad 0.060×0.060 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_0.063x0.063in_Drill0.039in
+Single octagonal THT pad 0.063×0.063 in², hole ⌀ 0.039 in, nominal trace width 0.026 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_0.072x0.072in_Drill0.040in
+Single octagonal THT pad 0.072×0.072 in², hole ⌀ 0.040 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_0.072x0.072in_Drill0.052in
+Single octagonal THT pad 0.072×0.072 in², hole ⌀ 0.052 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_0.097x0.068in_Drill0.040in
+Single octagonal THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+5
+1
+PCM_Elektuur
+Pad_Octa_0.097x0.068in_Drill0.040in_Offset
+Single octagonal THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in, offset hole
+
+0
+5
+1
+PCM_Elektuur
+Pad_Octa_0.097x0.097in_Drill0.040in
+Single octagonal THT pad 0.097×0.097 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_0.121x0.121in_Drill0.048in
+Single octagonal THT pad 0.121×0.121 in², hole ⌀ 0.048 in, nominal trace width 0.050 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_1.21x1.21mm_Drill0.7mm
+Single octagonal THT pad 1.21×1.21 mm², hole ⌀ 0.7 mm, nominal trace width 0.5 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_1.45x1.45mm_Drill0.9mm
+Single octagonal THT pad 1.45×1.45 mm², hole ⌀ 0.9 mm, nominal trace width 0.6 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_1.51x1.07mm_Drill0.8mm
+Single octagonal THT pad 1.51×1.07 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+5
+1
+PCM_Elektuur
+Pad_Octa_1.51x1.51mm_Drill0.8mm
+Single octagonal THT pad 1.51×1.51 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_1.57x1.57mm_Drill1.0mm
+Single octagonal THT pad 1.57×1.57 mm², hole ⌀ 0.975 mm, nominal trace width 0.65 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_1.81x1.81mm_Drill1.0mm
+Single octagonal THT pad 1.81×1.81 mm², hole ⌀ 1 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_1.81x1.81mm_Drill1.3mm
+Single octagonal THT pad 1.81×1.81 mm², hole ⌀ 1.3 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_2.41x1.71mm_Drill1.0mm
+Single octagonal THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+5
+1
+PCM_Elektuur
+Pad_Octa_2.41x1.71mm_Drill1.0mm_Offset
+Single octagonal THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm, offset hole
+
+0
+5
+1
+PCM_Elektuur
+Pad_Octa_2.41x2.41mm_Drill1.0mm
+Single octagonal THT pad 2.41×2.41 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Octa_3.02x3.02mm_Drill1.2mm
+Single octagonal THT pad 3.02×3.02 mm², hole ⌀ 1.2 mm, nominal trace width 1.25 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_0.048x0.048in_Drill0.028in
+Single square THT pad 0.048×0.048 in², hole ⌀ 0.028 in, nominal trace width 0.020 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_0.058x0.058in_Drill0.036in
+Single square THT pad 0.058×0.058 in², hole ⌀ 0.036 in, nominal trace width 0.024 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_0.060x0.043in_Drill0.034in
+Single rectangular THT pad 0.060×0.043 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+5
+1
+PCM_Elektuur
+Pad_Rect_0.060x0.060in_Drill0.034in
+Single square THT pad 0.060×0.060 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_0.063x0.063in_Drill0.039in
+Single square THT pad 0.063×0.063 in², hole ⌀ 0.039 in, nominal trace width 0.026 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_0.072x0.072in_Drill0.040in
+Single square THT pad 0.072×0.072 in², hole ⌀ 0.040 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_0.072x0.072in_Drill0.052in
+Single square THT pad 0.072×0.072 in², hole ⌀ 0.052 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_0.097x0.068in_Drill0.040in
+Single rectangular THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+5
+1
+PCM_Elektuur
+Pad_Rect_0.097x0.068in_Drill0.040in_Offset
+Single rectangular THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in, offset hole
+
+0
+5
+1
+PCM_Elektuur
+Pad_Rect_0.097x0.097in_Drill0.040in
+Single square THT pad 0.097×0.097 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_0.121x0.121in_Drill0.048in
+Single square THT pad 0.121×0.121 in², hole ⌀ 0.048 in, nominal trace width 0.050 in
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_1.21x1.21mm_Drill0.7mm
+Single square THT pad 1.21×1.21 mm², hole ⌀ 0.7 mm, nominal trace width 0.5 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_1.45x1.45mm_Drill0.9mm
+Single square THT pad 1.45×1.45 mm², hole ⌀ 0.9 mm, nominal trace width 0.6 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_1.51x1.07mm_Drill0.8mm
+Single rectangular THT pad 1.51×1.07 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+5
+1
+PCM_Elektuur
+Pad_Rect_1.51x1.51mm_Drill0.8mm
+Single square THT pad 1.51×1.51 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_1.57x1.57mm_Drill1.0mm
+Single square THT pad 1.57×1.57 mm², hole ⌀ 0.975 mm, nominal trace width 0.65 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_1.81x1.81mm_Drill1.0mm
+Single square THT pad 1.81×1.81 mm², hole ⌀ 1 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_1.81x1.81mm_Drill1.3mm
+Single square THT pad 1.81×1.81 mm², hole ⌀ 1.3 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_2.41x1.71mm_Drill1.0mm
+Single rectangular THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+5
+1
+PCM_Elektuur
+Pad_Rect_2.41x1.71mm_Drill1.0mm_Offset
+Single rectangular THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm, offset hole
+
+0
+5
+1
+PCM_Elektuur
+Pad_Rect_2.41x2.41mm_Drill1.0mm
+Single square THT pad 2.41×2.41 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+1
+1
+PCM_Elektuur
+Pad_Rect_3.02x3.02mm_Drill1.2mm
+Single square THT pad 3.02×3.02 mm², hole ⌀ 1.2 mm, nominal trace width 1.25 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_0.048in_Drill0.028in
+Single round THT pad ⌀ 0.048 in, hole ⌀ 0.028 in, nominal trace width 0.020 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_0.058in_Drill0.036in
+Single round THT pad ⌀ 0.058 in, hole ⌀ 0.036 in, nominal trace width 0.024 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_0.060in_Drill0.034in
+Single round THT pad ⌀ 0.060 in, hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_0.060x0.043in_Drill0.034in
+Single obround THT pad 0.060×0.043 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_0.063in_Drill0.039in
+Single round THT pad ⌀ 0.063 in, hole ⌀ 0.039 in, nominal trace width 0.026 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_0.072in_Drill0.040in
+Single round THT pad ⌀ 0.072 in, hole ⌀ 0.040 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_0.072in_Drill0.052in
+Single round THT pad ⌀ 0.072 in, hole ⌀ 0.052 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_0.097in_Drill0.040in
+Single round THT pad ⌀ 0.097 in, hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_0.097x0.068in_Drill0.040in
+Single obround THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_0.097x0.068in_Drill0.040in_Offset
+Single obround THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in, offset hole
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_0.121in_Drill0.048in
+Single round THT pad ⌀ 0.121 in, hole ⌀ 0.048 in, nominal trace width 0.050 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_1.21mm_Drill0.7mm
+Single round THT pad ⌀ 1.21 mm, hole ⌀ 0.7 mm, nominal trace width 0.5 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_1.45mm_Drill0.9mm
+Single round THT pad ⌀ 1.45 mm, hole ⌀ 0.9 mm, nominal trace width 0.6 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_1.51mm_Drill0.8mm
+Single round THT pad ⌀ 1.51 mm, hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_1.51x1.07mm_Drill0.8mm
+Single obround THT pad 1.51×1.07 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_1.57mm_Drill1.0mm
+Single round THT pad ⌀ 1.57 mm, hole ⌀ 0.975 mm, nominal trace width 0.65 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_1.81mm_Drill1.0mm
+Single round THT pad ⌀ 1.81 mm, hole ⌀ 1 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_1.81mm_Drill1.3mm
+Single round THT pad ⌀ 1.81 mm, hole ⌀ 1.3 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_2.41mm_Drill1.0mm
+Single round THT pad ⌀ 2.41 mm, hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_2.41x1.71mm_Drill1.0mm
+Single obround THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_2.41x1.71mm_Drill1.0mm_Offset
+Single obround THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm, offset hole
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_3.02mm_Drill1.2mm
+Single round THT pad ⌀ 3.02 mm, hole ⌀ 1.2 mm, nominal trace width 1.25 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_0.048x0.048in_Drill0.028in
+Single chamfered THT pad 0.048×0.048 in², hole ⌀ 0.028 in, nominal trace width 0.020 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_0.058x0.058in_Drill0.036in
+Single chamfered THT pad 0.058×0.058 in², hole ⌀ 0.036 in, nominal trace width 0.024 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_0.060x0.043in_Drill0.034in
+Single chamfered THT pad 0.060×0.043 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Chamfer_0.060x0.060in_Drill0.034in
+Single chamfered THT pad 0.060×0.060 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_0.063x0.063in_Drill0.039in
+Single chamfered THT pad 0.063×0.063 in², hole ⌀ 0.039 in, nominal trace width 0.026 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_0.072x0.072in_Drill0.040in
+Single chamfered THT pad 0.072×0.072 in², hole ⌀ 0.040 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_0.072x0.072in_Drill0.052in
+Single chamfered THT pad 0.072×0.072 in², hole ⌀ 0.052 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_0.097x0.068in_Drill0.040in
+Single chamfered THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Chamfer_0.097x0.068in_Drill0.040in_Offset
+Single chamfered THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in, offset hole
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Chamfer_0.097x0.097in_Drill0.040in
+Single chamfered THT pad 0.097×0.097 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_0.121x0.121in_Drill0.048in
+Single chamfered THT pad 0.121×0.121 in², hole ⌀ 0.048 in, nominal trace width 0.050 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_1.21x1.21mm_Drill0.7mm
+Single chamfered THT pad 1.21×1.21 mm², hole ⌀ 0.7 mm, nominal trace width 0.5 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_1.45x1.45mm_Drill0.9mm
+Single chamfered THT pad 1.45×1.45 mm², hole ⌀ 0.9 mm, nominal trace width 0.6 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_1.51x1.07mm_Drill0.8mm
+Single chamfered THT pad 1.51×1.07 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Chamfer_1.51x1.51mm_Drill0.8mm
+Single chamfered THT pad 1.51×1.51 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_1.57x1.57mm_Drill1.0mm
+Single chamfered THT pad 1.57×1.57 mm², hole ⌀ 0.975 mm, nominal trace width 0.65 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_1.81x1.81mm_Drill1.0mm
+Single chamfered THT pad 1.81×1.81 mm², hole ⌀ 1 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_1.81x1.81mm_Drill1.3mm
+Single chamfered THT pad 1.81×1.81 mm², hole ⌀ 1.3 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_2.41x1.71mm_Drill1.0mm
+Single chamfered THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Chamfer_2.41x1.71mm_Drill1.0mm_Offset
+Single chamfered THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm, offset hole
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Chamfer_2.41x2.41mm_Drill1.0mm
+Single chamfered THT pad 2.41×2.41 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Chamfer_3.02x3.02mm_Drill1.2mm
+Single chamfered THT pad 3.02×3.02 mm², hole ⌀ 1.2 mm, nominal trace width 1.25 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_0.048x0.048in_Drill0.028in
+Single octagonal THT pad 0.048×0.048 in², hole ⌀ 0.028 in, nominal trace width 0.020 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_0.058x0.058in_Drill0.036in
+Single octagonal THT pad 0.058×0.058 in², hole ⌀ 0.036 in, nominal trace width 0.024 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_0.060x0.043in_Drill0.034in
+Single octagonal THT pad 0.060×0.043 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Octa_0.060x0.060in_Drill0.034in
+Single octagonal THT pad 0.060×0.060 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_0.063x0.063in_Drill0.039in
+Single octagonal THT pad 0.063×0.063 in², hole ⌀ 0.039 in, nominal trace width 0.026 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_0.072x0.072in_Drill0.040in
+Single octagonal THT pad 0.072×0.072 in², hole ⌀ 0.040 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_0.072x0.072in_Drill0.052in
+Single octagonal THT pad 0.072×0.072 in², hole ⌀ 0.052 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_0.097x0.068in_Drill0.040in
+Single octagonal THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Octa_0.097x0.068in_Drill0.040in_Offset
+Single octagonal THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in, offset hole
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Octa_0.097x0.097in_Drill0.040in
+Single octagonal THT pad 0.097×0.097 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_0.121x0.121in_Drill0.048in
+Single octagonal THT pad 0.121×0.121 in², hole ⌀ 0.048 in, nominal trace width 0.050 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_1.21x1.21mm_Drill0.7mm
+Single octagonal THT pad 1.21×1.21 mm², hole ⌀ 0.7 mm, nominal trace width 0.5 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_1.45x1.45mm_Drill0.9mm
+Single octagonal THT pad 1.45×1.45 mm², hole ⌀ 0.9 mm, nominal trace width 0.6 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_1.51x1.07mm_Drill0.8mm
+Single octagonal THT pad 1.51×1.07 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Octa_1.51x1.51mm_Drill0.8mm
+Single octagonal THT pad 1.51×1.51 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_1.57x1.57mm_Drill1.0mm
+Single octagonal THT pad 1.57×1.57 mm², hole ⌀ 0.975 mm, nominal trace width 0.65 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_1.81x1.81mm_Drill1.0mm
+Single octagonal THT pad 1.81×1.81 mm², hole ⌀ 1 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_1.81x1.81mm_Drill1.3mm
+Single octagonal THT pad 1.81×1.81 mm², hole ⌀ 1.3 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_2.41x1.71mm_Drill1.0mm
+Single octagonal THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Octa_2.41x1.71mm_Drill1.0mm_Offset
+Single octagonal THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm, offset hole
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Octa_2.41x2.41mm_Drill1.0mm
+Single octagonal THT pad 2.41×2.41 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Octa_3.02x3.02mm_Drill1.2mm
+Single octagonal THT pad 3.02×3.02 mm², hole ⌀ 1.2 mm, nominal trace width 1.25 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_0.048x0.048in_Drill0.028in
+Single square THT pad 0.048×0.048 in², hole ⌀ 0.028 in, nominal trace width 0.020 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_0.058x0.058in_Drill0.036in
+Single square THT pad 0.058×0.058 in², hole ⌀ 0.036 in, nominal trace width 0.024 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_0.060x0.043in_Drill0.034in
+Single rectangular THT pad 0.060×0.043 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Rect_0.060x0.060in_Drill0.034in
+Single square THT pad 0.060×0.060 in², hole ⌀ 0.034 in, nominal trace width 0.025 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_0.063x0.063in_Drill0.039in
+Single square THT pad 0.063×0.063 in², hole ⌀ 0.039 in, nominal trace width 0.026 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_0.072x0.072in_Drill0.040in
+Single square THT pad 0.072×0.072 in², hole ⌀ 0.040 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_0.072x0.072in_Drill0.052in
+Single square THT pad 0.072×0.072 in², hole ⌀ 0.052 in, nominal trace width 0.030 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_0.097x0.068in_Drill0.040in
+Single rectangular THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Rect_0.097x0.068in_Drill0.040in_Offset
+Single rectangular THT pad 0.097×0.068 in², hole ⌀ 0.040 in, nominal trace width 0.040 in, offset hole
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Rect_0.097x0.097in_Drill0.040in
+Single square THT pad 0.097×0.097 in², hole ⌀ 0.040 in, nominal trace width 0.040 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_0.121x0.121in_Drill0.048in
+Single square THT pad 0.121×0.121 in², hole ⌀ 0.048 in, nominal trace width 0.050 in
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_1.21x1.21mm_Drill0.7mm
+Single square THT pad 1.21×1.21 mm², hole ⌀ 0.7 mm, nominal trace width 0.5 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_1.45x1.45mm_Drill0.9mm
+Single square THT pad 1.45×1.45 mm², hole ⌀ 0.9 mm, nominal trace width 0.6 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_1.51x1.07mm_Drill0.8mm
+Single rectangular THT pad 1.51×1.07 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Rect_1.51x1.51mm_Drill0.8mm
+Single square THT pad 1.51×1.51 mm², hole ⌀ 0.85 mm, nominal trace width 0.625 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_1.57x1.57mm_Drill1.0mm
+Single square THT pad 1.57×1.57 mm², hole ⌀ 0.975 mm, nominal trace width 0.65 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_1.81x1.81mm_Drill1.0mm
+Single square THT pad 1.81×1.81 mm², hole ⌀ 1 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_1.81x1.81mm_Drill1.3mm
+Single square THT pad 1.81×1.81 mm², hole ⌀ 1.3 mm, nominal trace width 0.75 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_2.41x1.71mm_Drill1.0mm
+Single rectangular THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Rect_2.41x1.71mm_Drill1.0mm_Offset
+Single rectangular THT pad 2.41×1.71 mm², hole ⌀ 1 mm, nominal trace width 1 mm, offset hole
+
+0
+5
+1
+PCM_Elektuur_1
+Pad_Rect_2.41x2.41mm_Drill1.0mm
+Single square THT pad 2.41×2.41 mm², hole ⌀ 1 mm, nominal trace width 1 mm
+
+0
+1
+1
+PCM_Elektuur_1
+Pad_Rect_3.02x3.02mm_Drill1.2mm
+Single square THT pad 3.02×3.02 mm², hole ⌀ 1.2 mm, nominal trace width 1.25 mm
+
+0
+1
+1
 Package_BGA
 Alliance_TFBGA-36_6x8mm_Layout6x8_P0.75mm
 Alliance TFBGA-36, NSMD, 6.0x8.0mm, 36 Ball, 6x8 Layout, 0.75mm Pitch, https://www.alliancememory.com/wp-content/uploads/pdf/AS6C1008_Mar_2023V1.2.pdf

@@ -1758,7 +1758,7 @@
 		)
 		(uuid "75c4734c-99f2-4c90-9383-0cc2f0286b49")
 	)
-	(label "I2C_BME.SDA"
+	(label "I2C_INT.SDA"
 		(at 148.59 132.08 180)
 		(effects
 			(font
@@ -1778,7 +1778,7 @@
 		)
 		(uuid "96f4a67c-b13b-4f2b-b1fa-8f8d23685f24")
 	)
-	(label "I2C_BME.SCL"
+	(label "I2C_INT.SCL"
 		(at 137.16 127 0)
 		(effects
 			(font
@@ -1809,7 +1809,7 @@
 		)
 		(uuid "ae8b10a7-625e-4ec8-8b15-15ef16265513")
 	)
-	(hierarchical_label "I2C_BME{SDA SCL}"
+	(hierarchical_label "I2C_INT{SDA SCL}"
 		(shape input)
 		(at 156.21 123.19 0)
 		(effects
