@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 // import 'package:provider/provider.dart';
 
-import 'logopage.dart';
+import 'camerapage.dart';
+import 'homepage.dart';
+import 'logspage.dart';
+import 'lorapage.dart';
+import 'mappage.dart';
+import 'powerpage.dart';
+import 'sensorspage.dart';
+import 'settingspage.dart';
 // import 'state.dart';
 
 /* App entry point */
@@ -40,23 +47,21 @@ class _IcaroMainState extends State<IcaroMain> {
         Widget page;
         switch(selectedIndex){
           case 0:
-            page = IcaroLogoPage();
+            page = IcaroHomePage();
           case 1:
-            page = Placeholder();
+            page = IcaroSensorsPage();
           case 2:
-            page = Placeholder();
+            page = IcaroCameraPage();
           case 3:
-            page = Placeholder();
+            page = IcaroMapPage();
           case 4:
-            page = Placeholder();
+            page = IcaroPowerPage();
           case 5:
-            page = Placeholder();
+            page = IcaroLoraPage();
           case 6:
-            page = Placeholder();
+            page = IcaroLogsPage();
           case 7:
-            page = Placeholder();
-          case 8:
-            page = Placeholder();
+            page = IcaroSettingsPage();
           default:
           throw UnimplementedError("No widget for $selectedIndex");
         }

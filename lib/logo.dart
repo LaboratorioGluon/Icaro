@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class IcaroLogoPage extends StatelessWidget {
-  const IcaroLogoPage({super.key});
+class IcaroLogo extends StatelessWidget {
+  const IcaroLogo({super.key});
   static const String logoAsset = "assets/IcaroPatch.png";
 
   @override
