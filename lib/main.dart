@@ -5,7 +5,7 @@ import 'camerapage.dart';
 import 'homepage.dart';
 import 'logspage.dart';
 import 'lorapage.dart';
-import 'mappage.dart';
+import 'mappage/mappage.dart';
 import 'powerpage.dart';
 import 'sensorspage.dart';
 import 'settingspage.dart';

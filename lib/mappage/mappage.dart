@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:icaro_app/common/satellite.dart';
 
 class IcaroMapPage extends StatefulWidget {
   const IcaroMapPage({super.key});
@@ -11,6 +16,13 @@ class IcaroMapPage extends StatefulWidget {
 }
 
 class _IcaroMapPageState extends State<IcaroMapPage> {
+
+  // Initial state
+  @override
+  void initState() {
+    super.initState();
+    iss = fetchISS();
+  }
 
   // Sheet controls
   bool expanded = false;
@@ -33,18 +45,42 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
   }
 
   void _resetLocation() {
+    _setLocation(getDefaultLatLng(), getDefaultZoom(), getDefaultRotation());
+  }
+
+  void _setLocation(LatLng position, double zoom, double rotation) {
     setState(() {
-      mapController.move(getDefaultLatLng(), getDefaultZoom());
-      mapController.rotate(getDefaultRotation());
+      mapController.move(position, zoom);
+      mapController.rotate(rotation);
     });
   }
 
+  // ISS tracking
+  late Future<Satellite> iss;
+
+  // Widget creation
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final style = theme.textTheme.displayMedium!.copyWith(
             color: theme.colorScheme.primary,
             );
+
+    var issData = Center(child:                
+                    FutureBuilder<Satellite>(
+                      future: iss,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return SatelliteDataWidget(sat: snapshot.requireData);
+                        } else if (snapshot.hasError) {
+                          return Text('${snapshot.error}');
+                        }
+
+                        // By default, show a loading spinner.
+                        return const CircularProgressIndicator();
+                      },
+                    ),
+                );
 
     // Collapsed widget for sheet
     const double collapsedHeight = 100;
@@ -62,6 +98,7 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
                   // onPressed: () => Navigator.pop(context),
                   onPressed: () => {_resetLocation()},
                 ),
+                issData
               ],
             );
     
@@ -109,4 +146,28 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
 
     return pageWidget;
   }
+}
+
+Future<Satellite> fetchISS() async {
+  final response = await http.get(
+    Uri.parse('https://api.wheretheiss.at/v1/satellites/25544'),
+  );
+
+  if (response.statusCode == 200) {
+    return Satellite.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  } else {
+    throw Exception('Failed to load ISS');
+  }
+}
+
+class SatelliteDataWidget extends StatelessWidget{
+  const SatelliteDataWidget({super.key, required this.sat});
+
+  final Satellite sat;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(sat.name.toUpperCase());
+  }
+
 }
