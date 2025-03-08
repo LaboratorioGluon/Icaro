@@ -61,4 +61,22 @@ class Satellite {
       _ => throw const FormatException('Faild to load satellite.'),
     };
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "Nombre": name,
+      "ID": id,
+      "Latitud": latitude,
+      "Longitud": longitude,
+      "Altitud": altitude,
+      "Velocidad": velocity,
+      "Visibilidad": visibility,
+      "Footprint": footprint,
+      "Timestamp": timestamp,
+      "Día Numérico": daynum,
+      "Solar Lat": solarLat,
+      "Solar Lon": solarLon,
+      "Unidades": units,
+    };
+  }
 }
