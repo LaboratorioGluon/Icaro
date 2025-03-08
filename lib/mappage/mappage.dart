@@ -29,6 +29,10 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
     _issPositionSub = ISSservice().locationStream.listen((newPosition) {
       setState(() {
         issPosition = newPosition;
+        if(trackIss)
+        {
+          mapController.move(issPosition, mapController.camera.zoom);
+        }
       });
     });
 
@@ -67,12 +71,9 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
 
   // ISS tracking
   late Satellite iss;
-  bool trackIss = false;
-  LatLng issPosition = LatLng(0.0, 0.0);
-  Marker issMarker = Marker(
-                      point: getDefaultLatLng(), 
-                      child: Image.asset("assets/icaro.png")
-                    );
+  bool trackIss = true;
+  LatLng issPosition = const LatLng(40.44254064814816, -3.952498215412911);
+  late Marker issMarker;
 
   void _setTracking(bool value) {
     setState(() {
@@ -91,6 +92,11 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
             color: theme.colorScheme.primary,
             fontSize: 16
             );
+
+    issMarker = Marker(
+                      point: issPosition, 
+                      child: Image.asset("assets/icaro.png")
+                    );
 
     Widget header = ConstrainedBox(
         constraints: BoxConstraints(
