@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'package:icaro_app/common/satellite.dart';
@@ -16,7 +17,7 @@ class IcaroMapPage extends StatefulWidget {
   State<IcaroMapPage> createState() => _IcaroMapPageState();
 }
 
-class _IcaroMapPageState extends State<IcaroMapPage> {
+class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMixin{
   late StreamSubscription<LatLng> _issPositionSub;
   late StreamSubscription<Satellite> _issSatelliteSub;
 
@@ -31,7 +32,7 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
         issPosition = newPosition;
         if(trackIss)
         {
-          mapController.move(issPosition, mapController.camera.zoom);
+          _moveMap(issPosition);
         }
       });
     });
@@ -51,7 +52,11 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
   }
 
   // Map controls
-  final mapController = MapController();
+  late final _animatedMapController = AnimatedMapController(
+                                        vsync: this, 
+                                        duration: const Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+
   static getDefaultLatLng() {
     return LatLng(40.44254064814816, -3.952498215412911);
   }
@@ -62,11 +67,8 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
     return 0.0;
   }
 
-  void _setLocation(LatLng position, double zoom, double rotation) {
-    setState(() {
-      mapController.move(position, zoom);
-      mapController.rotate(rotation);
-    });
+  void _moveMap(LatLng position) {
+    _animatedMapController.animateTo(dest: position);
   }
 
   // ISS tracking
@@ -155,7 +157,7 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
             initialZoom: getDefaultZoom(),
             initialRotation: getDefaultRotation(),
           ),
-          mapController: mapController,
+          mapController: _animatedMapController.mapController,
           children: [
             TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
