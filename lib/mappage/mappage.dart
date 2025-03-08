@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -24,14 +25,6 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
     iss = fetchISS();
   }
 
-  // Sheet controls
-  bool expanded = false;
-  void _toggleHeight() {
-    setState(() {
-      expanded = !expanded;
-    });
-  }
-
   // Map controls
   final mapController = MapController();
   static getDefaultLatLng() {
@@ -42,10 +35,6 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
   }
   static getDefaultRotation() {
     return 0.0;
-  }
-
-  void _resetLocation() {
-    _setLocation(getDefaultLatLng(), getDefaultZoom(), getDefaultRotation());
   }
 
   void _setLocation(LatLng position, double zoom, double rotation) {
@@ -81,9 +70,7 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
                         Duration(seconds: 1)
                       ).asyncMap((i) => fetchISS());
 
-    // Widget for sheet
-    double sheetHeight = 100;
-    Widget sheetWidget = ConstrainedBox(
+    Widget header = ConstrainedBox(
         constraints: BoxConstraints(
           minWidth: 0, 
           minHeight: 100, 
@@ -102,7 +89,7 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
               mainAxisAlignment: MainAxisAlignment.center, 
               crossAxisAlignment: CrossAxisAlignment.center, 
               children: [
-                Text("Follow", style: smallStyle), // Etiqueta del switch
+                Text("Track", style: smallStyle), // Etiqueta del switch
                 Switch(
                   value: trackIss,
                   onChanged: (bool value) {_setTracking(value);},
@@ -114,46 +101,24 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
         ),
     );
         
-    if (expanded)
-    {
-      var issTable = Center(child:                
-                      StreamBuilder(
-                        stream: issStream,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return SatelliteDataTable(sat: snapshot.requireData);
-                          } else if (snapshot.hasError) {
-                            return Text('${snapshot.error}');
-                          }
-                          return const CircularProgressIndicator();
-                        },
-                      ),
-                  );
-
-      // Expand widget for sheet
-      sheetHeight = 350;
-      sheetWidget = Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        sheetWidget,
-                        // ElevatedButton(
-                        //   child: const Text('Reset position'),
-                        //   // onPressed: () => Navigator.pop(context),
-                        //   onPressed: () => {_resetLocation()},
-                        // ),
-                        Expanded (child: issTable),
-                      ],
-                    );
-    }
+    var issTable = Center(child:                
+        StreamBuilder(
+          stream: issStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return SatelliteDataTable(sat: snapshot.requireData);
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+            return const CircularProgressIndicator();
+          },
+        ),
+    );
 
     // Widget for sheet
-    var bottomSheet = SizedBox(
-          height: sheetHeight,
-          child: Center(
-            child: sheetWidget,
-          ),
-        );
+    var bottomSheet = PageDetails(
+      header: header,
+      body: issTable);
 
     // Map backgrounds
     var map = FlutterMap(
@@ -171,21 +136,12 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
           ],
         );
 
-
-    var pageWidget = Scaffold (
-          body: map,
-          bottomSheet: bottomSheet,
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              _toggleHeight();
-            },
-            child: Image.asset(
-              "assets/IcaroPatch.png",
-              width: 48,
-            ),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        );
+    var pageWidget = Stack(
+        children: [
+            map,
+            bottomSheet
+        ],
+    );
 
     return pageWidget;
   }
@@ -203,6 +159,107 @@ Future<Satellite> fetchISS() async {
   }
 }
 
+// Sheet section
+class PageDetails extends StatefulWidget {
+  final Widget header;
+  final Widget body;
+
+  const PageDetails ({ super.key, required this.header,required this.body });
+
+  @override
+  State<PageDetails> createState() => _PageDetailsState();
+}
+
+class _PageDetailsState extends State<PageDetails> {
+
+  final DraggableScrollableController sheetController = DraggableScrollableController();
+
+  double _sheetPosition = 0.15;
+  final double _dragSensitivity = 600;
+
+  bool get _isOnDesktopAndWeb =>
+      kIsWeb ||
+      switch (defaultTargetPlatform) {
+        TargetPlatform.macOS ||
+        TargetPlatform.linux ||
+        TargetPlatform.windows => true,
+        TargetPlatform.android ||
+        TargetPlatform.iOS ||
+        TargetPlatform.fuchsia => false,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    // final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    var sheet = DraggableScrollableSheet(
+      minChildSize: 0.15,
+      maxChildSize: 0.5,
+      initialChildSize: _sheetPosition,
+      builder: (BuildContext context, ScrollController scrollController) {
+        var grabber = Grabber(
+          onVerticalDragUpdate: (DragUpdateDetails details) {
+            setState(() {
+              _sheetPosition -= details.delta.dy / _dragSensitivity;
+              if (_sheetPosition < 0.15) {
+                _sheetPosition = 0.15;
+              }
+              if (_sheetPosition > 0.5) {
+                _sheetPosition = 0.5;
+              }
+            });
+          },
+          isOnDesktopAndWeb: _isOnDesktopAndWeb,
+        );
+
+        var realHeader = widget.header;
+
+        var realBody = SingleChildScrollView (
+          scrollDirection: Axis.vertical,
+          child: widget.body,
+        );
+
+        return Container(
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+              color: Theme.of(context).canvasColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(25),
+                topRight: Radius.circular(25),
+              ),
+            ),
+            child: SingleChildScrollView(
+                  controller: scrollController,
+            child: Column(
+              children: <Widget>[
+                grabber,
+                realHeader,
+                realBody,
+              ],
+            ),
+            ),
+          );
+      },
+    );
+
+    return Align (
+        alignment: Alignment.bottomCenter,
+        child: ConstrainedBox (
+          constraints: BoxConstraints (
+            maxWidth: 1000,
+            maxHeight: 700,
+          ),
+          child: FractionallySizedBox (
+            alignment: Alignment.center, 
+            widthFactor: 0.5,
+            child: sheet,
+          ),
+        ),
+    );
+  }
+}
+
+// Widget to display information
 class SatelliteDataTable extends StatelessWidget{
   const SatelliteDataTable({super.key, required this.sat});
 
@@ -253,6 +310,45 @@ class SatelliteDataTable extends StatelessWidget{
         ),
       ),
 
+    );
+  }
+}
+
+class Grabber extends StatelessWidget {
+  const Grabber({
+    super.key,
+    required this.onVerticalDragUpdate,
+    required this.isOnDesktopAndWeb,
+  });
+
+  final ValueChanged<DragUpdateDetails> onVerticalDragUpdate;
+  final bool isOnDesktopAndWeb;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isOnDesktopAndWeb) {
+      return const SizedBox.shrink();
+    }
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onVerticalDragUpdate: onVerticalDragUpdate,
+      child: Container(
+        width: double.infinity,
+        color: colorScheme.primary,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 8.0),
+            width: 32.0,
+            height: 4.0,
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
