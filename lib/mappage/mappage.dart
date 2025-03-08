@@ -1,12 +1,12 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:icaro_app/common/satellite.dart';
+import 'package:icaro_app/mappage/issservice.dart';
 
 class IcaroMapPage extends StatefulWidget {
   const IcaroMapPage({super.key});
@@ -17,12 +17,33 @@ class IcaroMapPage extends StatefulWidget {
 }
 
 class _IcaroMapPageState extends State<IcaroMapPage> {
+  late StreamSubscription<LatLng> _issPositionSub;
+  late StreamSubscription<Satellite> _issSatelliteSub;
 
   // Initial state
   @override
   void initState() {
     super.initState();
-    iss = fetchISS();
+
+    // Initialize ISS tracking subscription
+    _issPositionSub = ISSservice().locationStream.listen((newPosition) {
+      setState(() {
+        issPosition = newPosition;
+      });
+    });
+
+    _issSatelliteSub = ISSservice().satelliteStream.listen((newData) {
+      setState(() {
+        iss = newData;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _issPositionSub.cancel();
+    _issSatelliteSub.cancel();
+    super.dispose();
   }
 
   // Map controls
@@ -45,8 +66,13 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
   }
 
   // ISS tracking
-  late Future<Satellite> iss;
+  late Satellite iss;
   bool trackIss = false;
+  LatLng issPosition = LatLng(0.0, 0.0);
+  Marker issMarker = Marker(
+                      point: getDefaultLatLng(), 
+                      child: Image.asset("assets/icaro.png")
+                    );
 
   void _setTracking(bool value) {
     setState(() {
@@ -65,10 +91,6 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
             color: theme.colorScheme.primary,
             fontSize: 16
             );
-
-    var issStream = Stream.periodic(
-                        Duration(seconds: 1)
-                      ).asyncMap((i) => fetchISS());
 
     Widget header = ConstrainedBox(
         constraints: BoxConstraints(
@@ -103,7 +125,7 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
         
     var issTable = Center(child:                
         StreamBuilder(
-          stream: issStream,
+          stream: ISSservice().satelliteStream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return SatelliteDataTable(sat: snapshot.requireData);
@@ -133,6 +155,11 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.icaro.app',
             ),
+            MarkerLayer(
+              markers: [
+                issMarker,
+              ],
+            ),
           ],
         );
 
@@ -144,18 +171,6 @@ class _IcaroMapPageState extends State<IcaroMapPage> {
     );
 
     return pageWidget;
-  }
-}
-
-Future<Satellite> fetchISS() async {
-  final response = await http.get(
-    Uri.parse('https://api.wheretheiss.at/v1/satellites/25544'),
-  );
-
-  if (response.statusCode == 200) {
-    return Satellite.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-  } else {
-    throw Exception('Failed to load ISS');
   }
 }
 
