@@ -145,6 +145,130 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Device:R"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R"
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "R res resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Jumper:SolderJumper_3_Open"
 			(pin_names
 				(offset 0)
@@ -1213,6 +1337,18 @@
 		(uuid "4896d061-a5b6-4ea3-91ed-f319839c153b")
 	)
 	(junction
+		(at 165.1 113.03)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "4a219dbc-18d9-4aec-9301-a71ea0632366")
+	)
+	(junction
+		(at 165.1 132.08)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "5c7b4515-37fa-48dd-9051-a4fb671939d0")
+	)
+	(junction
 		(at 129.54 57.15)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1223,6 +1359,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e0ca1f1f-4291-4ab8-9149-afe41eb575d5")
+	)
+	(junction
+		(at 168.91 127)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e41628fd-1a04-4c14-9468-e0e1db0b6e21")
 	)
 	(junction
 		(at 130.81 81.28)
@@ -1273,7 +1415,7 @@
 		(uuid "3779d06e-c26b-44b9-af70-40a9505d1fcc")
 	)
 	(bus_entry
-		(at 152.4 124.46)
+		(at 177.8 124.46)
 		(size -2.54 2.54)
 		(stroke
 			(width 0)
@@ -1300,7 +1442,7 @@
 		(uuid "bea388c6-3ea6-4596-9a9a-d0563da2065b")
 	)
 	(bus_entry
-		(at 152.4 129.54)
+		(at 177.8 129.54)
 		(size -2.54 2.54)
 		(stroke
 			(width 0)
@@ -1320,7 +1462,7 @@
 	)
 	(bus
 		(pts
-			(xy 152.4 123.19) (xy 152.4 124.46)
+			(xy 177.8 123.19) (xy 177.8 124.46)
 		)
 		(stroke
 			(width 0)
@@ -1360,6 +1502,16 @@
 	)
 	(wire
 		(pts
+			(xy 165.1 124.46) (xy 165.1 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "277b7ee6-9c03-4ca9-b69c-b03b1f6a44cc")
+	)
+	(wire
+		(pts
 			(xy 143.51 106.68) (xy 143.51 107.95)
 		)
 		(stroke
@@ -1387,6 +1539,26 @@
 			(type default)
 		)
 		(uuid "33eb5f4a-831b-42d7-ae94-ec005924c0bc")
+	)
+	(wire
+		(pts
+			(xy 168.91 124.46) (xy 168.91 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "34d59936-1f88-4620-a3b8-5cf8bdc18d15")
+	)
+	(wire
+		(pts
+			(xy 168.91 113.03) (xy 165.1 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "374410bd-56a7-4179-9ba5-b02d176118cb")
 	)
 	(wire
 		(pts
@@ -1420,6 +1592,16 @@
 	)
 	(wire
 		(pts
+			(xy 165.1 113.03) (xy 165.1 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "406858fe-8a16-49eb-be6f-0a94cf2a2677")
+	)
+	(wire
+		(pts
 			(xy 139.7 113.03) (xy 137.16 113.03)
 		)
 		(stroke
@@ -1450,7 +1632,7 @@
 	)
 	(wire
 		(pts
-			(xy 134.62 132.08) (xy 149.86 132.08)
+			(xy 134.62 132.08) (xy 165.1 132.08)
 		)
 		(stroke
 			(width 0)
@@ -1467,6 +1649,16 @@
 			(type default)
 		)
 		(uuid "54d95776-280c-4900-ac74-bac53825c740")
+	)
+	(wire
+		(pts
+			(xy 165.1 111.76) (xy 165.1 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "557cabd4-2e7e-4ac4-be45-9f41fc3107a7")
 	)
 	(bus
 		(pts
@@ -1508,9 +1700,19 @@
 		)
 		(uuid "65c49713-23de-40df-8ec9-e767b3f39461")
 	)
+	(wire
+		(pts
+			(xy 168.91 127) (xy 175.26 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6874ac8c-ff81-4cbf-b2b2-00086aac02e2")
+	)
 	(bus
 		(pts
-			(xy 156.21 123.19) (xy 152.4 123.19)
+			(xy 181.61 123.19) (xy 177.8 123.19)
 		)
 		(stroke
 			(width 0)
@@ -1530,7 +1732,7 @@
 	)
 	(bus
 		(pts
-			(xy 152.4 124.46) (xy 152.4 129.54)
+			(xy 177.8 124.46) (xy 177.8 129.54)
 		)
 		(stroke
 			(width 0)
@@ -1560,6 +1762,16 @@
 	)
 	(wire
 		(pts
+			(xy 168.91 116.84) (xy 168.91 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "744459e1-47cc-45dc-bc25-7c9bda33b135")
+	)
+	(wire
+		(pts
 			(xy 101.6 68.58) (xy 119.38 68.58)
 		)
 		(stroke
@@ -1577,6 +1789,16 @@
 			(type default)
 		)
 		(uuid "79bcceb9-7c4a-41ec-bd0f-4e5c410eb72f")
+	)
+	(wire
+		(pts
+			(xy 165.1 132.08) (xy 175.26 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7a898cf0-d990-47c2-a28e-e5ce4bc7d4cc")
 	)
 	(wire
 		(pts
@@ -1680,7 +1902,7 @@
 	)
 	(wire
 		(pts
-			(xy 134.62 127) (xy 149.86 127)
+			(xy 134.62 127) (xy 168.91 127)
 		)
 		(stroke
 			(width 0)
@@ -1758,7 +1980,7 @@
 		)
 		(uuid "75c4734c-99f2-4c90-9383-0cc2f0286b49")
 	)
-	(label "I2C_BME.SDA"
+	(label "I2C_INT.SDA"
 		(at 148.59 132.08 180)
 		(effects
 			(font
@@ -1778,7 +2000,7 @@
 		)
 		(uuid "96f4a67c-b13b-4f2b-b1fa-8f8d23685f24")
 	)
-	(label "I2C_BME.SCL"
+	(label "I2C_INT.SCL"
 		(at 137.16 127 0)
 		(effects
 			(font
@@ -1809,9 +2031,9 @@
 		)
 		(uuid "ae8b10a7-625e-4ec8-8b15-15ef16265513")
 	)
-	(hierarchical_label "I2C_BME{SDA SCL}"
+	(hierarchical_label "I2C_INT{SDA SCL}"
 		(shape input)
-		(at 156.21 123.19 0)
+		(at 181.61 123.19 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2026,6 +2248,74 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 165.1 120.65 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "23d4504e-2242-443e-b98a-afc04e6d0a37")
+		(property "Reference" "R15"
+			(at 166.37 117.475 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10k"
+			(at 165.1 122.555 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 166.878 120.65 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 165.1 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 165.1 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "5f1b50a2-50e4-47d3-9111-1a235bd6a3b8")
+		)
+		(pin "2"
+			(uuid "45f05f47-d12e-42e3-9ca3-bf437b67f87b")
+		)
+		(instances
+			(project "SensorBoard"
+				(path "/fa219048-dcb4-48ee-a6b6-8b1fad43a054/b6d62be8-6230-46e7-ab2b-f5043389658b"
+					(reference "R15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+3V3")
 		(at 129.54 48.26 0)
 		(mirror y)
@@ -2087,6 +2377,72 @@
 			(project "SensorBoard"
 				(path "/fa219048-dcb4-48ee-a6b6-8b1fad43a054/b6d62be8-6230-46e7-ab2b-f5043389658b"
 					(reference "#PWR024")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 165.1 111.76 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3973af10-cbaf-4922-bc60-20bb4f31e5a3")
+		(property "Reference" "#PWR044"
+			(at 165.1 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 165.1 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 165.1 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 165.1 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 165.1 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0526809c-3785-4333-a753-142c735d74d2")
+		)
+		(instances
+			(project "SensorBoard"
+				(path "/fa219048-dcb4-48ee-a6b6-8b1fad43a054/b6d62be8-6230-46e7-ab2b-f5043389658b"
+					(reference "#PWR044")
 					(unit 1)
 				)
 			)
@@ -2411,6 +2767,74 @@
 			(project ""
 				(path "/fa219048-dcb4-48ee-a6b6-8b1fad43a054/b6d62be8-6230-46e7-ab2b-f5043389658b"
 					(reference "U3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 168.91 120.65 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8f78f474-190f-4ee6-bfb9-cc370b583001")
+		(property "Reference" "R16"
+			(at 170.18 117.475 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10k"
+			(at 168.91 122.555 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 170.688 120.65 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 168.91 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 168.91 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "918a8ee1-e1e6-45c1-a48c-112ac7076786")
+		)
+		(pin "2"
+			(uuid "e88a3e5a-071a-49d9-8c29-96844c7c5127")
+		)
+		(instances
+			(project "SensorBoard"
+				(path "/fa219048-dcb4-48ee-a6b6-8b1fad43a054/b6d62be8-6230-46e7-ab2b-f5043389658b"
+					(reference "R16")
 					(unit 1)
 				)
 			)
