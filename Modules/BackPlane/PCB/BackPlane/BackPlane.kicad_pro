@@ -187,7 +187,9 @@
       ],
       "track_widths": [
         0.0,
-        0.3
+        0.3,
+        0.6,
+        1.0
       ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
@@ -498,8 +500,8 @@
     "last_paths": {
       "gencad": "",
       "idf": "",
-      "netlist": "",
-      "plot": "",
+      "netlist": "./",
+      "plot": "build",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "BackPlane.step",
