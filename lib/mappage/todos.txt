@@ -1,0 +1,5 @@
+TODO/ideas list for MapPage:
+* Remove detail widget -> Replace for popup when pressing each marker
+  - This would be good for multiple markers 
+* Multiple markers 
+  - Think if removing tracking button or select a marker from a list

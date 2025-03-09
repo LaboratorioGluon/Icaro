@@ -7,7 +7,7 @@ import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'package:icaro_app/common/satellite.dart';
-import 'package:icaro_app/mappage/issservice.dart';
+import 'package:icaro_app/common/services/issservice.dart';
 
 class IcaroMapPage extends StatefulWidget {
   const IcaroMapPage({super.key});
@@ -26,21 +26,13 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
   void initState() {
     super.initState();
 
-    // Initialize ISS tracking subscription
-    _issPositionSub = ISSservice().locationStream.listen((newPosition) {
-      setState(() {
-        issPosition = newPosition;
-        if(trackIss)
-        {
-          _moveMap(issPosition);
-        }
-      });
+    // Initialize ISS data subscription for tracking
+    _issSatelliteSub = ISSservice().satelliteStream.listen((newData) {
+      _setIss(newData);
     });
 
-    _issSatelliteSub = ISSservice().satelliteStream.listen((newData) {
-      setState(() {
-        iss = newData;
-      });
+    _issPositionSub = ISSservice().locationStream.listen((newPosition) {
+      _setIssPosition(newPosition);
     });
   }
 
@@ -73,13 +65,29 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
 
   // ISS tracking
   late Satellite iss;
-  bool trackIss = true;
+  bool issTrackEnable = true;
   LatLng issPosition = const LatLng(40.44254064814816, -3.952498215412911);
   late Marker issMarker;
 
-  void _setTracking(bool value) {
+  void _setIssTrackingEnable(bool value) {
     setState(() {
-      trackIss = value;
+      issTrackEnable = value;
+    });
+  }
+  
+  void _setIss(Satellite newData) {
+    setState(() {
+      iss = newData;
+    });
+  }
+
+  void _setIssPosition(LatLng newPosition) {
+    setState(() {
+      issPosition = newPosition;
+      if(issTrackEnable)
+      {
+        _moveMap(issPosition);
+      }
     });
   }
 
@@ -100,7 +108,8 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
                       child: Image.asset("assets/icaro.png")
                     );
 
-    Widget header = ConstrainedBox(
+    // Widgets for detail sheet
+    var header = ConstrainedBox(
         constraints: BoxConstraints(
           minWidth: 0, 
           minHeight: 100, 
@@ -121,8 +130,8 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
               children: [
                 Text("Track", style: smallStyle), // Etiqueta del switch
                 Switch(
-                  value: trackIss,
-                  onChanged: (bool value) {_setTracking(value);},
+                  value: issTrackEnable,
+                  onChanged: (bool value) {_setIssTrackingEnable(value);},
                 ),
               ],    
             ),
@@ -131,7 +140,7 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
         ),
     );
         
-    var issTable = Center(child:                
+    var satTable = Center(child:                
         StreamBuilder(
           stream: ISSservice().satelliteStream,
           builder: (context, snapshot) {
@@ -145,12 +154,11 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
         ),
     );
 
-    // Widget for sheet
-    var bottomSheet = PageDetails(
+    var details = DetailsBottomSheet(
       header: header,
-      body: issTable);
+      body: satTable);
 
-    // Map backgrounds
+    // Map widget for background
     var map = FlutterMap(
           options: MapOptions(
             initialCenter: getDefaultLatLng(),
@@ -171,10 +179,11 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
           ],
         );
 
+    // Compose final widget and return
     var pageWidget = Stack(
         children: [
             map,
-            bottomSheet
+            details
         ],
     );
 
@@ -182,18 +191,18 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
   }
 }
 
-// Sheet section
-class PageDetails extends StatefulWidget {
+// Detail section
+class DetailsBottomSheet extends StatefulWidget {
   final Widget header;
   final Widget body;
 
-  const PageDetails ({ super.key, required this.header,required this.body });
+  const DetailsBottomSheet ({ super.key, required this.header,required this.body });
 
   @override
-  State<PageDetails> createState() => _PageDetailsState();
+  State<DetailsBottomSheet> createState() => _DetailsBottomSheetState();
 }
 
-class _PageDetailsState extends State<PageDetails> {
+class _DetailsBottomSheetState extends State<DetailsBottomSheet> {
 
   final DraggableScrollableController sheetController = DraggableScrollableController();
 
@@ -282,7 +291,7 @@ class _PageDetailsState extends State<PageDetails> {
   }
 }
 
-// Widget to display information
+// Widget to display detail information
 class SatelliteDataTable extends StatelessWidget{
   const SatelliteDataTable({super.key, required this.sat});
 
@@ -337,6 +346,7 @@ class SatelliteDataTable extends StatelessWidget{
   }
 }
 
+// This widget is needed for PC/Web
 class Grabber extends StatelessWidget {
   const Grabber({
     super.key,
