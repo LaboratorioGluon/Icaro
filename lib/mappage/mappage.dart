@@ -31,7 +31,7 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
       _setIss(newData);
     });
 
-    _issPositionSub = ISSservice().locationStream.listen((newPosition) {
+    _issPositionSub = ISSservice().preciseLocationStream.listen((newPosition) {
       _setIssPosition(newPosition);
     });
   }
