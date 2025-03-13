@@ -14,7 +14,6 @@ class ISSservice {
     _startSatelliteUpdates();
     _startPositionUpdates();
     _startPrecisePositionUpdates();
-    _startPrecisePositionUpdates2();
   }
 
   // Stream ISS JSON data
@@ -34,7 +33,7 @@ class ISSservice {
   }
 
   void _startSatelliteUpdates() {
-    Stream.periodic(const Duration(seconds: 1))
+    Stream.periodic(const Duration(seconds: 5))
      .asyncMap((_) => _fetchISS())
     .listen((newSatellite) {
       _satelliteController.add(newSatellite);
@@ -62,43 +61,43 @@ class ISSservice {
 
   void _startPrecisePositionUpdates() {
 
-    satelliteStream.listen((newSat) {
+    satelliteStream.listen((newSatellite) {
       prevTime = lastTime;
       prevSat = lastSat;
       lastTime = DateTime.now();
-      lastSat = newSat;
+      lastSat = newSatellite;
     });
 
-    // Ejemplo de escuchar el stream:
-    _precisePositionController.stream.listen((LatLng value) {
-      // Manejar los valores emitidos
-      print(value);
+    Stream.periodic(const Duration(milliseconds: 150))
+     .asyncMap((_) => _calculatePrecisePosition())
+    .listen((newPosition) {
+      _precisePositionController.add(newPosition);
     });
+
+    // preciseLocationStream.listen((LatLng value) {
+    //   // Manejar los valores emitidos
+    //   print(value);
+    // });
   }
 
-  void _startPrecisePositionUpdates2() { 
+  Future<LatLng> _calculatePrecisePosition() async {
+  // void _calculatePrecisePosition() { 
     // Definir la lógica del stream que se ejecuta cada 0.1 segundos
-      // Stream.periodic(const Duration(milliseconds: 100), (_) {
-      print("");
-    //   while(true)
-    //   {
-    //     if (prevSat == null && lastSat == null) {
-    //       return;
-    //     } else if (prevSat == null && lastSat != null) {
-    //       _precisePositionController.add(LatLng(lastSat!.latitude, lastSat!.longitude));
-    //     } else {
-    //       double vLat = (lastSat!.latitude - prevSat!.latitude) / (lastTime!.difference(prevTime!)).inMilliseconds;
-    //       double vLon = (lastSat!.longitude - prevSat!.longitude) / (lastTime!.difference(prevTime!)).inMilliseconds;
+    // Stream.periodic(const Duration(milliseconds: 100), (_) {
+    if (prevSat == null && lastSat == null) {
+      return LatLng(40.44254064814816, -3.952498215412911);
+    } else if (prevSat == null && lastSat != null) {
+      return LatLng(lastSat!.latitude, lastSat!.longitude);
+    } else {
+      double vLat = (lastSat!.latitude - prevSat!.latitude) / (lastTime!.difference(prevTime!)).inMilliseconds;
+      double vLon = (lastSat!.longitude - prevSat!.longitude) / (lastTime!.difference(prevTime!)).inMilliseconds;
 
-    //       DateTime currentTime = DateTime.now();
-    //       double nuevaLat = lastSat!.latitude + vLat * (currentTime.difference(lastTime!)).inMilliseconds;
-    //       double nuevaLon = lastSat!.longitude + vLon * (currentTime.difference(lastTime!)).inMilliseconds;
+      DateTime currentTime = DateTime.now();
+      double nuevaLat = lastSat!.latitude + vLat * (currentTime.difference(lastTime!)).inMilliseconds;
+      double nuevaLon = lastSat!.longitude + vLon * (currentTime.difference(lastTime!)).inMilliseconds;
 
-    //       LatLng value = LatLng(nuevaLat, nuevaLon);
-    //       _precisePositionController.add(value); // Enviar el valor calculado al controller
-    //     }
-    //   }
-    // });
-
+      LatLng value = LatLng(nuevaLat, nuevaLon);
+      return (value); // Enviar el valor calculado al controller
+    }
   }
 }

@@ -53,7 +53,7 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
     return LatLng(40.44254064814816, -3.952498215412911);
   }
   static getDefaultZoom() {
-    return 17.5;
+    return 5;
   }
   static getDefaultRotation() {
     return 0.0;
