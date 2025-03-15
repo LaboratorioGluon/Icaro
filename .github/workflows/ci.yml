@@ -1,0 +1,47 @@
+name: Deploy MkDocs Site
+on:
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine SITE_URL and Language Variants
+        run: |
+          if [ "${GITHUB_REPOSITORY}" = "${GITHUB_ACTOR}/${GITHUB_ACTOR}.github.io" ]; then
+            echo "SITE_URL=https://${GITHUB_ACTOR}.github.io/" >> $GITHUB_ENV
+          else
+            echo "SITE_URL=https://${GITHUB_ACTOR}.github.io/${GITHUB_REPOSITORY##*/}/" >> $GITHUB_ENV
+          fi
+          echo "SITE_URL_EN=${SITE_URL}en/" >> $GITHUB_ENV
+          echo "SITE_URL_ES=${SITE_URL}es/" >> $GITHUB_ENV
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          cd MKDocs
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            pip install mkdocs
+          fi
+
+      - name: Build MkDocs site
+        run: |
+          cd MKDocs
+          mkdocs build
+
+      - name: Deploy to GitHub Pages
+        run: |
+          cd MKDocs
+          mkdocs gh-deploy --force
