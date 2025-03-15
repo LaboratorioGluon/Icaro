@@ -2,11 +2,6 @@
 
 Tarjeta encargada de adaptar y distribuir la potencia al resto de placas.
 
-## Dudas
-
->  ¿Duda?
-
-Respuesta
 
 ## Funcionalidades
 
@@ -44,7 +39,6 @@ La Supply Board tiene que ser capaz de a partir de el voltaje de una batería de
 | `VO_5V` | `5 V` | `1000 mA`| `CIO_MAIN_CONNECTOR` | Salida de 5 V |
 | `VO_3V3` | `3.3 V` | `1000 mA`| `CIO_MAIN_CONNECTOR` | Salida de 3.3 V |
 | `VO_BYPASS` | Igual que `VI_BATT` | `2 A` | `CIO_MAIN_CONNECTOR` | Bypass de la alimentación |
-
 
 ### Señales 
 

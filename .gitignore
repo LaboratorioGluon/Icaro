@@ -82,7 +82,7 @@ Temporary Items
 *.swo
 
 **/*.zip
-
+Media
 # Office temporary files
 *.tmp
 ~$*

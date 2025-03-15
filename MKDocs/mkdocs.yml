@@ -3,9 +3,17 @@ site_url: !ENV [SITE_URL]
 
 nav:
   - Home: index.html
+  - Supply Board: 
+    - General: es/supplyBoard/SupplyBoard.md
+    - Software: es/supplyBoard/software.md
+    - Hardware: es/supplyBoard/SupplyBoard.md
+
+extra_css:
+  - style.css
 
 theme:
   name: material
+  #name: readthedocs
   language: en
   features:
     - navigation.instant
@@ -81,7 +89,7 @@ copyright: GPLv3 2025 Laboratorio Gluón
 
 plugins:
   - search
-  - tags
+  #- tags
   - macros
 
 markdown_extensions:
