@@ -1,0 +1,102 @@
+site_name: Project Ícaro
+site_url: !ENV [SITE_URL]
+
+nav:
+  - Home: index.html
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - header.autohide
+    - navigation.tabs
+    - navigation.path
+    - navigation.footer
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  font:
+    text: Roboto
+    code: Roboto Mono
+  #icon: assets/example.svg
+  favicon: assets/example.svg
+
+extra:
+  # Languages Supported
+  alternate:
+    - name: English
+      link: !ENV [SITE_URL_EN]
+      lang: en
+    - name: Spanish
+      link: !ENV [SITE_URL_ES]
+      lang: es
+  # Remove made with MK Docs
+  generator: false
+  # Add social
+  social:
+    # Github
+    - icon: fontawesome/brands/github
+      link: https://github.com/LaboratorioGluon/Icaro
+      name: Ícaro Project on Github
+    # Twitch
+    - icon: fontawesome/brands/twitch
+      link: https://www.twitch.tv/labgluon
+      name: Ícaro Project on Twitch
+    # Twitter
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/labgluon
+      name: Laboratorio Gluón on Twitter
+    # Bluesky
+    - icon: fontawesome/brands/bluesky
+      link: https://twitter.com/labgluon
+      name: Laboratorio Gluón on Bluesky
+    # Mastodon
+    - icon: fontawesome/brands/mastodon
+      link: https://mastodon.world/@labgluon
+      name: Laboratorio Gluón on Mastodon
+  tags:
+    HTML5: html
+    JavaScript: js
+    CSS: css
+
+copyright: GPLv3 2025 Laboratorio Gluón
+
+plugins:
+  - search
+  - tags
+  - macros
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
