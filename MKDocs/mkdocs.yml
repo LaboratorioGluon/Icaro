@@ -3,10 +3,10 @@ site_url: !ENV [SITE_URL]
 
 nav:
   - Home: index.html
-  - Supply Board: 
-    - General: es/supplyBoard/SupplyBoard.md
-    - Software: es/supplyBoard/software.md
-    - Hardware: es/supplyBoard/SupplyBoard.md
+  - Supply Board:
+      - General: es/supplyBoard/SupplyBoard.md
+      - Software: es/supplyBoard/software.md
+      - Hardware: es/supplyBoard/SupplyBoard.md
 
 extra_css:
   - style.css
@@ -74,7 +74,7 @@ extra:
       name: Laboratorio Gluón on Twitter
     # Bluesky
     - icon: fontawesome/brands/bluesky
-      link: https://twitter.com/labgluon
+      link: https://bsky.app/profile/labgluon.bsky.social
       name: Laboratorio Gluón on Bluesky
     # Mastodon
     - icon: fontawesome/brands/mastodon
