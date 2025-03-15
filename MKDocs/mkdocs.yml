@@ -2,11 +2,10 @@ site_name: Project Ícaro
 site_url: !ENV [SITE_URL]
 
 nav:
-  - Home: index.html
+  - Home: index.md
   - Supply Board:
-      - General: es/supplyBoard/SupplyBoard.md
-      - Software: es/supplyBoard/software.md
-      - Hardware: es/supplyBoard/SupplyBoard.md
+      - Hardware: supplyBoard/hardware.md
+      - Software: supplyBoard/software.md
 
 extra_css:
   - style.css
@@ -16,7 +15,7 @@ theme:
   #name: readthedocs
   language: en
   features:
-    - navigation.instant
+    # - navigation.instant
     - header.autohide
     - navigation.tabs
     - navigation.path
@@ -48,14 +47,6 @@ theme:
   favicon: assets/example.svg
 
 extra:
-  # Languages Supported
-  alternate:
-    - name: English
-      link: !ENV [SITE_URL_EN]
-      lang: en
-    - name: Spanish
-      link: !ENV [SITE_URL_ES]
-      lang: es
   # Remove made with MK Docs
   generator: false
   # Add social
@@ -89,8 +80,21 @@ copyright: GPLv3 2025 Laboratorio Gluón
 
 plugins:
   - search
-  #- tags
+  - tags
   - macros
+  - i18n:
+      docs_structure: suffix
+      reconfigure_material: true
+      languages:
+        - locale: en
+          name: English
+          site_name: "Project Ícaro"
+          build: true
+          default: true
+        - locale: es
+          name: Español
+          site_name: "Proyecto Ícaro"
+          build: true
 
 markdown_extensions:
   - pymdownx.highlight:
