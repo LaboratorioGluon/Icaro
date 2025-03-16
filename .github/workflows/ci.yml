@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - develop
 permissions:
   contents: write
 jobs:
@@ -19,8 +20,6 @@ jobs:
           else
             echo "SITE_URL=https://${GITHUB_ACTOR}.github.io/${GITHUB_REPOSITORY##*/}/" >> $GITHUB_ENV
           fi
-          echo "SITE_URL_EN=${SITE_URL}en/" >> $GITHUB_ENV
-          echo "SITE_URL_ES=${SITE_URL}es/" >> $GITHUB_ENV
 
       - name: Set up Python
         uses: actions/setup-python@v5
