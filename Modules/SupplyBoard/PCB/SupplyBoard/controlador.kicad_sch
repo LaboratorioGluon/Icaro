@@ -5147,7 +5147,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "TMP20AIDCK"
+		(property "Value" "TMP235A4DCKR"
 			(at 48.26 165.0999 0)
 			(effects
 				(font
@@ -5165,7 +5165,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tmp20.pdf"
+		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/tmp235.pdf?ts=1742153153204&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252Fes-mx%252FTMP235"
 			(at 57.15 163.83 0)
 			(effects
 				(font
@@ -5218,7 +5218,7 @@
 		(fields_autoplaced yes)
 		(uuid "81a2b64e-ff23-4df0-acdd-9ce1bce9d379")
 		(property "Reference" "U1"
-			(at 162.2141 119.38 0)
+			(at 162.1633 119.38 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5227,7 +5227,7 @@
 			)
 		)
 		(property "Value" "STM32L031G6Ux"
-			(at 162.2141 121.92 0)
+			(at 162.1633 121.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
