@@ -14,13 +14,19 @@ Configuración de los pines para el STM32L031.
 | PA4 | `ANALOG`        | -         | Corriente IN          |
 | PA5 | `ANALOG`        | -         | Corriente BYPASS      |
 | PA6 | `ANALOG`        | -         | Sensor Temperatura    |
-| PA7 | `ANALOG`        | -         | Sensor Temperatura    |
-| PA8 | `ANALOG`        | -         | Sensor Temperatura    |
+| PA7 | `OUTPUT_PP`     | -         | CS0                   |
+| PA8 | `OUTPUT_PP`     | -         | CS1                   |
 | PA9 | `AF_PP`         | `TBD`     | I2C SCL               |
 | PA10| `AF_PP`         | `TBD`     | I2C SDA               |
+| PA13| ***NO USAR***   | -         | SWDIO                 |
+| PA14| ***NO USAR***   | -         | SWCLK                 |
+| PA15| `OUTPUT_PP`     | -         | Salida Para control de loop |
 |**PUERTO B**| ||
-| PB6 | `AF_PP`         | `USART2`  | UART                  |
-| PB7 | `AF_PP`         | `USART2`  | UART                  |
+| PB0 | `AF_PP`         | `AF1_SPI1`    | SPI1 MISO         |
+| PB1 | `AF_PP`         | `AF0_SPI1`    | SPI1 MOSI         |
+| PB3 | `AF_PP`         | `AF0_SPI1`    | SPI1 SCK          |
+| PB6 | `AF_PP`         | `AF0_USART2`  | UART              |
+| PB7 | `AF_PP`         | `AF0_USART2`  | UART              |
 |**PUERTO C**| ||
 | PC14 | `OUTPUT_PP`    | -         | Enable de BYPASS      |
 | PC15 | `OUTPUT_PP`    | -         | Enable de 5V          |

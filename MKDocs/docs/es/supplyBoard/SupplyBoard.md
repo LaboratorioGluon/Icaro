@@ -10,8 +10,14 @@ La Supply Board tiene que ser capaz de a partir de el voltaje de una batería de
 ## Componentes principales
 
 - Procesador: `STM32L031`
+    - [Reference Manual](https://www.st.com/resource/en/reference_manual/rm0377-ultralowpower-stm32l0x1-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
+    - [Datasheet](https://www.st.com/resource/en/datasheet/stm32l031e6.pdf)
 - Buck-Boost: `TPS63070`
+    - [Datasheet](https://www.ti.com/lit/ds/symlink/tps63070.pdf?ts=1737812401667&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252Fes-mx%252FTPS63070)
 - Buck converter para 3V3: `TPS564257`
+    - [Datasheet](https://www.ti.com/lit/ds/symlink/tps564257.pdf?ts=1742137228160&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252Fes-mx%252FTPS564257)
+- Sensor Temperatura: `TMP235A4DCKR`
+    - [Datasheet](https://www.ti.com/lit/ds/symlink/tmp20.pdf)
 
 ## Specificaciones
 
