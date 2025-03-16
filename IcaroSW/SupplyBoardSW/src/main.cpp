@@ -13,6 +13,7 @@ int main()
     __HAL_RCC_PWR_CLK_ENABLE();
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_ADC1_CLK_ENABLE();
     __HAL_RCC_USART2_CLK_ENABLE();
 
@@ -62,15 +63,36 @@ int main()
     HAL_ADC_ConfigChannel(&adcHandle, &adcChan);
 
     HAL_ADCEx_Calibration_Start(&adcHandle, ADC_SINGLE_ENDED);
-
     volatile uint16_t adcRawValue;
-    
+
+
+    /** UART **/
+
+    initGpio.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+    initGpio.Mode = GPIO_MODE_AF_PP;
+    initGpio.Alternate = GPIO_AF0_USART2;
+
+    HAL_GPIO_Init(GPIOB, &initGpio);
+
+    UART_HandleTypeDef uartHandle;
+    uartHandle.Instance = USART2;
+    uartHandle.Init.BaudRate = 115200;
+    uartHandle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    uartHandle.Init.Mode = UART_MODE_TX_RX;
+    uartHandle.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+    uartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
+    uartHandle.Init.Parity = UART_PARITY_NONE;
+    uartHandle.Init.StopBits = UART_STOPBITS_1;
+    uartHandle.Init.WordLength = UART_WORDLENGTH_8B;
+
+    HAL_UART_Init(&uartHandle);
 
     for(;;)
     {
         HAL_ADC_Start(&adcHandle);
         HAL_ADC_PollForConversion(&adcHandle, HAL_MAX_DELAY);
         adcRawValue = HAL_ADC_GetValue(&adcHandle);
+        HAL_UART_Transmit(&uartHandle, (uint8_t*)"Hola Chat!\r\n", 14, HAL_MAX_DELAY);
         HAL_Delay(1000);
         HAL_GPIO_TogglePin(GPIOA, STM_SPEED_PIN);
     }
