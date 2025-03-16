@@ -17,7 +17,7 @@ La Supply Board tiene que ser capaz de a partir de el voltaje de una batería de
 - Buck converter para 3V3: `TPS564257`
     - [Datasheet](https://www.ti.com/lit/ds/symlink/tps564257.pdf?ts=1742137228160&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252Fes-mx%252FTPS564257)
 - Sensor Temperatura: `TMP235A4DCKR`
-    - [Datasheet](https://www.ti.com/lit/ds/symlink/tmp20.pdf)
+    - [Datasheet](https://www.ti.com/lit/ds/symlink/tmp235.pdf?ts=1742153153204&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252Fes-mx%252FTMP235)
 - Sensor de Corriente: `INA2180A4` (Debería ser el A1)
     - [Datasheet](https://www.ti.com/lit/ds/symlink/ina2180.pdf?ts=1738007939519&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FINA2180)
 ## Specificaciones
