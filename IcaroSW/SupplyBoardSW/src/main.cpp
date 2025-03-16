@@ -1,9 +1,14 @@
 #include <stm32l0xx_hal.h>
 
 #include "supplyBoard.h"
+#include <stdio.h>
+#include <string.h>
 
 #define STM_SPEED_PIN GPIO_PIN_15
 #define STM_SPEED_PORT GPIOA
+
+
+SupplyBoard supplyBoard;
 
 int main()
 {
@@ -87,12 +92,17 @@ int main()
 
     HAL_UART_Init(&uartHandle);
 
+    supplyBoard.hAdc = adcHandle;
+    volatile uint16_t temp;
+    uint8_t buf[100];
     for(;;)
     {
-        HAL_ADC_Start(&adcHandle);
+        /*HAL_ADC_Start(&adcHandle);
         HAL_ADC_PollForConversion(&adcHandle, HAL_MAX_DELAY);
-        adcRawValue = HAL_ADC_GetValue(&adcHandle);
-        HAL_UART_Transmit(&uartHandle, (uint8_t*)"Hola Chat!\r\n", 14, HAL_MAX_DELAY);
+        adcRawValue = HAL_ADC_GetValue(&adcHandle);*/
+        temp = supplyBoard.getSensorTemp();
+        sprintf((char*)buf, "Temp %lu\r\n", temp);
+        HAL_UART_Transmit(&uartHandle, buf, strlen((char*)buf), HAL_MAX_DELAY);
         HAL_Delay(1000);
         HAL_GPIO_TogglePin(GPIOA, STM_SPEED_PIN);
     }
