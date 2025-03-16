@@ -18,13 +18,14 @@ La Supply Board tiene que ser capaz de a partir de el voltaje de una batería de
     - [Datasheet](https://www.ti.com/lit/ds/symlink/tps564257.pdf?ts=1742137228160&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252Fes-mx%252FTPS564257)
 - Sensor Temperatura: `TMP235A4DCKR`
     - [Datasheet](https://www.ti.com/lit/ds/symlink/tmp20.pdf)
-
+- Sensor de Corriente: `INA2180A4` (Debería ser el A1)
+    - [Datasheet](https://www.ti.com/lit/ds/symlink/ina2180.pdf?ts=1738007939519&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FINA2180)
 ## Specificaciones
 
 
 ## Diseño
 
-![](SupplyBoard.png)
+![](./SupplyBoard.png)
 
 
 ## Interfaces
@@ -33,8 +34,7 @@ La Supply Board tiene que ser capaz de a partir de el voltaje de una batería de
 | ID | Nombre | Voltaje | Corriente | Connector | Desc |
 |-|-| :--: | :--: | :--: | - |
 | `J1` | `CI_BATT` | `3.3 V - 15.0 V` | `2 A` | XT-30 | Connector de entrada de batería.|
-| `J2` | `CI_USB` | `5 V` | `300 mA` | micro-USB | Conector de carga USB.
-| `J3` | `CIO_MAIN_CONNECTOR`| `-` | `-` | 02x08 H2.0 | Connector principal al resto de placas|
+| `J3` | `CIO_MAIN_CONNECTOR`| `-` | `-` | 02x12 Pin Header 2.54mm | Connector principal al resto de placas|
 
 ### Alimentaciones
 
