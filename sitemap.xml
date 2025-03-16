@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://LaboratorioGluon.github.io/Icaro/</loc>
+        <lastmod>2025-03-16</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://LaboratorioGluon.github.io/Icaro/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://LaboratorioGluon.github.io/Icaro/es/"/>
+    </url>
+    <url>
+        <loc>https://LaboratorioGluon.github.io/Icaro/supplyBoard/hardware/</loc>
+        <lastmod>2025-03-16</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://LaboratorioGluon.github.io/Icaro/supplyBoard/hardware/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://LaboratorioGluon.github.io/Icaro/es/supplyBoard/hardware/"/>
+    </url>
+    <url>
+        <loc>https://LaboratorioGluon.github.io/Icaro/supplyBoard/software/</loc>
+        <lastmod>2025-03-16</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://LaboratorioGluon.github.io/Icaro/supplyBoard/software/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://LaboratorioGluon.github.io/Icaro/es/supplyBoard/software/"/>
+    </url>
+    <url>
+        <loc>https://LaboratorioGluon.github.io/Icaro/es/</loc>
+        <lastmod>2025-03-16</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://LaboratorioGluon.github.io/Icaro/es/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://LaboratorioGluon.github.io/Icaro/"/>
+    </url>
+    <url>
+        <loc>https://LaboratorioGluon.github.io/Icaro/es/supplyBoard/hardware/</loc>
+        <lastmod>2025-03-16</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://LaboratorioGluon.github.io/Icaro/es/supplyBoard/hardware/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://LaboratorioGluon.github.io/Icaro/supplyBoard/hardware/"/>
+    </url>
+    <url>
+        <loc>https://LaboratorioGluon.github.io/Icaro/es/supplyBoard/software/</loc>
+        <lastmod>2025-03-16</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="es" href="https://LaboratorioGluon.github.io/Icaro/es/supplyBoard/software/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://LaboratorioGluon.github.io/Icaro/supplyBoard/software/"/>
+    </url>
+</urlset>
