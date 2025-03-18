@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:icaro_app/common/satellite.dart';
+import 'package:icaro_app/common/data/satellite.dart';
 
 class ISSservice {
   static final ISSservice _instance = ISSservice._internal();
