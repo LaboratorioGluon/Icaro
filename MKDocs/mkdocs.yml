@@ -13,6 +13,7 @@ extra_css:
 theme:
   name: material
   logo: assets/icaro_logo.png
+  favicon: assets/icaro_logo.png
   language: en
   features:
     # - navigation.instant
