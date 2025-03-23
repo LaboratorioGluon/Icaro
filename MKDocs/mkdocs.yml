@@ -31,6 +31,8 @@ theme:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
+      primary: "rgb(84, 61, 101)"
+      accent: "rgb(245, 195, 99)"
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
@@ -38,14 +40,14 @@ theme:
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
+      primary: "rgb(245, 195, 99)"
+      accent: "rgb(84, 61, 101)"
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
   font:
     text: Roboto
     code: Roboto Mono
-  #icon: assets/example.svg
-  favicon: assets/example.svg
 
 extra:
   # Remove made with MK Docs
