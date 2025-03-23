@@ -31,7 +31,7 @@ theme:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: "rgb(84, 61, 101)"
+      primary: deep purple
       accent: "rgb(245, 195, 99)"
       toggle:
         icon: material/brightness-7
@@ -40,8 +40,8 @@ theme:
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: "rgb(245, 195, 99)"
-      accent: "rgb(84, 61, 101)"
+      primary: amber
+      accent: deep purple
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
