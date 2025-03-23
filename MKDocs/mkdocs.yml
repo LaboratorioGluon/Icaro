@@ -12,7 +12,7 @@ extra_css:
 
 theme:
   name: material
-  #name: readthedocs
+  logo: assets/icaro_logo.png
   language: en
   features:
     # - navigation.instant
