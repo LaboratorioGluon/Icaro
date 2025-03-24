@@ -6,6 +6,10 @@ nav:
   - Supply Board:
       - Hardware: supplyBoard/hardware.md
       - Software: supplyBoard/software.md
+  - Sensor Board:
+      - Hardware: sensorBoard/hardware.md
+  - Camera Board:
+      - Hardware: camBoard/hardware.md
 
 extra_css:
   - style.css
