@@ -22,6 +22,7 @@ dependencies:
   latlong2: ^0.9.1
   http: ^1.3.0
   flutter_map_animations: ^0.9.0
+  based_battery_indicator: ^1.0.3
 
 dev_dependencies:
   flutter_test:

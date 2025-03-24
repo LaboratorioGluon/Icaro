@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.12.0"
+  based_battery_indicator:
+    dependency: "direct main"
+    description:
+      name: based_battery_indicator
+      sha256: "61c5b5a33e5dc35fc45cb016160f4eae8ee9a85c804bd797a5dbb9283bc9f288"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
   boolean_selector:
     dependency: transitive
     description:
