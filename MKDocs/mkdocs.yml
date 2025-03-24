@@ -6,13 +6,18 @@ nav:
   - Supply Board:
       - Hardware: supplyBoard/hardware.md
       - Software: supplyBoard/software.md
+  - Sensor Board:
+      - Hardware: sensorBoard/hardware.md
+  - Camera Board:
+      - Hardware: camBoard/hardware.md
 
 extra_css:
   - style.css
 
 theme:
   name: material
-  #name: readthedocs
+  logo: assets/icaro_logo.png
+  favicon: assets/icaro_logo.png
   language: en
   features:
     # - navigation.instant
@@ -30,6 +35,8 @@ theme:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
+      primary: deep purple
+      accent: "rgb(245, 195, 99)"
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
@@ -37,14 +44,14 @@ theme:
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
+      primary: orange
+      accent: deep purple
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
   font:
     text: Roboto
     code: Roboto Mono
-  #icon: assets/example.svg
-  favicon: assets/example.svg
 
 extra:
   # Remove made with MK Docs
