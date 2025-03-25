@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
 
-import 'common/services/simulated/sensorsservicesim.dart';
-import 'common/data/icarosensors.dart';
+import '../common/services/simulated/sensorsservicesim.dart';
+import '../common/data/icarosensors.dart';
+
+import 'temperaturewidget.dart';
 
 class IcaroSensorsPage extends StatefulWidget {
   const IcaroSensorsPage({super.key});
@@ -22,9 +24,6 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
   late String dataStr;
 
   late BasedBatteryStatus batteryStatus;
-
-
-
 
   // Initial state
   @override
@@ -87,6 +86,8 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
         duration: const Duration(seconds: 1),
         );
 
+    var tempWidget = TemperatureWidget();
+
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -101,6 +102,7 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
 
           Text(dataStr),
           battery,
+          tempWidget
         ],
       );
   }
