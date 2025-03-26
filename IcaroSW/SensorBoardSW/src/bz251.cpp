@@ -194,34 +194,10 @@ uint8_t Bz251::parse_RMC(char *data)
 
 uint8_t Bz251::read(void)
 {
-    // uint8_t* readData = (uint8_t*) malloc(1024+1);
-
-    //uint8_t readData[512];
-    //memset(readData, 0, 512);
-    //size_t length = 0;
-    //ESP_ERROR_CHECK(uart_get_buffered_data_len(uartNum, (size_t*)&length));
-
     uint32_t len = uart_read_bytes(uartNum, &alldata[alldataLen], 512, 0);
     //ESP_LOGE("BZ251", "Read %lu bytes", len);
     while(len){
-
-        /*for( uint32_t i = 0; i < len; i++)
-        {
-            // if is ascii, print it
-            if (alldata[alldataLen + i] >= 32 && alldata[alldataLen + i] <= 126)
-            {
-                printf("%c", alldata[alldataLen + i]);
-            }
-            else
-            {
-                printf(".");
-            }
-        }
-        printf("\n");*/
-
-
         alldataLen += len;
-
         len = uart_read_bytes(uartNum, &alldata[alldataLen], 512, 0);
     }    
     
@@ -251,7 +227,6 @@ uint8_t Bz251::read(void)
 
     if (lasteFound)
     {
-        //ESP_LOGE("BZ251", "LasteFound: %lu, datalen: %lu", lasteFound, alldataLen);
         alldataLen = alldataLen - lasteFound;
         for( uint32_t i = 0; i < alldataLen; i++)
         {
