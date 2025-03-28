@@ -15,30 +15,74 @@ class ISSservice {
     _startPositionUpdates();
     _startPrecisePositionUpdates();
   }
+    void dispose() {
+    _fetchTimer?.cancel();
+    _satelliteController.close();
+  }
 
   // Stream ISS JSON data
   final StreamController<Satellite> _satelliteController = StreamController.broadcast();
   Stream<Satellite> get satelliteStream => _satelliteController.stream;
 
-  Future<Satellite> _fetchISS() async {
-    final response = await http.get(
-      Uri.parse('https://api.wheretheiss.at/v1/satellites/25544'),
-    );
+  static var latitude = 40.0;
+  static var longitude = -4.0;
 
-    if (response.statusCode == 200) {
-      return Satellite.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  Timer? _fetchTimer;
+  Duration _fetchInterval = const Duration(seconds: 1);
+  int _receivedCount = 0;
+
+
+  Future<Satellite> _fetchISS() async {
+    var online = true;
+    if (online)
+    {
+      final response = await http.get(
+        Uri.parse('https://api.wheretheiss.at/v1/satellites/25544'),
+      );
+
+      if (response.statusCode == 200) {
+        return Satellite.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+      } else {
+        throw Exception('Failed to load ISS');
+      }
     } else {
-      throw Exception('Failed to load ISS');
+      latitude = latitude;
+      longitude = longitude + 0.1;
+      if (longitude > 180.0) {
+        longitude = -180.0 + (longitude - 180.0);
+      }
+
+      return Satellite(
+        name: "simulated",
+        id: 0,
+        latitude: latitude,
+        longitude: longitude,
+        altitude: 0.0,
+        velocity: 0.0,
+        visibility: "",
+        footprint: 0.0,
+        timestamp: 0,
+        daynum: 0.0,
+        solarLat: 0.0,
+        solarLon: 0.0,
+        units: "",
+      );
     }
   }
 
   void _startSatelliteUpdates() {
-    Stream.periodic(const Duration(seconds: 5))
-     .asyncMap((_) => _fetchISS())
-    .listen((newSatellite) {
+    _fetchTimer?.cancel(); // Detiene el timer si ya estaba corriendo
+    _fetchTimer = Timer.periodic(_fetchInterval, (timer) async {
+      Satellite newSatellite = await _fetchISS();
       _satelliteController.add(newSatellite);
-    });
-  }
+      _receivedCount++;
+
+      if (_receivedCount == 2) {
+        _fetchInterval = const Duration(seconds: 10); // Cambia a 10 segundos
+        _receivedCount = 0; // Reinicia el contador
+        _startSatelliteUpdates(); // Reinicia el stream con el nuevo intervalo
+      }
+    });  }
 
   // Stream ISS Position data
   final StreamController<LatLng> _positionController = StreamController.broadcast();
@@ -60,7 +104,6 @@ class ISSservice {
   Satellite? lastSat;  
 
   void _startPrecisePositionUpdates() {
-
     satelliteStream.listen((newSatellite) {
       prevTime = lastTime;
       prevSat = lastSat;
@@ -68,22 +111,14 @@ class ISSservice {
       lastSat = newSatellite;
     });
 
-    Stream.periodic(const Duration(milliseconds: 150))
+    Stream.periodic(const Duration(milliseconds: 200))
      .asyncMap((_) => _calculatePrecisePosition())
     .listen((newPosition) {
       _precisePositionController.add(newPosition);
     });
-
-    // preciseLocationStream.listen((LatLng value) {
-    //   // Manejar los valores emitidos
-    //   print(value);
-    // });
   }
 
   Future<LatLng> _calculatePrecisePosition() async {
-  // void _calculatePrecisePosition() { 
-    // Definir la lógica del stream que se ejecuta cada 0.1 segundos
-    // Stream.periodic(const Duration(milliseconds: 100), (_) {
     if (prevSat == null && lastSat == null) {
       return LatLng(40.44254064814816, -3.952498215412911);
     } else if (prevSat == null && lastSat != null) {
