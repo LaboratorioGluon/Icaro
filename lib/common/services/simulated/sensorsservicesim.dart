@@ -7,6 +7,7 @@ import 'package:icaro_app/common/data/icarosensors.dart';
 import 'package:icaro_app/common/data/sensorboard.dart';
 import 'package:icaro_app/common/data/supplyboard.dart';
 import 'package:icaro_app/common/data/threeaxis.dart';
+import 'package:latlong2/latlong.dart';
 
 class SensorsServiceSim {
   static final SensorsServiceSim _instance = SensorsServiceSim._internal();
@@ -18,9 +19,9 @@ class SensorsServiceSim {
   static var boardTemp = 0.0;
   static var boardHum = 0.0;
 
-  static var accgyr = 0.0;
-  static var acceletometer = ThreeAxis(x: accgyr, y: accgyr, z: accgyr);
-  static var gyroscope = ThreeAxis(x: accgyr, y: accgyr, z: accgyr);
+  static var angle = 0.0;
+  static var acceletometer = ThreeAxis(x: angle, y: angle, z: angle);
+  static var gyroscope = ThreeAxis(x: angle, y: angle, z: angle);
 
   static var latitude = 40.0;
   static var longitude = -4.0;
@@ -41,18 +42,18 @@ class SensorsServiceSim {
   Future<IcaroSensors> _fetchSensorsSim() async {
     // TODO: Receive data from real device 
 
-    accgyr = (accgyr >= 360.0) ? 0 : accgyr + 5;
+    angle = (angle >= 360.0) ? 0 : angle + 5;
     
     acceletometer = ThreeAxis(
-      x: sin(degToRadian(accgyr)), 
-      y: sin(degToRadian(accgyr+45)), 
-      z: sin(degToRadian(accgyr+90)),
+      x: sin(degToRadian(angle)), 
+      y: sin(degToRadian(angle+45)), 
+      z: sin(degToRadian(angle+90)),
     );
 
     gyroscope = ThreeAxis(
-      x: sin(degToRadian(accgyr+135)), 
-      y: sin(degToRadian(accgyr+180)), 
-      z: sin(degToRadian(accgyr+225)),
+      x: sin(degToRadian(angle+135)), 
+      y: sin(degToRadian(angle+180)), 
+      z: sin(degToRadian(angle+225)),
     );
 
     latitude = latitude;
@@ -68,10 +69,10 @@ class SensorsServiceSim {
       altitude: altitude,
     );
 
-    internalTemp = (internalTemp >= 100.0) ? -100.0 : internalTemp + 2.0;
-    externalTemp = (externalTemp <= -100.0) ? 100.0 : externalTemp - 2.0;
-    boardTemp = (boardTemp >= 30.0) ? -30.0 : boardTemp + 0.5;
-    boardHum = (boardHum >= 100.0) ? 0.0 : boardHum + 1.0;
+    internalTemp = (sin(degToRadian(angle)) * 100);
+    externalTemp = (sin(degToRadian(angle+120)) * 100);
+    boardTemp    = (sin(degToRadian(angle+240)) * 100);
+    boardHum     = 50 + (sin(degToRadian(angle+270)) * 50);
 
     SensorBoard sensorBoard = SensorBoard(
       internalTemp: internalTemp,
