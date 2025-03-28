@@ -7,9 +7,9 @@ class IcaroLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    var icaroLogo = Image.asset(logoAsset);
+    var icaroLogo = Image.asset(logoAsset,);
 
-    return Center(
+    return Container(
       child: icaroLogo
     );
   }
