@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
+import 'package:icaro_app/sensorspage/humiditywidget.dart';
 
 import '../common/services/simulated/sensorsservicesim.dart';
 import '../common/data/icarosensors.dart';
@@ -29,6 +30,7 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
   var internalTemp = 0.0;
   var externalTemp = 0.0;
   var boardTemp = 0.0;
+  var boardHum = 0.0;
 
   late String dataStr;
 
@@ -45,6 +47,7 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
     internalTemp = 0.0;
     externalTemp = 0.0;
     boardTemp = 0.0;
+    boardHum = 0.0;
 
     gyroscope = ThreeAxis(x: 0, y: 0, z: 0);
     accelerometer = ThreeAxis(x: 0, y: 0, z: 0);
@@ -83,6 +86,7 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
       internalTemp = data.sensorBoard.internalTemp;
       externalTemp = data.sensorBoard.externalTemp;
       boardTemp = data.sensorBoard.boardTemp;
+      boardHum = data.sensorBoard.boardHum;
 
       gyroscope = data.sensorBoard.gyroscope;
       accelerometer = data.sensorBoard.acceletometer;
@@ -114,10 +118,12 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
         TemperatureSubject("Internal Temp", internalTemp, Colors.red),
         TemperatureSubject("External Temp", externalTemp, Colors.blue),
         TemperatureSubject("OnBoard Temp", boardTemp, Colors.grey),
+        TemperatureSubject("Humidity", boardHum, Colors.green),
         ]);
 
     var accel = ThreeAxisWidget(label: "Accelerometer", threeAxis: accelerometer);
     var gyro = ThreeAxisWidget(label: "Gyroscope", threeAxis: gyroscope);
+    var humWidget = HumidityWidget(label: "Humidity", value: boardHum);
 
     return SingleChildScrollView( 
       child: Column(
@@ -132,7 +138,6 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
             ),
           ),
 
-          Text(dataStr),
           battery,
           tempWidget,
           Row( 
@@ -140,8 +145,10 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
               [
                 accel,
                 gyro,
+                humWidget,
               ]
-          )
+          ),
+          Text(dataStr),
         ],
       ),
     );
