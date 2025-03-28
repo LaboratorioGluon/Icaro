@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.12.0"
+  based_battery_indicator:
+    dependency: "direct main"
+    description:
+      name: based_battery_indicator
+      sha256: "61c5b5a33e5dc35fc45cb016160f4eae8ee9a85c804bd797a5dbb9283bc9f288"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
   boolean_selector:
     dependency: transitive
     description:
@@ -376,6 +384,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  syncfusion_flutter_charts:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_charts
+      sha256: "8367eb7b9941e33158f34c3e903e19897542b19423f9a91897aaafe4228298ca"
+      url: "https://pub.dev"
+    source: hosted
+    version: "28.2.12"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: f1d2b52697543e13bdefdc62d15868124a265987577f53224a7dbe176c8448f0
+      url: "https://pub.dev"
+    source: hosted
+    version: "28.2.12"
+  syncfusion_flutter_gauges:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_gauges
+      sha256: "246a34dd74b6a41aed22315a1ecc773c883897450d5a0a5e7b9249c4f653b2fe"
+      url: "https://pub.dev"
+    source: hosted
+    version: "28.2.12"
   term_glyph:
     dependency: transitive
     description:
