@@ -26,6 +26,10 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
   var gyroscope = ThreeAxis(x: 0, y: 0, z: 0);
   var accelerometer = ThreeAxis(x: 0, y: 0, z: 0);
 
+  var internalTemp = 0.0;
+  var externalTemp = 0.0;
+  var boardTemp = 0.0;
+
   late String dataStr;
 
   late BasedBatteryStatus batteryStatus;
@@ -37,6 +41,10 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
     // Initialize state
     dataStr = "NoData";
     batteryStatus = BasedBatteryStatus(value: 0, type: BasedBatteryStatusType.normal);
+
+    internalTemp = 0.0;
+    externalTemp = 0.0;
+    boardTemp = 0.0;
 
     gyroscope = ThreeAxis(x: 0, y: 0, z: 0);
     accelerometer = ThreeAxis(x: 0, y: 0, z: 0);
@@ -72,6 +80,10 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
       dataStr = jsonEncode(newData.toMap());
       // dataStr = newData;
 
+      internalTemp = data.sensorBoard.internalTemp;
+      externalTemp = data.sensorBoard.externalTemp;
+      boardTemp = data.sensorBoard.boardTemp;
+
       gyroscope = data.sensorBoard.gyroscope;
       accelerometer = data.sensorBoard.acceletometer;
 
@@ -97,7 +109,12 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
         duration: const Duration(seconds: 1),
         );
 
-    var tempWidget = TemperatureWidget();
+    var tempWidget = TemperatureWidget(
+      temperatures: [
+        TemperatureSubject("Internal", internalTemp, Colors.red),
+        TemperatureSubject("External", externalTemp, Colors.blue),
+        TemperatureSubject("OnBoard", boardTemp, Colors.grey),
+        ]);
 
     var accel = ThreeAxisWidget(label: "Accelerometer", threeAxis: accelerometer);
     var gyro = ThreeAxisWidget(label: "Gyroscope", threeAxis: gyroscope);
