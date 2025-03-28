@@ -88,7 +88,8 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
 
     var tempWidget = TemperatureWidget();
 
-    return Column(
+    return SingleChildScrollView( 
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Card(
@@ -104,6 +105,7 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
           battery,
           tempWidget
         ],
-      );
+      ),
+    );
   }
 }
