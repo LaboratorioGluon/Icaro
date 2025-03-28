@@ -7,7 +7,7 @@ import 'logspage.dart';
 import 'lorapage.dart';
 import 'mappage/mappage.dart';
 import 'powerpage.dart';
-import 'sensorspage.dart';
+import 'sensorspage/sensorspage.dart';
 import 'settingspage.dart';
 // import 'state.dart';
 
@@ -43,7 +43,6 @@ class _IcaroMainState extends State<IcaroMain> {
 
     @override
     Widget build(BuildContext context) {
-
         Widget page;
         switch(selectedIndex){
           case 0:
