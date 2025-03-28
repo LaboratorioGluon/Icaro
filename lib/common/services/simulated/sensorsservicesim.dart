@@ -1,5 +1,5 @@
 import 'dart:async';
-// import 'dart:convert';
+import 'dart:math';
 
 import 'package:icaro_app/common/data/cameraboard.dart';
 import 'package:icaro_app/common/data/gps.dart';
@@ -41,18 +41,18 @@ class SensorsServiceSim {
   Future<IcaroSensors> _fetchSensorsSim() async {
     // TODO: Receive data from real device 
 
-    accgyr = (accgyr >= 1.0) ? -1.0 : accgyr + 0.1;
+    accgyr = (accgyr >= 360.0) ? 0 : accgyr + 5;
     
     acceletometer = ThreeAxis(
-      x: accgyr, 
-      y: accgyr, 
-      z: accgyr
+      x: sin(degToRadian(accgyr)), 
+      y: sin(degToRadian(accgyr+45)), 
+      z: sin(degToRadian(accgyr+90)),
     );
 
     gyroscope = ThreeAxis(
-      x: accgyr, 
-      y: accgyr, 
-      z: accgyr
+      x: sin(degToRadian(accgyr+135)), 
+      y: sin(degToRadian(accgyr+180)), 
+      z: sin(degToRadian(accgyr+225)),
     );
 
     latitude = latitude;
@@ -68,10 +68,10 @@ class SensorsServiceSim {
       altitude: altitude,
     );
 
-    internalTemp = (internalTemp >= 100.0) ? -100.0 : internalTemp + 20.0;
-    externalTemp = (externalTemp <= -100.0) ? 100.0 : externalTemp - 20.0;
-    boardTemp = (boardTemp >= 30.0) ? -30.0 : boardTemp + 5.0;
-    boardHum = (boardHum >= 100.0) ? 0.0 : boardHum + 10.0;
+    internalTemp = (internalTemp >= 100.0) ? -100.0 : internalTemp + 2.0;
+    externalTemp = (externalTemp <= -100.0) ? 100.0 : externalTemp - 2.0;
+    boardTemp = (boardTemp >= 30.0) ? -30.0 : boardTemp + 0.5;
+    boardHum = (boardHum >= 100.0) ? 0.0 : boardHum + 1.0;
 
     SensorBoard sensorBoard = SensorBoard(
       internalTemp: internalTemp,
@@ -83,7 +83,7 @@ class SensorsServiceSim {
       gps: gps,
     );
 
-    batteryLevel = (batteryLevel >= 100.0) ? 0.0 : batteryLevel + 10.0;
+    batteryLevel = (batteryLevel >= 100.0) ? 0.0 : batteryLevel + 1.0;
     s3V = (batteryLevel >= 30);
     s5V = (batteryLevel >= 50);
 
@@ -107,7 +107,7 @@ class SensorsServiceSim {
   }
 
   void _startSensorsUpdates() {
-    Stream.periodic(const Duration(seconds: 2))
+    Stream.periodic(const Duration(milliseconds: 50))
      .asyncMap((_) => _fetchSensorsSim())
     .listen((icaroSensors) {
       // TODO: Publish data independently?

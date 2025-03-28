@@ -6,8 +6,10 @@ import 'package:based_battery_indicator/based_battery_indicator.dart';
 
 import '../common/services/simulated/sensorsservicesim.dart';
 import '../common/data/icarosensors.dart';
+import '../common/data/threeaxis.dart';
 
 import 'temperaturewidget.dart';
+import 'threeaxiswidget.dart';
 
 class IcaroSensorsPage extends StatefulWidget {
   const IcaroSensorsPage({super.key});
@@ -21,6 +23,9 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
   late StreamSubscription<IcaroSensors> _sensorsSub;
 
   late IcaroSensors data;
+  var gyroscope = ThreeAxis(x: 0, y: 0, z: 0);
+  var accelerometer = ThreeAxis(x: 0, y: 0, z: 0);
+
   late String dataStr;
 
   late BasedBatteryStatus batteryStatus;
@@ -32,6 +37,9 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
     // Initialize state
     dataStr = "NoData";
     batteryStatus = BasedBatteryStatus(value: 0, type: BasedBatteryStatusType.normal);
+
+    gyroscope = ThreeAxis(x: 0, y: 0, z: 0);
+    accelerometer = ThreeAxis(x: 0, y: 0, z: 0);
 
     // Initialize ISS data subscription for tracking
     _sensorsSub = SensorsServiceSim().sensorsStream.listen((newData) {
@@ -64,6 +72,9 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
       dataStr = jsonEncode(newData.toMap());
       // dataStr = newData;
 
+      gyroscope = data.sensorBoard.gyroscope;
+      accelerometer = data.sensorBoard.acceletometer;
+
       batteryStatus = BasedBatteryStatus(
                         value: newData.supplyBoard.batteryLevel.toInt(), 
                         type: BasedBatteryStatusType.normal,
@@ -88,7 +99,11 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
 
     var tempWidget = TemperatureWidget();
 
-    return Column(
+    var accel = ThreeAxisWidget(label: "Accelerometer", threeAxis: accelerometer);
+    var gyro = ThreeAxisWidget(label: "Gyroscope", threeAxis: gyroscope);
+
+    return SingleChildScrollView( 
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Card(
@@ -102,8 +117,16 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
 
           Text(dataStr),
           battery,
-          tempWidget
+          tempWidget,
+          Row( 
+            children: 
+              [
+                accel,
+                gyro,
+              ]
+          )
         ],
-      );
+      ),
+    );
   }
 }
