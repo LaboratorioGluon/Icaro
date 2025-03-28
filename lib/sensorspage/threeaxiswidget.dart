@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:icaro_app/common/data/threeaxis.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class _AxisData {
   final String label; // Para el eje X (etiqueta de la barra)
@@ -28,15 +27,15 @@ class ThreeAxisWidget extends StatelessWidget {
           // Check the available width and height in constraints
           // double availableWidth = constraints.maxWidth;
           // double availableHeight = constraints.maxHeight;
-        double availableWidth = 0;
-          var orientation = (availableWidth >= 512) ? 
-              LinearGaugeOrientation.vertical : LinearGaugeOrientation.horizontal;
+          // double availableWidth = 0;
+          // var orientation = (availableWidth >= 512) ? 
+          //     LinearGaugeOrientation.vertical : LinearGaugeOrientation.horizontal;
 
           var axisSeries = ColumnSeries<_AxisData, String>(
             
             dataSource: [
               _AxisData('X', threeAxis.x),
-              _AxisData('Y', threeAxis.x),
+              _AxisData('Y', threeAxis.y),
               _AxisData('Z', threeAxis.z),
             ],
             xValueMapper: (_AxisData data, _) => data.label,

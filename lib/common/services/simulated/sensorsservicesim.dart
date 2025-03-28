@@ -1,5 +1,5 @@
 import 'dart:async';
-// import 'dart:convert';
+import 'dart:math';
 
 import 'package:icaro_app/common/data/cameraboard.dart';
 import 'package:icaro_app/common/data/gps.dart';
@@ -41,18 +41,18 @@ class SensorsServiceSim {
   Future<IcaroSensors> _fetchSensorsSim() async {
     // TODO: Receive data from real device 
 
-    accgyr = (accgyr >= 1.0) ? -1.0 : accgyr + 0.01;
+    accgyr = (accgyr >= 360.0) ? 0 : accgyr + 5;
     
     acceletometer = ThreeAxis(
-      x: accgyr, 
-      y: accgyr, 
-      z: accgyr
+      x: sin(degToRadian(accgyr)), 
+      y: sin(degToRadian(accgyr+45)), 
+      z: sin(degToRadian(accgyr+90)),
     );
 
     gyroscope = ThreeAxis(
-      x: accgyr, 
-      y: accgyr, 
-      z: accgyr
+      x: sin(degToRadian(accgyr+135)), 
+      y: sin(degToRadian(accgyr+180)), 
+      z: sin(degToRadian(accgyr+225)),
     );
 
     latitude = latitude;
