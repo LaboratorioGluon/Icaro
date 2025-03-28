@@ -6,7 +6,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
 
-import 'package:icaro_app/common/satellite.dart';
+import 'package:icaro_app/common/data/satellite.dart';
 import 'package:icaro_app/common/services/issservice.dart';
 
 class IcaroMapPage extends StatefulWidget {
@@ -31,7 +31,7 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
       _setIss(newData);
     });
 
-    _issPositionSub = ISSservice().locationStream.listen((newPosition) {
+    _issPositionSub = ISSservice().preciseLocationStream.listen((newPosition) {
       _setIssPosition(newPosition);
     });
   }
@@ -40,6 +40,7 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
   void dispose() {
     _issPositionSub.cancel();
     _issSatelliteSub.cancel();
+    _animatedMapController.dispose();
     super.dispose();
   }
 
@@ -53,7 +54,7 @@ class _IcaroMapPageState extends State<IcaroMapPage> with TickerProviderStateMix
     return LatLng(40.44254064814816, -3.952498215412911);
   }
   static getDefaultZoom() {
-    return 17.5;
+    return 5.0;
   }
   static getDefaultRotation() {
     return 0.0;
