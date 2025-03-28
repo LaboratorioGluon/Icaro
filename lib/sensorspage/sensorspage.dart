@@ -111,9 +111,9 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
 
     var tempWidget = TemperatureWidget(
       temperatures: [
-        TemperatureSubject("Internal", internalTemp, Colors.red),
-        TemperatureSubject("External", externalTemp, Colors.blue),
-        TemperatureSubject("OnBoard", boardTemp, Colors.grey),
+        TemperatureSubject("Internal Temp", internalTemp, Colors.red),
+        TemperatureSubject("External Temp", externalTemp, Colors.blue),
+        TemperatureSubject("OnBoard Temp", boardTemp, Colors.grey),
         ]);
 
     var accel = ThreeAxisWidget(label: "Accelerometer", threeAxis: accelerometer);
