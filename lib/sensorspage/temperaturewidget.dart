@@ -70,7 +70,7 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
 
     for (var temp in widget.temperatures) {
       if (history.containsKey(temp.label)) {
-        history[temp.label]!.add(TemperaturePoint(x: elemCounter, y: temp.value));
+          history[temp.label]!.add(TemperaturePoint(x: elemCounter, y: temp.value));
         if (history[temp.label]!.length >= maxElems) {
           history[temp.label]!.removeAt(0);
         }
@@ -102,11 +102,60 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
       );
   }
 
-  Widget _buildTwoColumnLayout() {
+  Widget _generateGraphWidget ()
+  {
+    var tempColors = <Color>[];
+    var tempSplines = <SplineSeries<TemperaturePoint, num>>[];
+    
+    // Generate data for each temperature given
+    for(var temp in widget.temperatures)
+    {
+      // Generate color
+      tempColors.add(temp.color);
+    
+      // Generate spline serie
+      tempSplines.add(
+          SplineSeries<TemperaturePoint, num>(
+            name: temp.label,
+            dataSource: [...history[temp.label]!],
+            xValueMapper: (TemperaturePoint data, int index) => data.x,
+            yValueMapper: (TemperaturePoint data, int index) => data.y,
+            animationDuration: 0,
+            color: temp.color,
+          )
+        );
+
+    }
+
+    var splineLegend = Legend(
+      isVisible: true,
+      position: LegendPosition.bottom,
+      alignment: ChartAlignment.center
+    );
+
+    var graphWidget = SfCartesianChart(
+      plotAreaBorderWidth: 0,
+      primaryXAxis: const NumericAxis(
+        majorGridLines: MajorGridLines(width: 0),
+      ),
+      primaryYAxis: const NumericAxis(
+        minimum: -125,
+        maximum: 125,
+        axisLine: AxisLine(width: 0),
+        majorTickLines: MajorTickLines(size: 0),
+      ),
+      series: tempSplines,
+      legend: splineLegend,
+    );
+
+    return graphWidget;
+  }
+
+
+  Widget _generatePointerWidget(LinearGaugeOrientation orientation) {
 
     var tempColors = <Color>[];
     var tempPointers = <LinearShapePointer>[];
-    var tempSplines = <SplineSeries<TemperaturePoint, num>>[];
     
     // Generate data for each temperature given
     for(var temp in widget.temperatures)
@@ -121,57 +170,43 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
             color: temp.color,
           )
         );
+    }
 
-      // Generate spline serie
-      tempSplines.add(
-          SplineSeries<TemperaturePoint, num>(
-            name: "InternalTemp",
-            dataSource: [...history[temp.label]!],
-            xValueMapper: (TemperaturePoint data, int index) => data.x,
-            yValueMapper: (TemperaturePoint data, int index) => data.y,
-            animationDuration: 0,
-            color: temp.color,
-          )
+    LinearGradient gradient;
+    if (orientation == LinearGaugeOrientation.horizontal)
+    {
+      gradient = LinearGradient(
+          colors: [Colors.blue, Colors.red],
+          begin: Alignment.centerLeft, 
+          end: Alignment.centerRight
         );
-
+    } else {
+      gradient = LinearGradient(
+          colors: [Colors.blue, Colors.red],
+          begin: Alignment.bottomCenter, 
+          end: Alignment.topCenter
+        );
     }
 
     var pointerWidget = SfLinearGauge(
         minimum: -100.0,
         maximum: 100.0,
-        orientation: LinearGaugeOrientation.vertical,
+        orientation: orientation,
         axisTrackStyle: LinearAxisTrackStyle(
-          gradient: LinearGradient(
-            colors: tempColors,
-            begin: Alignment.topCenter, 
-            end: Alignment.bottomCenter
-          )
+          gradient: gradient
         ),
         isAxisInversed: false,
         ranges: [],
         markerPointers: tempPointers,
       );
 
-      var splineLegend = Legend(
-        isVisible: true,
-        position: LegendPosition.bottom,
-        alignment: ChartAlignment.center
-      );
+    return pointerWidget;
+  }
 
-      var graphWidget = SfCartesianChart(
-        plotAreaBorderWidth: 0,
-        primaryXAxis: const NumericAxis(
-          majorGridLines: MajorGridLines(width: 0),
-        ),
-        primaryYAxis: const NumericAxis(
-          minimum: -125,
-          maximum: 125,
-          axisLine: AxisLine(width: 0),
-          majorTickLines: MajorTickLines(size: 0),
-        ),
-        series: tempSplines,
-        legend: splineLegend,
-      );
+  Widget _buildTwoColumnLayout() {
+
+    var pointerWidget = _generatePointerWidget(LinearGaugeOrientation.vertical);
+    var graphWidget = _generateGraphWidget();
 
     return Row(
       children: [
@@ -183,67 +218,13 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
 
   Widget _buildSingleColumnLayout() {
 
-    // var currentTemps = SfLinearGauge(
-    //     minimum: -100.0,
-    //     maximum: 100.0,
-    //     orientation: LinearGaugeOrientation.horizontal,
-    //     axisTrackStyle: LinearAxisTrackStyle(
-    //       gradient: LinearGradient(
-    //         colors: [warmColor, Colors.grey, coldColor],
-    //         begin: Alignment.centerRight, 
-    //         end: Alignment.centerLeft
-    //       )
-    //     ),
-    //     isAxisInversed: false,
-    //     ranges: [],
-    //     markerPointers: [
-    //       LinearShapePointer(
-    //         value: externalTemp,
-    //         color: coldColor
-    //       ),
-    //       LinearShapePointer(
-    //         value: internalTemp,
-    //         color: warmColor
-    //       ),
-    //     ],
-    //     // barPointers: [LinearBarPointer(value: 20)],
-    //   );
-
-    //   var splineSeries = <SplineSeries<TemperaturePoint, num>>[
-    //     SplineSeries<TemperaturePoint, num>(
-    //       dataSource: [...internalTempData!],
-    //       xValueMapper: (TemperaturePoint data, int index) => data.x,
-    //       yValueMapper: (TemperaturePoint data, int index) => data.y,
-    //       animationDuration: 5000,
-    //       color: warmColor,
-    //     ),
-    //     SplineSeries<TemperaturePoint, num>(
-    //       dataSource: [...externalTempData!],
-    //       xValueMapper: (TemperaturePoint data, int index) => data.x,
-    //       yValueMapper: (TemperaturePoint data, int index) => data.y,
-    //       animationDuration: 5000,
-    //       color: coldColor,
-    //     )
-    //   ];
-
-    //   var graph = SfCartesianChart(
-    //     plotAreaBorderWidth: 0,
-    //     primaryXAxis: const NumericAxis(
-    //       majorGridLines: MajorGridLines(width: 0),
-    //     ),
-    //     primaryYAxis: const NumericAxis(
-    //       minimum: -125,
-    //       maximum: 125,
-    //       axisLine: AxisLine(width: 0),
-    //       majorTickLines: MajorTickLines(size: 0),
-    //     ),
-    //     series: splineSeries,
-    //   );
+    var pointerWidget = _generatePointerWidget(LinearGaugeOrientation.horizontal);
+    var graphWidget = _generateGraphWidget();
 
     return Column(
       children: [
-        // graph,
-        // currentTemps,
+        graphWidget,
+        pointerWidget,
       ],
     );
   }
