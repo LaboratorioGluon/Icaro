@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:icaro_app/common/data/icarosensors.dart';
 import 'package:icaro_app/common/services/simulated/sensorsservicesim.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
-// import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class TemperatureWidget extends StatefulWidget {
 
@@ -137,7 +136,7 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
           dataSource: [...internalTempData!],
           xValueMapper: (TemperaturePoint data, int index) => data.x,
           yValueMapper: (TemperaturePoint data, int index) => data.y,
-          animationDuration: 1000,
+          animationDuration: 0,
           color: warmColor,
         ),
         SplineSeries<TemperaturePoint, num>(
@@ -145,7 +144,7 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
           dataSource: [...externalTempData!],
           xValueMapper: (TemperaturePoint data, int index) => data.x,
           yValueMapper: (TemperaturePoint data, int index) => data.y,
-          animationDuration: 1000,
+          animationDuration: 0,
           color: coldColor,
         )
       ];
