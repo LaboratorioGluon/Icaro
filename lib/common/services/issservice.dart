@@ -35,6 +35,7 @@ class ISSservice {
   Future<Satellite> _fetchISS() async {
     var online = true;
     if (online)
+    // ignore: dead_code
     {
       final response = await http.get(
         Uri.parse('https://api.wheretheiss.at/v1/satellites/25544'),
@@ -45,6 +46,7 @@ class ISSservice {
       } else {
         throw Exception('Failed to load ISS');
       }
+    // ignore: dead_code
     } else {
       latitude = latitude;
       longitude = longitude + 0.1;

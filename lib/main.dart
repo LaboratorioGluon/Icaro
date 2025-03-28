@@ -33,6 +33,7 @@ class IcaroMain extends StatefulWidget {
 }
 
 class _IcaroMainState extends State<IcaroMain> {
+    // ignore: unused_field
     static const appTitle = Text("IcaroApp");
 
     int selectedIndex = 0;
