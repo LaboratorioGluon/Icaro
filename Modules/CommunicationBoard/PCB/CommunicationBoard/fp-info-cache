@@ -1,4 +1,4 @@
-24951594550461561
+24953338519338212
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -58533,6 +58533,13 @@ WheelSwitch
 0
 10
 4
+IcaroFootprints
+XCVR_E22-900M30S
+
+
+0
+22
+22
 IcaroFootprints
 microSD-Receptacle-SelfEject
 TFP09-2-12B
