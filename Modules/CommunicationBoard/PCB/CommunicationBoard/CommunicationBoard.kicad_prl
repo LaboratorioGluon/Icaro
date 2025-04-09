@@ -17,7 +17,7 @@
     },
     "selection_filter": {
       "dimensions": true,
-      "footprints": true,
+      "footprints": false,
       "graphics": true,
       "keepouts": true,
       "lockedItems": false,
@@ -49,7 +49,7 @@
       "conflict_shadows",
       "shapes"
     ],
-    "visible_layers": "ffffffff_ffffffff_ffffd575_df5555ff",
+    "visible_layers": "ffffffff_ffffffff_ffffd575_ff5555ff",
     "zone_display_mode": 0
   },
   "git": {
@@ -87,16 +87,16 @@
       9
     ],
     "col_widths": [
-      149,
-      137,
-      90,
-      100,
-      94,
-      105,
-      105,
-      106,
-      90,
-      90
+      186,
+      171,
+      113,
+      125,
+      118,
+      131,
+      131,
+      133,
+      113,
+      113
     ],
     "custom_group_rules": [],
     "expanded_rows": [],
