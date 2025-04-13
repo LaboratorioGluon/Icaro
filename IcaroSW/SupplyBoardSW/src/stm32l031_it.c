@@ -22,6 +22,7 @@ void DMA1_Channel1_IRQHandler(void)
   /* USER CODE END DMA1_Channel1_IRQn 1 */
 }
 
+#if 0
 extern I2C_HandleTypeDef hI2c;
 void I2C1_IRQHandler(void)
 {
@@ -29,8 +30,14 @@ void I2C1_IRQHandler(void)
   {
     HAL_I2C_ER_IRQHandler(&hI2c);
   }
+  /*else if( hI2c.Instance->ISR & (I2C_FLAG_AF))
+  {
+    __HAL_I2C_CLEAR_FLAG(&hI2c, I2C_FLAG_AF);
+    HAL_I2C_ErrorCallback(&hI2c);
+  }*/
   else
   {
     HAL_I2C_EV_IRQHandler(&hI2c);
   }
 }
+  #endif

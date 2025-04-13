@@ -2,6 +2,7 @@
 #include <freertos/FreeRTOS.h>
 #include <esp_log.h>
 
+#include "dataMapSupply.h"
 
 #if 0
 #include <driver/i2c.h>
@@ -14,8 +15,8 @@
 #define APP_CPU_NUM PRO_CPU_NUM
 #endif
 
-#define SDA_PIN 21
-#define SCL_PIN 22
+#define SDA_PIN 25
+#define SCL_PIN 26
 
 static const char *TAG = "i2cscanner";
 
@@ -88,6 +89,9 @@ bme280_dev dev;
 i2c_master_bus_handle_t bus_handle;
 i2c_master_dev_handle_t dev_handle;
 i2c_device_config_t dev_cfg;
+
+i2c_master_bus_handle_t i2cExternalBusHandle;
+i2c_master_dev_handle_t i2cSupplyDev;
 
 Bz251 bz251;
 Bz251Data bz251Data;
@@ -221,6 +225,11 @@ extern "C" void app_main() {
 
     ESP_ERROR_CHECK(i2c_new_master_bus(&i2cMasterConfig, &bus_handle));
 
+    i2cMasterConfig.i2c_port = I2C_NUM_1;
+    i2cMasterConfig.sda_io_num = GPIO_NUM_25;
+    i2cMasterConfig.scl_io_num = GPIO_NUM_26;
+    ESP_ERROR_CHECK(i2c_new_master_bus(&i2cMasterConfig, &i2cExternalBusHandle));
+
     dev_cfg = {
         .dev_addr_length = I2C_ADDR_BIT_LEN_7,
         .device_address = 0x48,
@@ -229,15 +238,59 @@ extern "C" void app_main() {
 
     ESP_ERROR_CHECK(i2c_master_bus_add_device(bus_handle, &dev_cfg, &dev_handle));
 
+    dev_cfg.device_address = 0x58;
+    ESP_ERROR_CHECK(i2c_master_bus_add_device(i2cExternalBusHandle, &dev_cfg, &i2cSupplyDev));
+
 
     ESP_LOGE("MAIN", "Holi");
     ADS1115_initiate(&ads1115_cfg);
     
-    xTaskCreatePinnedToCore(coreAThread, "core_A", 4096, NULL, 3, &taskGPS, 0);
+    //xTaskCreatePinnedToCore(coreAThread, "core_A", 4096, NULL, 3, &taskGPS, 0);
 
     esp_err_t result;
+
+    uint32_t i2cRecv;
+    uint16_t supplyTemp;
+
+    uint8_t addr = 0x4;
+
     for(;;)
     {
+        addr = DATAMAP_TEMP_OFFSET;
+        esp_err_t err = i2c_master_transmit(i2cSupplyDev, &addr, 1, 1000);
+        if (err == ESP_OK)
+        {
+            err = i2c_master_receive(i2cSupplyDev, (uint8_t*)&supplyTemp, 2, 1000);
+            ESP_LOGE("MAIN", "Temperatura supply: %d mV", ((supplyTemp&0xFF)<<8) + (supplyTemp>>8) );
+
+        }
+        else
+        {
+            ESP_LOGE("MAIN", "I2C Tx Error: %d", err);
+        }
+        /*
+        esp_err_t err = i2c_master_transmit(i2cSupplyDev, &addr, 1, 1000);
+        if (err == ESP_OK)
+        {
+            err = i2c_master_receive(i2cSupplyDev, (uint8_t*)&i2cRecv, 4, 1000);
+            if (err == ESP_OK)
+            {
+                addr++;
+                if (addr > 10)
+                    addr = 0;
+                ESP_LOGE("MAIN", "I2C Recv(%d): 0x%08lX", addr, i2cRecv);
+            }
+            else
+            {
+                ESP_LOGE("MAIN", "I2C Recv Error: %d", err);
+            }
+
+        }
+        else
+        {
+            ESP_LOGE("MAIN", "I2C Tx Error: %d", err);
+            //i2c_master_bus_reset(i2cSupplyDev);
+        }*/
         // Request single ended on pin AIN0
         ADS1115_request_diff_AIN0_AIN1(); // all functions except for get_conversion_X return 'esp_err_t' for logging
 

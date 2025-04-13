@@ -1,12 +1,65 @@
 #include "supplyBoard.h"
+#include <string.h>
 
+extern "C" I2C_HandleTypeDef c_hI2cSlave;
+
+I2C_HandleTypeDef SupplyBoard::s_hI2cSlave = {0};
+
+SupplyBoard::SupplyBoard()
+{
+    memset(&hI2cSlave, 0, sizeof(hI2cSlave));
+    isAdcInitialized = 0;
+
+}
 
 void SupplyBoard::initHw(SupplyBoardInit initConfig)
 {
-    if( initConfig.sensorTemp.enable )
-    {
+}
 
+SupplyErr SupplyBoard::initI2cSlave(uint8_t address)
+{
+    c_hI2cSlave.ErrorCode = 0;
+    memset(&hI2cSlave, 0, sizeof(hI2cSlave));
+    HAL_StatusTypeDef status;
+
+    GPIO_InitTypeDef initGpio;
+    initGpio.Pin = GPIO_PIN_10 | GPIO_PIN_9;
+    initGpio.Alternate = GPIO_AF1_I2C1;
+    initGpio.Pull = GPIO_NOPULL;
+    initGpio.Mode = GPIO_MODE_AF_OD;
+    initGpio.Speed = GPIO_SPEED_FREQ_VERY_HIGH;    
+    HAL_GPIO_Init(GPIOA, &initGpio);
+
+    hI2cSlave.Instance = I2C1;
+    hI2cSlave.Mode = HAL_I2C_MODE_SLAVE;
+    hI2cSlave.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+    hI2cSlave.Init.DualAddressMode = I2C_DUALADDRESS_DISABLED;
+    hI2cSlave.Init.OwnAddress1 = address<<1;
+    hI2cSlave.Init.Timing = 0x00503D58;
+    hI2cSlave.Init.OwnAddress2 = 0;
+    hI2cSlave.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+    hI2cSlave.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+    hI2cSlave.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+    hI2cSlave.State = HAL_I2C_STATE_RESET;
+    status = HAL_I2C_Init(&hI2cSlave);
+
+    if (status == HAL_OK)
+    {
+        status = HAL_I2CEx_ConfigAnalogFilter(&hI2cSlave, I2C_ANALOGFILTER_ENABLE);
     }
+
+    if (status == HAL_OK)
+    {
+        status = HAL_I2CEx_ConfigDigitalFilter(&hI2cSlave, 0);
+    }
+
+    if (status == HAL_OK)
+    {
+        HAL_NVIC_SetPriority(I2C1_IRQn, 0, 0);
+        HAL_NVIC_EnableIRQ(I2C1_IRQn);
+    }
+
+    return status == HAL_OK ? SUPPLY_OK : SUPPLY_ERR;
 }
 
 uint16_t SupplyBoard::getSensorTemp()
@@ -60,4 +113,15 @@ void SupplyBoard::initAdc()
     {
         isAdcInitialized = 1;
     }
+}
+
+SupplyErr SupplyBoard::i2cSlaveStart()
+{
+    if (hI2cSlave.State == HAL_I2C_STATE_RESET)
+    {
+        return SUPPLY_ERR;
+    }
+
+    HAL_I2C_EnableListen_IT(&hI2cSlave);
+    return SUPPLY_OK;
 }

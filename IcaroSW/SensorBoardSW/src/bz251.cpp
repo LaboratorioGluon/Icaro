@@ -199,7 +199,7 @@ uint8_t Bz251::read(void)
     while(len){
         alldataLen += len;
         len = uart_read_bytes(uartNum, &alldata[alldataLen], 512, 0);
-    }    
+    }
     
     // Find dolar sign and end
     uint32_t dFound=0, eFound=0, lasteFound = 0;
