@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "IcaroFootprints")(type "KiCad")(uri "/media/labgluon/LaboratorioGluon/LaboratorioGluon/Proyectos/036.Icaro/Modules/Common/Kicad/IcaroFootprints.pretty")(options "")(descr ""))
+)
