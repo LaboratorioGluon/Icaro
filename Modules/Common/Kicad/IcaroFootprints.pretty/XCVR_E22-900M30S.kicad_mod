@@ -367,7 +367,7 @@
 		(uuid "c825c2de-8387-4260-8c7e-9fcd5ad6a89c")
 	)
 	(embedded_fonts no)
-	(model "C:/Users/Joseju/Desktop/Icaro/Modules/Common/Kicad/3dModels/E22-900M30S.step"
+	(model "../../../../Modules/Common/Kicad/3dModels/E22-900M30S.step"
 		(offset
 			(xyz 0 0 0)
 		)
