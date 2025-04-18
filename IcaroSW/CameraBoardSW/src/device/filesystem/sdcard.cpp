@@ -23,7 +23,7 @@ constexpr gpio_num_t SD_PIN_D0 = GPIO_NUM_40;
 namespace Device::FileSystem
 {
 
-SDCard::SDCard() : initialized(false), card(nullptr)
+SDCard::SDCard() : IFileSystem(), initialized(false), card(nullptr)
 {
     esp_log_level_set(MODULE_TAG, ESP_LOG_INFO);    
 }
