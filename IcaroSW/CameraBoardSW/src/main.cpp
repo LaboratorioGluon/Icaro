@@ -24,7 +24,7 @@ bool initialize()
 {
     bool initialized = true;
 
-    esp_log_level_set(MODULE_TAG, ESP_LOG_VERBOSE);
+    esp_log_level_set(MODULE_TAG, ESP_LOG_MAX);
 
     ESP_LOGI(MODULE_TAG, "Initializing file system.");
     if (!fs->initialize())
@@ -88,15 +88,38 @@ void app_main()
     // Create initial file
     createInitFile();
     
-    
-    return;
+    // Application data
+    int count = 0;
+    char imagefile[20];
 
     // Application main loop
+    ESP_LOGI(MODULE_TAG, "Starting application.");
+    ESP_LOGD(MODULE_TAG, "Starting application.");
     while(1)
     {
+        count++;
+        sprintf(imagefile, "/%08d.jpg", count);
+
         // 1 -> Take picture
+        ESP_LOGD(MODULE_TAG, "Image taken: %s", imagefile);
+        Device::frame_t* frame = camera->takePicture();
+
         // 2a -> Send picture
+        /* TODO: Send image */
+
         // 2b -> Store picture
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
+        if(fs->write(imagefile, frame->buf, frame->len))
+        {
+            ESP_LOGD(MODULE_TAG, "Image stored: %s", imagefile);
+        }
+        else
+        {
+            ESP_LOGE(MODULE_TAG, "Failed to store image: %s", imagefile);
+        }
+    
+        // 3 -> Free picture buffer
+        camera->freeBuffer(frame);
+
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
