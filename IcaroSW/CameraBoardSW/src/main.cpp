@@ -12,13 +12,15 @@
 #include "device/ifilesystem.h"
 #include "platform.h"
 
+#include "network/wifi.h"
+
 namespace
 {
 const char* MODULE_TAG = "MAIN";
 
 Device::IFileSystem* fs = Platform::buildFileSystem();
 Device::ICamera* camera = Platform::buildCamera();
-Network::INetwork* network = Platform::buildWiFi();
+Network::WiFi* wifi = Platform::buildWiFi();
 }
 
 bool initialize()

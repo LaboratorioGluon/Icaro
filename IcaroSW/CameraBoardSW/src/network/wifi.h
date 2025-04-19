@@ -1,15 +1,14 @@
 #pragma once
 
-#include "inetwork.h"
-#include "link/ilink.h"
-
 #include <esp_netif.h>
 #include <esp_wifi.h>
+
+#include "link/ilink.h"
 
 namespace Network
 {
 
-class WiFi : public INetwork
+class WiFi
 {
 private:
     esp_netif_t* netif;
@@ -26,7 +25,7 @@ public:
     WiFi();
     ~WiFi();
 
-    bool initialize() override;
+    bool initialize();
 
     Link::ILink* createUDPLink(char* ipDst, int port);
     Link::ILink* createTCPLink(char* ipDst, int port);
