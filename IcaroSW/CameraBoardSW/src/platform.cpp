@@ -24,4 +24,9 @@ Network::WiFi* buildWiFi()
     return new Network::WiFi();
 }
 
+Network::WiFiRaw* buildWiFiRaw()
+{   
+    return new Network::WiFiRaw();
+}
+
 }

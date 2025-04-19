@@ -15,7 +15,6 @@ class WiFi
 {
 private:
     esp_netif_t* netif;
-
     wifi_init_config_t m_config;
 
     esp_event_handler_instance_t ip_event_handler;

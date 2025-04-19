@@ -3,6 +3,7 @@
 #include "device/icam.h"
 #include "device/ifilesystem.h"
 #include "network/wifi.h"
+#include "network/wifiraw.h"
 
 namespace Platform
 {
@@ -13,4 +14,5 @@ Device::IFileSystem* buildFileSystem();
 
 Network::WiFi* buildWiFi();
 
+Network::WiFiRaw* buildWiFiRaw();
 }

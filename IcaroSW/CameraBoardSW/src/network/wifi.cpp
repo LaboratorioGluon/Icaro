@@ -15,6 +15,7 @@
 
 #include <lwip/sockets.h>
 
+#include "mac.h"
 #include "link/socket.h"
 
 #include "secrets.h" // Must be created and WIFI_SSID/WIFI_PASSWORD defined
@@ -22,13 +23,6 @@
 namespace 
 {
 const char* MODULE_TAG = "WIFI";
-
-constexpr int DEFAULT_CHANNEL = 6;
-
-constexpr int MAC_LENGTH = 6;
-typedef std::array<uint8_t, MAC_LENGTH> mac_t;
-
-constexpr mac_t DEFAULT_MAC {0x02, 0x6A, 0x9C, 0x1F, 0x3B, 0xE7};
 
 // WiFi event control
 static EventGroupHandle_t s_wifi_event_group = nullptr;
@@ -136,7 +130,10 @@ WiFi::~WiFi()
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, ESP_EVENT_ANY_ID, ip_event_handler));
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, wifi_event_handler));
 
-    esp_wifi_deinit();
+    if (s_wifi_event_group) {
+        vEventGroupDelete(s_wifi_event_group);
+        s_wifi_event_group = nullptr;
+    }
 }
 
 
@@ -218,6 +215,7 @@ bool WiFi::disconnect()
 {
     if (s_wifi_event_group) {
         vEventGroupDelete(s_wifi_event_group);
+        s_wifi_event_group = nullptr;
     }
 
     return esp_wifi_disconnect() == ESP_OK;
