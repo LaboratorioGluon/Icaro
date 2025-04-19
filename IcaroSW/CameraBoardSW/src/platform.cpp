@@ -1,18 +1,10 @@
+#include "platform.h"
 
 #include "device/icam.h"
 #include "device/ifilesystem.h"
 
 #include "device/camera/ov2640.h"
 #include "device/filesystem/sdcard.h"
-
-#include "network/wifi.h"
-#include "network/wifiraw.h"
-#include "network/link/ilink.h"
-
-namespace 
-{
-static Network::WiFi* wifi = nullptr;
-}
 
 namespace Platform
 {
@@ -30,4 +22,6 @@ Device::IFileSystem* buildFileSystem()
 Network::WiFi* buildWiFi()
 {
     return new Network::WiFi();
+}
+
 }
