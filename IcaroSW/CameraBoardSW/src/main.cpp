@@ -25,8 +25,8 @@ namespace
 {
 const char* MODULE_TAG = "MAIN";
 
-// Device::IFileSystem* fs = Platform::buildFileSystem();
-// Device::ICamera* camera = Platform::buildCamera();
+Device::IFileSystem* fs = Platform::buildFileSystem();
+Device::ICamera* camera = Platform::buildCamera();
 #if defined(USE_WIFI)
 Network::WiFi* wifi = Platform::buildWiFi();
 #include "network/wifi.h"
@@ -42,19 +42,19 @@ bool initialize()
 
     // esp_log_level_set(MODULE_TAG, ESP_LOG_MAX);
 
-    // ESP_LOGI(MODULE_TAG, "Initializing file system.");
-    // if (!fs->initialize())
-    // {
-    //     ESP_LOGE(MODULE_TAG, "Failed to initialize file system.");
-    //     initialized = false;
-    // }
+    ESP_LOGI(MODULE_TAG, "Initializing file system.");
+    if (!fs->initialize())
+    {
+        ESP_LOGE(MODULE_TAG, "Failed to initialize file system.");
+        initialized = false;
+    }
     
-    // ESP_LOGI(MODULE_TAG, "Initializing camera.");
-    // if (!camera->initialize())
-    // {
-    //     ESP_LOGE(MODULE_TAG, "Failed to initialize camera.");
-    //     initialized = false;
-    // }
+    ESP_LOGI(MODULE_TAG, "Initializing camera.");
+    if (!camera->initialize())
+    {
+        ESP_LOGE(MODULE_TAG, "Failed to initialize camera.");
+        initialized = false;
+    }
 
     ESP_LOGI(MODULE_TAG, "Initializing wifi.");
     if (!wifi->initialize())
@@ -82,15 +82,15 @@ void createInitFile()
     char buffer[BUFFER_SIZE];
     sprintf(buffer, "Last boot at %s\n", timeBuffer);
 
-    // bool writeOk = fs->append(file, (uint8_t*)buffer, strlen(buffer));
-    // if (writeOk)
-    // {
-    //     ESP_LOGI(MODULE_TAG, "Logged boot time.");
-    // }
-    // else
-    // {
-    //     ESP_LOGE(MODULE_TAG, "Error writting %s file.", file.c_str());
-    // }
+    bool writeOk = fs->append(file, (uint8_t*)buffer, strlen(buffer));
+    if (writeOk)
+    {
+        ESP_LOGI(MODULE_TAG, "Logged boot time.");
+    }
+    else
+    {
+        ESP_LOGE(MODULE_TAG, "Error writting %s file.", file.c_str());
+    }
 }
 
 void try_connect()
@@ -118,7 +118,17 @@ void try_connect()
     ESP_LOGI(MODULE_TAG, "RAW Link created.");
     
     std::string buffer {"Hello from raw connection!"};
-    while(1) raw_link->write(buffer.c_str(), buffer.length());
+    int count = 0;
+    while(1)
+    {
+        raw_link->write(buffer.c_str(), buffer.length());
+        count++;
+        if (count > 200)
+        {
+            vTaskDelay(10 / portTICK_PERIOD_MS);
+            count = 0;
+        }
+    }
 #endif
 }
 
