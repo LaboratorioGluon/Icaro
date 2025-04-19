@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+#include <string>
+
 #include <esp_netif.h>
 #include <esp_wifi.h>
 
@@ -23,12 +26,12 @@ private:
 
 public:
     WiFi();
-    ~WiFi();
+    virtual ~WiFi();
 
     bool initialize();
 
-    Link::ILink* createUDPLink(char* ipDst, int port);
-    Link::ILink* createTCPLink(char* ipDst, int port);
+    std::unique_ptr<Link::ILink> createUDPLink(std::string ip, int port);
+    std::unique_ptr<Link::ILink> createTCPLink(std::string ip, int port);
 };
 
 }

@@ -1,7 +1,6 @@
 #include "wifi.h"
 
 #include <array>
-#include <string>
 #include <string.h>
 
 #include <freertos/FreeRTOS.h>
@@ -14,8 +13,9 @@
 #include <esp_netif.h>
 #include <esp_event.h>
 
-#include "link/udp.h"
-#include "link/tcp.h"
+#include <lwip/sockets.h>
+
+#include "link/socket.h"
 
 #include "secrets.h" // Must be created and WIFI_SSID/WIFI_PASSWORD defined
 
@@ -116,7 +116,7 @@ static void wifi_event_cb(void *arg, esp_event_base_t event_base, int32_t event_
 namespace Network
 {
 
-WiFi::WiFi() : INetwork(), netif(nullptr), m_config(WIFI_INIT_CONFIG_DEFAULT())
+WiFi::WiFi() : netif(nullptr), m_config(WIFI_INIT_CONFIG_DEFAULT())
 {
     esp_log_level_set(MODULE_TAG, ESP_LOG_VERBOSE);    
     s_wifi_event_group = xEventGroupCreate();
@@ -223,15 +223,61 @@ bool WiFi::disconnect()
     return esp_wifi_disconnect() == ESP_OK;
 }
 
-Link::ILink* WiFi::createUDPLink(char* ipDst, int port)
+std::unique_ptr<Link::ILink> WiFi::createUDPLink(std::string ip, int port)
 {
-    Link::ILink* link = new Link::UDPLink();
+    std::unique_ptr<Link::ILink> link = nullptr;
+    struct sockaddr_in dest_addr;
+    dest_addr.sin_addr.s_addr = inet_addr(ip.c_str());
+    dest_addr.sin_family = AF_INET;
+    dest_addr.sin_port = htons(port);
+    int addr_family = AF_INET;
+    int ip_protocol = IPPROTO_IP;
+
+    int sock = socket(addr_family, SOCK_DGRAM, ip_protocol);
+    if (sock >= 0)
+    {
+        struct timeval timeout;
+        timeout.tv_sec = 30;
+        timeout.tv_usec = 0;
+        setsockopt (sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+        
+        ESP_LOGI(MODULE_TAG, "UDP Socket created, sending to %s:%d", ip.c_str(), port);
+
+        link = std::make_unique<Link::SocketLink>(sock, dest_addr);
+    }
+    else
+    {
+        ESP_LOGE(MODULE_TAG, "Unable to create socket: errno %d", errno);
+    }
     return link;
 }
 
-Link::ILink* WiFi::createTCPLink(char* ipDst, int port)
+std::unique_ptr<Link::ILink> WiFi::createTCPLink(std::string ip, int port)
 {
-    Link::TCPLink* link = new Link::TCPLink();
+    std::unique_ptr<Link::ILink> link = nullptr;
+    struct sockaddr_in dest_addr;
+    dest_addr.sin_addr.s_addr = inet_addr(ip.c_str());
+    dest_addr.sin_family = AF_INET;
+    dest_addr.sin_port = htons(port);
+    int addr_family = AF_INET;
+    int ip_protocol = IPPROTO_IP;
+
+    int sock = socket(addr_family, SOCK_STREAM, ip_protocol);
+    if (sock >= 0)
+    {
+        struct timeval timeout;
+        timeout.tv_sec = 30;
+        timeout.tv_usec = 0;
+        setsockopt (sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
+        
+        ESP_LOGI(MODULE_TAG, "TCP Socket created, sending to %s:%d", ip.c_str(), port);
+
+        link = std::make_unique<Link::SocketLink>(sock, dest_addr);
+    }
+    else
+    {
+        ESP_LOGE(MODULE_TAG, "Unable to create socket: errno %d", errno);
+    }
     return link;
 }
 

@@ -2,6 +2,7 @@
 #include <string>
 #include <string.h>
 #include <time.h>
+#include <memory>
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -44,7 +45,7 @@ bool initialize()
     }
 
     ESP_LOGI(MODULE_TAG, "Initializing wifi.");
-    if (!network->initialize())
+    if (!wifi->initialize())
     {
         ESP_LOGE(MODULE_TAG, "Failed to initialize wifi.");
         initialized = false;
@@ -80,6 +81,27 @@ void createInitFile()
     }
 }
 
+void try_connect()
+{
+    std::unique_ptr<Network::Link::ILink> udp_link {wifi->createUDPLink("192.168.3.5", 10000)};
+    if (udp_link->connect())
+    {
+        ESP_LOGI(MODULE_TAG, "UDP Link Connected.");
+        
+        std::string buffer {"Hello from udp connection!"};
+        udp_link->write(buffer.c_str(), buffer.length());
+    }
+    
+    std::unique_ptr<Network::Link::ILink> tcp_link = wifi->createTCPLink("192.168.3.5", 10001);
+    if (tcp_link->connect())
+    {
+        ESP_LOGI(MODULE_TAG, "TCP Link Connected.");
+        
+        std::string buffer {"Hello from tcp connection!"};
+        tcp_link->write(buffer.c_str(), buffer.length());
+    }
+}
+
 extern "C"
 void app_main()
 {
@@ -95,6 +117,8 @@ void app_main()
         ESP_LOGE(MODULE_TAG, "Initialization failed.");
         return;
     }
+
+    try_connect();
 
     // TODO: Implement and initialize RTC
 
