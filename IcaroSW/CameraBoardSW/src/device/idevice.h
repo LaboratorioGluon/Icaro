@@ -7,7 +7,7 @@ class IDevice
 {
 public:
     IDevice() = default;
-    ~IDevice() = default;
+    virtual ~IDevice() = default;
 
     virtual bool configure() = 0;
     virtual bool initialize() = 0;

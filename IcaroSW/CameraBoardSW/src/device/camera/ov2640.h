@@ -11,7 +11,7 @@ private:
     bool initialized;
 public:
     OV2640();
-    ~OV2640() = default;
+    virtual ~OV2640() = default;
     
     bool initialize() override;
     bool configure() override;

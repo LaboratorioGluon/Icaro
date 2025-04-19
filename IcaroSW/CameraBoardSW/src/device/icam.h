@@ -23,7 +23,7 @@ class ICamera : public IDevice
 {
 public:
     ICamera() : IDevice() {};
-    ~ICamera() = default;
+    virtual ~ICamera() = default;
 
     virtual frame_t* takePicture() = 0;
     virtual void freeBuffer(frame_t* frame) = 0;

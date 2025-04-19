@@ -20,7 +20,7 @@ private:
 
 public:
     SDCard();
-    ~SDCard() = default;
+    virtual ~SDCard() = default;
     
     bool configure() override;
     bool initialize() override;

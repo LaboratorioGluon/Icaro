@@ -12,7 +12,7 @@ class IFileSystem : public IDevice
 {
 public:
     IFileSystem() : IDevice() {};
-    ~IFileSystem() = default;
+    virtual ~IFileSystem() = default;
 
     virtual bool write(const std::string& filepath, uint8_t* data, size_t length) = 0;
     virtual bool append(const std::string& filepath, uint8_t* data, size_t length) = 0;
