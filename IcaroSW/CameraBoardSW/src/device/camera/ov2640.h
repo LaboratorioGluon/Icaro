@@ -7,6 +7,7 @@ namespace Device::Camera
 
 class OV2640 : public ICamera
 {
+private:
     bool initialized;
 public:
     OV2640();
