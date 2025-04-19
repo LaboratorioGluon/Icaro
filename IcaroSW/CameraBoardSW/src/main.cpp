@@ -18,6 +18,7 @@ const char* MODULE_TAG = "MAIN";
 
 Device::IFileSystem* fs = Platform::buildFileSystem();
 Device::ICamera* camera = Platform::buildCamera();
+Network::INetwork* network = Platform::buildWiFi();
 }
 
 bool initialize()
@@ -37,6 +38,13 @@ bool initialize()
     if (!camera->initialize())
     {
         ESP_LOGE(MODULE_TAG, "Failed to initialize camera.");
+        initialized = false;
+    }
+
+    ESP_LOGI(MODULE_TAG, "Initializing wifi.");
+    if (!network->initialize())
+    {
+        ESP_LOGE(MODULE_TAG, "Failed to initialize wifi.");
         initialized = false;
     }
 
@@ -70,14 +78,17 @@ void createInitFile()
     }
 }
 
-
 extern "C"
 void app_main()
 {
     ESP_LOGI(MODULE_TAG, "Hello Icaro.");
 
     // Initialization
-    if (!initialize())
+    if (initialize())
+    {
+        ESP_LOGI(MODULE_TAG, "System initialized.");
+    }
+    else
     {
         ESP_LOGE(MODULE_TAG, "Initialization failed.");
         return;
@@ -94,7 +105,6 @@ void app_main()
 
     // Application main loop
     ESP_LOGI(MODULE_TAG, "Starting application.");
-    ESP_LOGD(MODULE_TAG, "Starting application.");
     while(1)
     {
         count++;
