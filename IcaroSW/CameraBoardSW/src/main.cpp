@@ -40,7 +40,7 @@ bool initialize()
 {
     bool initialized = true;
 
-    // esp_log_level_set(MODULE_TAG, ESP_LOG_MAX);
+    esp_log_level_set(MODULE_TAG, ESP_LOG_MAX);
 
     ESP_LOGI(MODULE_TAG, "Initializing file system.");
     if (!fs->initialize())
@@ -119,6 +119,7 @@ void try_connect()
     
     std::string buffer {"Hello from raw connection!"};
     int count = 0;
+    
     while(1)
     {
         raw_link->write(buffer.c_str(), buffer.length());
@@ -148,44 +149,54 @@ void app_main()
         return;
     }
 
-    try_connect();
+    // try_connect();
 
     // TODO: Implement and initialize RTC
 
-    // // Create initial file
-    // createInitFile();
+    // Create initial file
+    createInitFile();
     
-    // // Application data
-    // int count = 0;
-    // char imagefile[20];
+    // Application data
+    int count = 0;
+    char imagefile[20];
+    std::unique_ptr<Network::Link::ILink> raw_link = wifi->create80211Link();
+    std::string buffer {"Hello from raw connection!"};
 
-    // // Application main loop
-    // ESP_LOGI(MODULE_TAG, "Starting application.");
-    // while(1)
-    // {
-    //     count++;
-    //     sprintf(imagefile, "/%08d.jpg", count);
+    // Application main loop
+    ESP_LOGI(MODULE_TAG, "Starting application.");
+    while(1)
+    {
+        count++;
+        if (count % 200 == 0)
+        {
+            vTaskDelay(10 / portTICK_PERIOD_MS);
+        }
 
-    //     // 1 -> Take picture
-    //     ESP_LOGD(MODULE_TAG, "Image taken: %s", imagefile);
-    //     Device::frame_t* frame = camera->takePicture();
+        sprintf(imagefile, "/%08d.jpg", count);
 
-    //     // 2a -> Send picture
-    //     /* TODO: Send image */
+        // 1 -> Take picture
+        ESP_LOGD(MODULE_TAG, "Image taken: %s", imagefile);
+        Device::frame_t* frame = camera->takePicture();
 
-    //     // 2b -> Store picture
-    //     if(fs->write(imagefile, frame->buf, frame->len))
-    //     {
-    //         ESP_LOGD(MODULE_TAG, "Image stored: %s", imagefile);
-    //     }
-    //     else
-    //     {
-    //         ESP_LOGE(MODULE_TAG, "Failed to store image: %s", imagefile);
-    //     }
+        // 2a -> Send picture
+        /* TODO: Send image */
+        ESP_LOGD(MODULE_TAG, "Sending data: %s", imagefile);
+        raw_link->write(buffer.c_str(), buffer.length());
+        ESP_LOGD(MODULE_TAG, "Data sent: %s", imagefile);
+
+        // 2b -> Store picture
+        if(fs->write(imagefile, frame->buf, frame->len))
+        {
+            ESP_LOGD(MODULE_TAG, "Image stored: %s", imagefile);
+        }
+        else
+        {
+            ESP_LOGE(MODULE_TAG, "Failed to store image: %s", imagefile);
+        }
     
-    //     // 3 -> Free picture buffer
-    //     camera->freeBuffer(frame);
+        // 3 -> Free picture buffer
+        camera->freeBuffer(frame);
 
-    //     vTaskDelay(1000 / portTICK_PERIOD_MS);
-    // }
+        // vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
 }
