@@ -18,8 +18,8 @@ public:
 
     bool isAvailable() override;
     
-    frame_t* takePicture() override;
-    void freeBuffer(frame_t* frame) override;
+    frame_t* grabFrame() override;
+    void freeFrame(frame_t* frame) override;
 };
 
 }

@@ -25,8 +25,8 @@ public:
     ICamera() : IDevice() {};
     virtual ~ICamera() = default;
 
-    virtual frame_t* takePicture() = 0;
-    virtual void freeBuffer(frame_t* frame) = 0;
+    virtual frame_t* grabFrame() = 0;
+    virtual void freeFrame(frame_t* frame) = 0;
 };
 
 }

@@ -1,39 +1,53 @@
-
 #include <string>
 #include <string.h>
 #include <time.h>
 #include <memory>
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
+// #include <freertos/FreeRTOS.h>
+// #include <freertos/task.h>
 
 #include <esp_log.h>
 
-// #include "device/icam.h"
-// #include "device/ifilesystem.h"
+#include "config.h"
+
+// Hardware
 #include "platform.h"
 
-// #define USE_WIFI
-#define USE_WIFIRAW
-#if defined(USE_WIFI)
+// Threads
+#include "storethread.h"
+
+#if defined(WIFI_TYPE)
+#if WIFI_TYPE == WIFI
 #include "network/wifi.h"
-#elif defined(USE_WIFIRAW)
+#include "wifithread.h"
+#elif WIFI_TYPE == WIFIRAW
 #include "network/wifiraw.h"
+#include "wifirawthread.h"
+#else
+#error "Wifi type not valid"
+#endif
+#else
+#error "No wifi type defined"
 #endif
 
 namespace
 {
 const char* MODULE_TAG = "MAIN";
 
-Device::IFileSystem* fs = Platform::buildFileSystem();
-Device::ICamera* camera = Platform::buildCamera();
-#if defined(USE_WIFI)
-Network::WiFi* wifi = Platform::buildWiFi();
-#include "network/wifi.h"
-#elif defined(USE_WIFIRAW)
-Network::WiFiRaw* wifi = Platform::buildWiFiRaw();
-#endif
+std::shared_ptr<Device::IFileSystem> fs = Platform::buildFileSystem();
+std::shared_ptr<Device::ICamera> camera = Platform::buildCamera();
 
+#if defined(WIFI_TYPE)
+#if WIFI_TYPE == WIFI
+std::shared_ptr<Network::WiFi> wifi = Platform::buildWiFi();
+#elif WIFI_TYPE == WIFIRAW
+std::shared_ptr<Network::WiFiRaw> wifi = Platform::buildWiFiRaw();
+#else
+#error "Wifi type not valid"
+#endif
+#else
+#error "No wifi type defined"
+#endif
 }
 
 bool initialize()
@@ -95,7 +109,8 @@ void createInitFile()
 
 void try_connect()
 {
-#if defined(USE_WIFI)
+#if defined(WIFI_TYPE)
+#if WIFI_TYPE == WIFI
     std::unique_ptr<Network::Link::ILink> udp_link {wifi->createUDPLink("192.168.3.5", 10000)};
     if (udp_link->connect())
     {
@@ -113,7 +128,7 @@ void try_connect()
         std::string buffer {"Hello from tcp connection!"};
         tcp_link->write(buffer.c_str(), buffer.length());
     }
-#elif defined(USE_WIFIRAW)
+#elif WIFI_TYPE == WIFIRAW
     std::unique_ptr<Network::Link::ILink> raw_link = wifi->create80211Link();
     ESP_LOGI(MODULE_TAG, "RAW Link created.");
     
@@ -130,6 +145,7 @@ void try_connect()
             count = 0;
         }
     }
+#endif
 #endif
 }
 
@@ -156,47 +172,40 @@ void app_main()
     // Create initial file
     createInitFile();
     
-    // Application data
-    int count = 0;
-    char imagefile[20];
-    std::unique_ptr<Network::Link::ILink> raw_link = wifi->create80211Link();
-    std::string buffer {"Hello from raw connection!"};
+    // Create threads
+    witiThreadArg_t wifiArgs {
+        .camera = camera,
+        .wifiraw = wifi
+    };
+    
+    storeThreadArg_t storeArgs {
+        .camera = camera,
+        .fs = fs
+    };
 
-    // Application main loop
-    ESP_LOGI(MODULE_TAG, "Starting application.");
+    xTaskCreatePinnedToCore(
+        wifiThreadFunc, // Función de la tarea
+        "WifiTask",     // Nombre de la tarea
+        4096,           // Tamaño de la pila
+        &wifiArgs,      // Parámetros de la tarea
+        1,              // Prioridad de la tarea
+        NULL,           // Handler de la tarea
+        0               // Núcleo al que se asigna la tarea (0 o 1)
+    );
+
+    xTaskCreatePinnedToCore(
+        storeThreadFunc, // Función de la tarea
+        "StoreTask",     // Nombre de la tarea
+        4096,            // Tamaño de la pila
+        &storeArgs,      // Parámetros de la tarea
+        1,               // Prioridad de la tarea
+        NULL,            // Handler de la tarea
+        0                // Núcleo al que se asigna la tarea (0 o 1)
+    );
+    
     while(1)
     {
-        count++;
-        if (count % 200 == 0)
-        {
-            vTaskDelay(10 / portTICK_PERIOD_MS);
-        }
-
-        sprintf(imagefile, "/%08d.jpg", count);
-
-        // 1 -> Take picture
-        ESP_LOGD(MODULE_TAG, "Image taken: %s", imagefile);
-        Device::frame_t* frame = camera->takePicture();
-
-        // 2a -> Send picture
-        /* TODO: Send image */
-        ESP_LOGD(MODULE_TAG, "Sending data: %s", imagefile);
-        raw_link->write(buffer.c_str(), buffer.length());
-        ESP_LOGD(MODULE_TAG, "Data sent: %s", imagefile);
-
-        // 2b -> Store picture
-        if(fs->write(imagefile, frame->buf, frame->len))
-        {
-            ESP_LOGD(MODULE_TAG, "Image stored: %s", imagefile);
-        }
-        else
-        {
-            ESP_LOGE(MODULE_TAG, "Failed to store image: %s", imagefile);
-        }
-    
-        // 3 -> Free picture buffer
-        camera->freeBuffer(frame);
-
-        // vTaskDelay(1000 / portTICK_PERIOD_MS);
+        vTaskDelay(INT_MAX);
     }
 }
+

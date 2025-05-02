@@ -9,24 +9,24 @@
 namespace Platform
 {
 
-Device::ICamera* buildCamera()
+std::shared_ptr<Device::ICamera> buildCamera()
 {
-    return new Device::Camera::OV2640();
+    return std::make_shared<Device::Camera::OV2640>();
 }
 
-Device::IFileSystem* buildFileSystem()
+std::shared_ptr<Device::IFileSystem> buildFileSystem()
 {
-    return new Device::FileSystem::SDCard();
+    return std::make_shared<Device::FileSystem::SDCard>();
 }
 
-Network::WiFi* buildWiFi()
+std::shared_ptr<Network::WiFi> buildWiFi()
 {
-    return new Network::WiFi();
+    return std::make_shared<Network::WiFi>();
 }
 
-Network::WiFiRaw* buildWiFiRaw()
+std::shared_ptr<Network::WiFiRaw> buildWiFiRaw()
 {   
-    return new Network::WiFiRaw();
+    return std::make_shared<Network::WiFiRaw>();
 }
 
 }

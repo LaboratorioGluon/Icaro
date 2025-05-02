@@ -100,14 +100,14 @@ bool OV2640::isAvailable()
     return initialized;
 }
 
-frame_t* OV2640::takePicture()
+frame_t* OV2640::grabFrame()
 {
     ESP_LOGD(MODULE_TAG, "Taking picture with OV2640.");
     camera_fb_t *pic = esp_camera_fb_get();
     return reinterpret_cast<frame_t*>(pic);
 }
 
-void OV2640::freeBuffer(frame_t* frame)
+void OV2640::freeFrame(frame_t* frame)
 {
     ESP_LOGD(MODULE_TAG, "Freeing buffer for OV2640.");
     esp_camera_fb_return(reinterpret_cast<camera_fb_t*>(frame));

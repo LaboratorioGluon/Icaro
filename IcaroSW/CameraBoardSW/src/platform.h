@@ -1,5 +1,7 @@
 #pragma once 
 
+#include <memory>
+
 #include "device/icam.h"
 #include "device/ifilesystem.h"
 #include "network/wifi.h"
@@ -8,11 +10,12 @@
 namespace Platform
 {
 
-Device::ICamera* buildCamera();
+std::shared_ptr<Device::ICamera> buildCamera();
 
-Device::IFileSystem* buildFileSystem();
+std::shared_ptr<Device::IFileSystem> buildFileSystem();
 
-Network::WiFi* buildWiFi();
+std::shared_ptr<Network::WiFi> buildWiFi();
 
-Network::WiFiRaw* buildWiFiRaw();
+std::shared_ptr<Network::WiFiRaw> buildWiFiRaw();
+
 }
