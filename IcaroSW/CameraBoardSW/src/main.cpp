@@ -141,7 +141,7 @@ void try_connect()
         count++;
         if (count > 200)
         {
-            vTaskDelay(10 / portTICK_PERIOD_MS);
+            vTaskDelay(pdMS_TO_TICKS(10));
             count = 0;
         }
     }

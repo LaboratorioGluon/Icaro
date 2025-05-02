@@ -9,56 +9,6 @@
 namespace 
 {
 const char* MODULE_TAG = "RAW80211";
-
-// constexpr size_t PACKET_MAX_SIZE = 1500;
-// uint8_t staticPacketBuffer[PACKET_MAX_SIZE] = {0};
-
-// libwifi_data_frame_header generateDataHeader(Network::mac_t src, Network::mac_t dst, Network::mac_t bssid, uint16_t duration, uint16_t fragment, uint16_t segment)
-// {
-//     libwifi_data_frame_header frame;
-//     frame.duration = duration;
-//     frame.frame_control.version = 0;
-//     frame.frame_control.type = TYPE_DATA;
-//     frame.frame_control.subtype = SUBTYPE_DATA;
-//     frame.frame_control.flags.to_ds = 0;
-//     frame.frame_control.flags.from_ds = 0;
-//     frame.frame_control.flags.more_frags = 0;
-//     frame.frame_control.flags.retry = 0;
-//     frame.frame_control.flags.power_mgmt = 0;
-//     frame.frame_control.flags.more_data = 0;
-//     frame.frame_control.flags.protect = 0;
-//     frame.frame_control.flags.ordered = 0;
-//     memcpy(frame.addr1, dst.data(), Network::MAC_LENGTH);
-//     memcpy(frame.addr2, src.data(), Network::MAC_LENGTH);
-//     memcpy(frame.addr3, bssid.data(), Network::MAC_LENGTH);
-//     constexpr int FRAGMENT_MASK = 0x000F;
-//     frame.seq_control.fragment_number = (fragment & FRAGMENT_MASK);
-//     constexpr int SEQUENCE_MASK = 0x0FFF;
-//     frame.seq_control.sequence_number = (fragment & SEQUENCE_MASK);
-//     return frame;
-// }
-
-// void initPacket()
-// {
-//     memset(staticPacketBuffer, 0, PACKET_MAX_SIZE);
-
-//     libwifi_data_frame_header f802header = 
-//         generateDataHeader(Network::DEFAULT_MAC, Network::BROADCAST_MAC, Network::BROADCAST_MAC, 0, 0, 0);
-   
-//     // Fill Frame 802.11 header
-//     int pos = 0;
-//     memcpy(&staticPacketBuffer[pos], &f802header, sizeof(f802header));
-//     pos += sizeof(f802header);
-    
-//     // Fill dummy data
-//     uint8_t dbyte = 0;
-//     for (int i=pos; i<sizeof(staticPacketBuffer); i++)
-//     {
-//         staticPacketBuffer[i] = dbyte;
-//         dbyte++;
-//     }
-// }
-
 }
 
 namespace Network::Link
@@ -67,7 +17,6 @@ namespace Network::Link
 Raw80211Link::Raw80211Link(mac_t src, mac_t dest) : src(src), dest(dest), packetBuffer{0}
 {
     esp_log_level_set(MODULE_TAG, ESP_LOG_NONE);
-    // initPacket();
 }
 
 Raw80211Link::~Raw80211Link()
@@ -98,18 +47,15 @@ size_t Raw80211Link::write(const char* data, size_t length)
     size_t bytesSent = 0;
     if (length <= MAX_PAYLOAD_SIZE)
     {
-        libwifi_data_frame_header f80211header = generateDataHeader(src, dest, dest, 0, 0, 0);
-        libwifi_logical_link_ctrl llcheader = generateLLCHeader();
-
         int pos = 0;
 
         // Fill Frame 802.11 header
-        memcpy(&packetBuffer[pos], &f80211header, sizeof(f80211header));
-        pos += sizeof(f80211header);
+        fillDataHeader(reinterpret_cast<libwifi_data_frame_header*>(&packetBuffer[pos]), src, dest, dest, 0, 0, 0);
+        pos += sizeof(libwifi_data_frame_header);
 
         // Fill Frame LLC header
-        memcpy(&packetBuffer[pos], &llcheader, sizeof(llcheader));
-        pos += sizeof(llcheader);
+        fillLLCHeader(reinterpret_cast<libwifi_logical_link_ctrl*>(&packetBuffer[pos]));
+        pos += sizeof(libwifi_logical_link_ctrl);
 
         // Fill payload data
         memcpy(&packetBuffer[pos], data, length);
@@ -141,46 +87,42 @@ size_t Raw80211Link::write(const char* data, size_t length)
     // return 0;
 }
 
-libwifi_data_frame_header Raw80211Link::generateDataHeader(mac_t src, mac_t dst, mac_t bssid, uint16_t duration, uint16_t fragment, uint16_t segment)
+void Raw80211Link::fillDataHeader(libwifi_data_frame_header* frame, mac_t src, mac_t dst, mac_t bssid, uint16_t duration, uint16_t fragment, uint16_t segment)
 {
-    libwifi_data_frame_header frame;
-    frame.duration = duration;
-    frame.frame_control.version = 0;
-    frame.frame_control.type = TYPE_DATA;
-    frame.frame_control.subtype = SUBTYPE_DATA;
-    frame.frame_control.flags.to_ds = 0;
-    frame.frame_control.flags.from_ds = 0;
-    frame.frame_control.flags.more_frags = 0;
-    frame.frame_control.flags.retry = 0;
-    frame.frame_control.flags.power_mgmt = 0;
-    frame.frame_control.flags.more_data = 0;
-    frame.frame_control.flags.protect = 0;
-    frame.frame_control.flags.ordered = 0;
-    memcpy(frame.addr1, dst.data(), MAC_LENGTH);
-    memcpy(frame.addr2, src.data(), MAC_LENGTH);
-    memcpy(frame.addr3, bssid.data(), MAC_LENGTH);
+    frame->duration = duration;
+    frame->frame_control.version = 0;
+    frame->frame_control.type = TYPE_DATA;
+    frame->frame_control.subtype = SUBTYPE_DATA;
+    frame->frame_control.flags.to_ds = 0;
+    frame->frame_control.flags.from_ds = 0;
+    frame->frame_control.flags.more_frags = 0;
+    frame->frame_control.flags.retry = 0;
+    frame->frame_control.flags.power_mgmt = 0;
+    frame->frame_control.flags.more_data = 0;
+    frame->frame_control.flags.protect = 0;
+    frame->frame_control.flags.ordered = 0;
+    memcpy(frame->addr1, dst.data(), MAC_LENGTH);
+    memcpy(frame->addr2, src.data(), MAC_LENGTH);
+    memcpy(frame->addr3, bssid.data(), MAC_LENGTH);
     constexpr int FRAGMENT_MASK = 0x000F;
-    frame.seq_control.fragment_number = (fragment & FRAGMENT_MASK);
+    frame->seq_control.fragment_number = (fragment & FRAGMENT_MASK);
     constexpr int SEQUENCE_MASK = 0x0FFF;
-    frame.seq_control.sequence_number = (fragment & SEQUENCE_MASK);
-    return frame;
+    frame->seq_control.sequence_number = (fragment & SEQUENCE_MASK);
 }
 
-libwifi_logical_link_ctrl Raw80211Link::generateLLCHeader()
+void Raw80211Link::fillLLCHeader(libwifi_logical_link_ctrl* frame)
 {
-    libwifi_logical_link_ctrl frame;
     constexpr uint8_t SNAP_PROTOCOL = 0xAA;
-    frame.dsap    = SNAP_PROTOCOL;
-    frame.ssap    = SNAP_PROTOCOL;
+    frame->dsap    = SNAP_PROTOCOL;
+    frame->ssap    = SNAP_PROTOCOL;
     constexpr uint8_t UNNUMERED_DATA = 0x03;
-    frame.control = UNNUMERED_DATA;
+    frame->control = UNNUMERED_DATA;
     constexpr char TEST_OUI[3] = {0x00, 0x00, 0x00};
-    frame.oui[0]  = TEST_OUI[0];
-    frame.oui[1]  = TEST_OUI[1];
-    frame.oui[2]  = TEST_OUI[2];
+    frame->oui[0]  = TEST_OUI[0];
+    frame->oui[1]  = TEST_OUI[1];
+    frame->oui[2]  = TEST_OUI[2];
     constexpr uint16_t EXPERIMENTAL_ETHERTYPE = 0x88B5;
-    frame.type    = EXPERIMENTAL_ETHERTYPE;
-    return frame;
+    frame->type    = EXPERIMENTAL_ETHERTYPE;
 }
 
 }
