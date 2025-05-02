@@ -16,10 +16,12 @@ private:
     const mac_t dest;
 
     constexpr static size_t MAX_PACKET_SIZE  = 1500;
-    constexpr static size_t MAX_PAYLOAD_SIZE = MAX_PACKET_SIZE - sizeof(libwifi_data_frame_header);
+    constexpr static size_t HEADERS_SIZE = sizeof(libwifi_data_frame_header) + sizeof(libwifi_logical_link_ctrl);
+    constexpr static size_t MAX_PAYLOAD_SIZE = MAX_PACKET_SIZE - HEADERS_SIZE;
     std::array<uint8_t, MAX_PACKET_SIZE> packetBuffer;
 
     libwifi_data_frame_header generateDataHeader(mac_t src, mac_t dst, mac_t bssid, uint16_t duration, uint16_t fragment, uint16_t segment);
+    libwifi_logical_link_ctrl generateLLCHeader();
 
     bool connect();
     bool isAvailable() const;

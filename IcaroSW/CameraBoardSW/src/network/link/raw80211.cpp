@@ -98,13 +98,18 @@ size_t Raw80211Link::write(const char* data, size_t length)
     size_t bytesSent = 0;
     if (length <= MAX_PAYLOAD_SIZE)
     {
-        libwifi_data_frame_header f80211header = 
-            generateDataHeader(src, dest, dest, 0, 0, 0);
+        libwifi_data_frame_header f80211header = generateDataHeader(src, dest, dest, 0, 0, 0);
+        libwifi_logical_link_ctrl llcheader = generateLLCHeader();
+
+        int pos = 0;
 
         // Fill Frame 802.11 header
-        int pos = 0;
         memcpy(&packetBuffer[pos], &f80211header, sizeof(f80211header));
         pos += sizeof(f80211header);
+
+        // Fill Frame LLC header
+        memcpy(&packetBuffer[pos], &llcheader, sizeof(llcheader));
+        pos += sizeof(llcheader);
 
         // Fill payload data
         memcpy(&packetBuffer[pos], data, length);
@@ -158,6 +163,23 @@ libwifi_data_frame_header Raw80211Link::generateDataHeader(mac_t src, mac_t dst,
     frame.seq_control.fragment_number = (fragment & FRAGMENT_MASK);
     constexpr int SEQUENCE_MASK = 0x0FFF;
     frame.seq_control.sequence_number = (fragment & SEQUENCE_MASK);
+    return frame;
+}
+
+libwifi_logical_link_ctrl Raw80211Link::generateLLCHeader()
+{
+    libwifi_logical_link_ctrl frame;
+    constexpr uint8_t SNAP_PROTOCOL = 0xAA;
+    frame.dsap    = SNAP_PROTOCOL;
+    frame.ssap    = SNAP_PROTOCOL;
+    constexpr uint8_t UNNUMERED_DATA = 0x03;
+    frame.control = UNNUMERED_DATA;
+    constexpr char TEST_OUI[3] = {0x00, 0x00, 0x00};
+    frame.oui[0]  = TEST_OUI[0];
+    frame.oui[1]  = TEST_OUI[1];
+    frame.oui[2]  = TEST_OUI[2];
+    constexpr uint16_t EXPERIMENTAL_ETHERTYPE = 0x88B5;
+    frame.type    = EXPERIMENTAL_ETHERTYPE;
     return frame;
 }
 

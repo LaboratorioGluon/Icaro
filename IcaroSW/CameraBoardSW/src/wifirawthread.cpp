@@ -15,7 +15,7 @@ namespace
 {
 const char* MODULE_TAG = "TH_WIFI";
 
-constexpr size_t PACKET_MAX_SIZE = 1500 - 24;
+constexpr size_t PACKET_MAX_SIZE = 1500 - 24 - 8; // 802.11 - LLC 
 uint8_t packetBuffer[PACKET_MAX_SIZE] = {0};
 
 void initPacket()
