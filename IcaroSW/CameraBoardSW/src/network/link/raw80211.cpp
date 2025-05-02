@@ -96,7 +96,7 @@ size_t Raw80211Link::read(char* data, size_t length)
 size_t Raw80211Link::write(const char* data, size_t length)
 {
     size_t bytesSent = 0;
-    if (length < MAX_PAYLOAD_SIZE)
+    if (length <= MAX_PAYLOAD_SIZE)
     {
         libwifi_data_frame_header f80211header = 
             generateDataHeader(src, dest, dest, 0, 0, 0);

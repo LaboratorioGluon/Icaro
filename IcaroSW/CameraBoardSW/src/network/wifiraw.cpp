@@ -17,7 +17,7 @@ namespace
 {
 const char* MODULE_TAG = "WIFIRAW";
 
-constexpr int DEFAULT_CHANNEL = 6;
+constexpr int DEFAULT_CHANNEL = 13;
 }
 
 namespace Network
