@@ -72,7 +72,7 @@ void wifiThreadFunc (void* arg)
         for (int i=0; i<20; i++)
         {
             // Dummy data sending for throughput tests
-            int err = raw_link->write((char*)packetBuffer, PACKET_MAX_SIZE);
+            int err = raw_link->write((char*)frame->buf, frame->len);
             if (err < 0)
             {
                 ESP_LOGE(MODULE_TAG, "Failed to send frame: %d", frameCounter);

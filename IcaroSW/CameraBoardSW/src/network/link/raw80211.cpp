@@ -80,7 +80,7 @@ size_t Raw80211Link::write(const char* data, size_t length)
         pos += sizeof(fragment_header_t);
 
         // Fill payload data
-        memcpy(&packetBuffer[pos], data, fragmentLength);
+        memcpy(&packetBuffer[pos], &data[totalBytesSent], fragmentLength);
         pos += fragmentLength;
 
         // Send data
