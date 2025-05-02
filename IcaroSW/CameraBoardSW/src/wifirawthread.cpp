@@ -68,19 +68,14 @@ void wifiThreadFunc (void* arg)
         // 2.2 Transform frame
 
         // 2.3 Send frame
-        // int err = raw_link->write(buffer.data(), buffer.length());
-        for (int i=0; i<20; i++)
+        int err = raw_link->write((char*)frame->buf, frame->len);
+        if (err < 0)
         {
-            // Dummy data sending for throughput tests
-            int err = raw_link->write((char*)frame->buf, frame->len);
-            if (err < 0)
-            {
-                ESP_LOGE(MODULE_TAG, "Failed to send frame: %d", frameCounter);
-            }
-            else if (err < buffer.length())
-            {
-                ESP_LOGE(MODULE_TAG, "Partially failed to send frame: %d", frameCounter);
-            }
+            ESP_LOGE(MODULE_TAG, "Failed to send frame: %d", frameCounter);
+        }
+        else if (err < buffer.length())
+        {
+            ESP_LOGE(MODULE_TAG, "Partially failed to send frame: %d", frameCounter);
         }
 
         // 2.4 Free frame

@@ -70,7 +70,7 @@ bool OV2640::initialize()
     config.frame_size = FRAMESIZE_VGA;        // Note: Do not use sizes above QVGA when not JPEG. The performance of the ESP32-S series has improved a lot, but JPEG mode always gives better frame rates.
     
     config.jpeg_quality = 12;                 // Note: 0-63, for OV series camera sensors, lower number means higher quality
-    config.fb_count = 3;                      // Note: When jpeg mode is used, if fb_count more than one, the driver will work in continuous mode.
+    config.fb_count = 4;                      // Note: When jpeg mode is used, if fb_count more than one, the driver will work in continuous mode.
     config.fb_location = CAMERA_FB_IN_PSRAM;
     // config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
     config.grab_mode      = CAMERA_GRAB_LATEST;
