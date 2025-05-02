@@ -8,7 +8,8 @@
 
 namespace 
 {
-const char* MODULE_TAG = "RAW80211";
+const char*           MODULE_TAG       = "RAW80211";
+const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_DEBUG;
 }
 
 namespace Network::Link
@@ -16,7 +17,7 @@ namespace Network::Link
 
 Raw80211Link::Raw80211Link(mac_t src, mac_t dest) : src(src), dest(dest), packetBuffer{0}
 {
-    esp_log_level_set(MODULE_TAG, ESP_LOG_NONE);
+    esp_log_level_set(MODULE_TAG, MODULE_LOG_LEVEL);
 }
 
 Raw80211Link::~Raw80211Link()
@@ -44,47 +45,75 @@ size_t Raw80211Link::read(char* data, size_t length)
 
 size_t Raw80211Link::write(const char* data, size_t length)
 {
-    size_t bytesSent = 0;
-    if (length <= MAX_PAYLOAD_SIZE)
+    static uint16_t messageID = 0;
+    messageID++;
+
+    int pos = 0;
+
+    // Fill Frame 802.11 header
+    fillDataHeader(reinterpret_cast<libwifi_data_frame_header*>(&packetBuffer[pos]), src, dest, dest, 0, 0, 0);
+    pos += sizeof(libwifi_data_frame_header);
+
+    // Fill Frame LLC header
+    fillLLCHeader(reinterpret_cast<libwifi_logical_link_ctrl*>(&packetBuffer[pos]));
+    pos += sizeof(libwifi_logical_link_ctrl);
+
+    const size_t fragmentStartingPos = pos;
+    constexpr size_t MAX_FRAGMENT_SIZE = MAX_PAYLOAD_SIZE - sizeof(fragment_header_t);
+    const size_t totalFragmentNum = (length / MAX_FRAGMENT_SIZE) + 1;
+    
+    size_t totalBytesSent = 0;
+    size_t bytesLeft = length;
+
+    size_t fragmentCount = 0;
+    size_t fragmentLength = 0;
+    while (fragmentCount < totalFragmentNum)
     {
-        int pos = 0;
-
-        // Fill Frame 802.11 header
-        fillDataHeader(reinterpret_cast<libwifi_data_frame_header*>(&packetBuffer[pos]), src, dest, dest, 0, 0, 0);
-        pos += sizeof(libwifi_data_frame_header);
-
-        // Fill Frame LLC header
-        fillLLCHeader(reinterpret_cast<libwifi_logical_link_ctrl*>(&packetBuffer[pos]));
-        pos += sizeof(libwifi_logical_link_ctrl);
+        // Restart position for fragment data
+        pos = fragmentStartingPos;
+        
+        // Calculate fragment data
+        fragmentLength = std::min(bytesLeft, MAX_FRAGMENT_SIZE);
+        
+        // Fill Frame Fragment header
+        fillFragmentHeader(reinterpret_cast<fragment_header_t*>(&packetBuffer[pos]), messageID, totalFragmentNum, fragmentCount, fragmentLength);
+        pos += sizeof(fragment_header_t);
 
         // Fill payload data
-        memcpy(&packetBuffer[pos], data, length);
-        pos += length;
+        memcpy(&packetBuffer[pos], data, fragmentLength);
+        pos += fragmentLength;
 
-        const size_t len = pos;
-        esp_err_t err = esp_wifi_80211_tx(WIFI_IF_STA, packetBuffer.data(), len, false);
-        if (err == ESP_OK)
+        // Send data
+        int retry = 0;
+        bool fragmentSent = false;
+        esp_err_t err = ESP_OK;
+        while (retry < 5)
         {
-            bytesSent = len;
+            const size_t bytesToSend = pos;
+            err = esp_wifi_80211_tx(WIFI_IF_STA, packetBuffer.data(), bytesToSend, false);
+            if (err == ESP_OK)
+            {
+                fragmentSent = true;
+                break;
+            }
+            retry++;
+        }
+
+        if (err == ESP_OK && fragmentSent)
+        {
+            // Update sending status data
+            bytesLeft -= fragmentLength;
+            totalBytesSent += fragmentLength;
+            fragmentCount++;
         }
         else
         {
             ESP_LOGE(MODULE_TAG, "Failed to send: %s\n", esp_err_to_name(err));
+            break;
         }
     }
-    else
-    {
-        ESP_LOGE(MODULE_TAG, "Payload size too big.");
-    }
-    return bytesSent;
 
-    // ESP_LOGI(MODULE_TAG, "Sending static packet");
-    // const size_t len = sizeof(staticPacketBuffer);
-    // esp_err_t err = esp_wifi_80211_tx(WIFI_IF_STA, staticPacketBuffer, len, false);
-    // if (err != ESP_OK) {
-    //     printf("Failed to send: %s\n", esp_err_to_name(err));
-    // }
-    // return 0;
+    return totalBytesSent;
 }
 
 void Raw80211Link::fillDataHeader(libwifi_data_frame_header* frame, mac_t src, mac_t dst, mac_t bssid, uint16_t duration, uint16_t fragment, uint16_t segment)
@@ -123,6 +152,14 @@ void Raw80211Link::fillLLCHeader(libwifi_logical_link_ctrl* frame)
     frame->oui[2]  = TEST_OUI[2];
     constexpr uint16_t EXPERIMENTAL_ETHERTYPE = 0x88B5;
     frame->type    = EXPERIMENTAL_ETHERTYPE;
+}
+
+void Raw80211Link::fillFragmentHeader(fragment_header_t* frame, uint16_t message_id, uint16_t total_frags, uint16_t frag_index, uint16_t payload_len)
+{
+    frame->message_id  = message_id;
+    frame->total_frags = total_frags;
+    frame->frag_index  = frag_index;
+    frame->payload_len = payload_len;
 }
 
 }
