@@ -14,24 +14,6 @@
 namespace
 {
 const char* MODULE_TAG = "TH_WIFI";
-
-// constexpr size_t PACKET_MAX_SIZE = 1500 - 24 - 8; // 802.11 - LLC 
-constexpr size_t PACKET_MAX_SIZE = 5000; // 802.11 - LLC 
-uint8_t packetBuffer[PACKET_MAX_SIZE] = {0};
-
-void initPacket()
-{
-    memset(packetBuffer, 0, PACKET_MAX_SIZE);
-
-    int pos = 0;
-    uint8_t dbyte = 0;
-    for (int i=pos; i<sizeof(packetBuffer); i++)
-    {
-        packetBuffer[i] = dbyte;
-        dbyte++;
-    }
-}
-
 }
 
 void wifiThreadFunc (void* arg)
@@ -39,8 +21,6 @@ void wifiThreadFunc (void* arg)
     esp_log_level_set(MODULE_TAG, ESP_LOG_DEBUG);
     ESP_LOGI(MODULE_TAG, "Thread launched");
     ESP_LOGI(MODULE_TAG, "Running in core %d", xPortGetCoreID());
-
-    initPacket();
 
     // 1 - Init thread
     // 1.1 - Parse arguments
@@ -52,7 +32,6 @@ void wifiThreadFunc (void* arg)
     int delayCounter = 0;
     int frameCounter = 0;
     
-    std::string buffer {"Hello from raw connection!"};
     std::unique_ptr<Network::Link::ILink> raw_link = wifiraw->create80211Link();
     ESP_LOGI(MODULE_TAG, "RAW Link created.");
     
@@ -73,7 +52,7 @@ void wifiThreadFunc (void* arg)
         {
             ESP_LOGE(MODULE_TAG, "Failed to send frame: %d", frameCounter);
         }
-        else if (err < buffer.length())
+        else if (err < frame->len)
         {
             ESP_LOGE(MODULE_TAG, "Partially failed to send frame: %d", frameCounter);
         }
@@ -88,9 +67,6 @@ void wifiThreadFunc (void* arg)
             vTaskDelay(10 / portTICK_PERIOD_MS);
             delayCounter = 0;
         }
-
-        // This delay works to stability throughput
-        // vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 
     // 3 - Deinit thread
