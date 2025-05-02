@@ -7,12 +7,13 @@
 
 namespace
 {
-const char* MODULE_TAG = "TH_STORE";
+const char*           MODULE_TAG       = "TH_STORE";
+const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_NONE;
 }
 
 void storeThreadFunc (void* arg)
 {
-    esp_log_level_set(MODULE_TAG, ESP_LOG_DEBUG);    
+    esp_log_level_set(MODULE_TAG, MODULE_LOG_LEVEL);    
     ESP_LOGI(MODULE_TAG, "Thread launched");
     ESP_LOGI(MODULE_TAG, "Running in core %d", xPortGetCoreID());
 

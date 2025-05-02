@@ -8,7 +8,8 @@
 
 namespace
 {
-const char* MODULE_TAG = "SDCARD";
+const char*           MODULE_TAG       = "SDCARD";
+const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_NONE;
 
 const char* MOUNT_POINT = "/sdcard";
 
@@ -25,7 +26,7 @@ namespace Device::FileSystem
 
 SDCard::SDCard() : IFileSystem(), initialized(false), card(nullptr)
 {
-    esp_log_level_set(MODULE_TAG, ESP_LOG_INFO);    
+    esp_log_level_set(MODULE_TAG, MODULE_LOG_LEVEL);    
 }
 
 bool SDCard::mount()
