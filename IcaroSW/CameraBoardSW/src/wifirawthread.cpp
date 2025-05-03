@@ -33,7 +33,7 @@ void wifiThreadFunc (void* arg)
     int frameCounter = 0;
     
     std::unique_ptr<Network::Link::ILink> raw_link = wifiraw->create80211Link();
-    ESP_LOGI(MODULE_TAG, "RAW Link created.");
+    ESP_LOGI(MODULE_TAG, "RAW Link created");
     
     // 2 - Thread loop
     while (true)

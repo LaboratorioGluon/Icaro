@@ -107,48 +107,6 @@ void createInitFile()
     }
 }
 
-void try_connect()
-{
-#if defined(WIFI_TYPE)
-#if WIFI_TYPE == WIFI
-    std::unique_ptr<Network::Link::ILink> udp_link {wifi->createUDPLink("192.168.3.5", 10000)};
-    if (udp_link->connect())
-    {
-        ESP_LOGI(MODULE_TAG, "UDP Link connected.");
-        
-        std::string buffer {"Hello from udp connection!"};
-        udp_link->write(buffer.c_str(), buffer.length());
-    }
-    
-    std::unique_ptr<Network::Link::ILink> tcp_link = wifi->createTCPLink("192.168.3.5", 10001);
-    if (tcp_link->connect())
-    {
-        ESP_LOGI(MODULE_TAG, "TCP Link connected.");
-        
-        std::string buffer {"Hello from tcp connection!"};
-        tcp_link->write(buffer.c_str(), buffer.length());
-    }
-#elif WIFI_TYPE == WIFIRAW
-    std::unique_ptr<Network::Link::ILink> raw_link = wifi->create80211Link();
-    ESP_LOGI(MODULE_TAG, "RAW Link created.");
-    
-    std::string buffer {"Hello from raw connection!"};
-    int count = 0;
-    
-    while(1)
-    {
-        raw_link->write(buffer.c_str(), buffer.length());
-        count++;
-        if (count > 200)
-        {
-            vTaskDelay(pdMS_TO_TICKS(10));
-            count = 0;
-        }
-    }
-#endif
-#endif
-}
-
 extern "C"
 void app_main()
 {
@@ -165,9 +123,7 @@ void app_main()
         return;
     }
 
-    // try_connect();
-
-    // TODO: Implement and initialize RTC
+    // TODO: Implement and initialize RTC?
 
     // Create initial file
     createInitFile();
