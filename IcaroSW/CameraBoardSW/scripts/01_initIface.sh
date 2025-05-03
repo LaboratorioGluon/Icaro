@@ -17,6 +17,10 @@ sudo iw dev $INTERFACE set type monitor
 # Encender la interfaz
 sudo ip link set $INTERFACE up
 
+# Reconfigurar la interfaz
+sudo airmon-ng check kill
+sudo airmon-ng start wlo1
+
 echo "La interfaz $INTERFACE ahora está en modo monitor."
 
 # Verificar el estado

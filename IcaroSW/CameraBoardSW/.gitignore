@@ -5,3 +5,7 @@
 .vscode/ipch
 .vscode/settings.json
 src/network/secrets.h
+
+# Testing images
+scripts/debug_*.jpg
+scripts/output.mp4
