@@ -91,7 +91,7 @@ bool SDCard::initialize()
     return initialized;
 }
 
-bool SDCard::isAvailable() 
+bool SDCard::isAvailable() const  
 {
     return (card != nullptr) && initialized;
 }

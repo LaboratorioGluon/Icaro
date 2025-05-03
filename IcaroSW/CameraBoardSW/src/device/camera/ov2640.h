@@ -16,7 +16,7 @@ public:
     bool initialize() override;
     bool configure() override;
 
-    bool isAvailable() override;
+    bool isAvailable() const override;
     
     frame_t* grabFrame() override;
     void freeFrame(frame_t* frame) override;

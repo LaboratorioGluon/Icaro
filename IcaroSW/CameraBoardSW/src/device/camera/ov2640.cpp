@@ -94,22 +94,30 @@ bool OV2640::configure()
     return true;
 }
 
-bool OV2640::isAvailable()
+bool OV2640::isAvailable() const
 {
     return initialized;
 }
 
 frame_t* OV2640::grabFrame()
 {
-    ESP_LOGD(MODULE_TAG, "Taking picture with OV2640.");
-    camera_fb_t *pic = esp_camera_fb_get();
-    return reinterpret_cast<frame_t*>(pic);
+    frame_t* frame = nullptr;
+    if (initialized)
+    {
+        ESP_LOGD(MODULE_TAG, "Taking picture with OV2640.");
+        camera_fb_t* pic = esp_camera_fb_get();
+        frame = reinterpret_cast<frame_t*>(pic);
+    }
+    return frame;
 }
 
 void OV2640::freeFrame(frame_t* frame)
 {
     ESP_LOGD(MODULE_TAG, "Freeing buffer for OV2640.");
-    esp_camera_fb_return(reinterpret_cast<camera_fb_t*>(frame));
+    if (frame != nullptr)
+    {
+        esp_camera_fb_return(reinterpret_cast<camera_fb_t*>(frame));
+    }
 }
 
 }

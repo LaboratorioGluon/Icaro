@@ -40,6 +40,11 @@ void wifiThreadFunc (void* arg)
     {
         // 2.1 Grab frame
         Device::frame_t* frame = camera->grabFrame();
+        if (frame == nullptr)
+        {
+            ESP_LOGE(MODULE_TAG, "Wrong frame pointer: %d", frameCounter);
+            continue;
+        }
         frameCounter = frameCounter + 1;
         ESP_LOGI(MODULE_TAG, "Grabbed frame: %d", frameCounter);
         ESP_LOGD(MODULE_TAG, "Frame size: %d Bytes", frame->len);

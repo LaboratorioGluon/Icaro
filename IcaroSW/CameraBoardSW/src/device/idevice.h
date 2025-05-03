@@ -12,7 +12,7 @@ public:
     virtual bool configure() = 0;
     virtual bool initialize() = 0;
 
-    virtual bool isAvailable() = 0;
+    virtual bool isAvailable() const = 0;
 };
 
 }

@@ -25,7 +25,7 @@ public:
     bool configure() override;
     bool initialize() override;
 
-    bool isAvailable() override;
+    bool isAvailable() const override;
 
     bool write(const std::string& filepath, uint8_t* data, size_t length) override;
     bool append(const std::string& filepath, uint8_t* data, size_t data_len) override;
