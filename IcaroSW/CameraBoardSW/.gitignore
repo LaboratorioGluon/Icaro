@@ -9,3 +9,7 @@ src/network/secrets.h
 # Testing images
 scripts/debug_*.jpg
 scripts/output.mp4
+
+# Backups and temporary files
+*.bkp
+*.dtmp

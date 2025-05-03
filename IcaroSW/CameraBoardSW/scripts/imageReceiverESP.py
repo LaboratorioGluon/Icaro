@@ -14,6 +14,10 @@ from PIL import Image, ImageTk
 #   Interface must be configured in monitor mode. (See scripts 00_showIfaces.sh and 01_initIface.sh)
 #   Interface must be set to use the same channel as the emitter. (I use wireshark)
 
+if os.geteuid() != 0:
+    print("This script shall be run as root")
+    sys.exit(1)
+
 # Script Configurations
 STORE_IMAGE=False # Set to 'True' to store each received frame as a jpg file 
 

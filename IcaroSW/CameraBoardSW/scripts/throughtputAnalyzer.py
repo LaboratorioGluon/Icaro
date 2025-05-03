@@ -11,6 +11,10 @@ import sys
 #   Interface must be configured in monitor mode. (See scripts 00_showIfaces.sh and 01_initIface.sh)
 #   Interface must be set to use the same channel as the emitter. (I use wireshark)
 
+if os.geteuid() != 0:
+    print("This script shall be run as root")
+    sys.exit(1)
+
 if len(sys.argv) < 2:
     print(f"Usage: python {sys.argv[0]} interface")
     sys.exit(1)
