@@ -18,7 +18,7 @@ sudo airmon-ng check kill
 sudo airmon-ng start wlo1
 
 # Print current mode of interface
-echo "The $INTERFACE should be in monitor mode."
+echo "The ${INTERFACE}mon should be in monitor mode."
 echo "Please verify before continuing:"
-iw dev $INTERFACE info
+iw dev ${INTERFACE}mon info
 
