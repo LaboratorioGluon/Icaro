@@ -5,6 +5,7 @@ import 'camerapage.dart';
 import 'homepage.dart';
 import 'logspage.dart';
 import 'lorapage.dart';
+import 'mavpage.dart';
 import 'mappage/mappage.dart';
 import 'powerpage.dart';
 import 'sensorspage/sensorspage.dart';
@@ -59,8 +60,10 @@ class _IcaroMainState extends State<IcaroMain> {
           case 5:
             page = IcaroLoraPage();
           case 6:
-            page = IcaroLogsPage();
+            page = IcaroMAVPage();
           case 7:
+            page = IcaroLogsPage();
+          case 8:
             page = IcaroSettingsPage();
           default:
           throw UnimplementedError("No widget for $selectedIndex");
@@ -92,6 +95,10 @@ class _IcaroMainState extends State<IcaroMain> {
                     NavigationRailDestination(
                       icon: Icon(Icons.wifi),
                       label: Text('Lora'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.cell_wifi),
+                      label: Text('MAV'),
                     ),
                     NavigationRailDestination(
                       icon: Icon(Icons.file_present),
