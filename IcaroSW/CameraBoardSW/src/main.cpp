@@ -23,6 +23,7 @@
 #elif WIFI_TYPE == WIFIRAW
 #include "network/wifiraw.h"
 #include "wifirawthread.h"
+#include "mavstatusthread.h"
 #else
 #error "Wifi type not valid"
 #endif
@@ -139,6 +140,10 @@ void app_main()
         .fs = fs
     };
 
+    mavStatusThreadArg_t mavArgs {
+        .wifiraw = wifi
+    };
+
     xTaskCreatePinnedToCore(
         wifiThreadFunc, // Función de la tarea
         "WifiTask",     // Nombre de la tarea
@@ -157,6 +162,16 @@ void app_main()
         1,               // Prioridad de la tarea
         NULL,            // Handler de la tarea
         0                // Núcleo al que se asigna la tarea (0 o 1)
+    );
+    
+    xTaskCreatePinnedToCore(
+        mavStatusThreadFunc, // Función de la tarea
+        "MAVTask",           // Nombre de la tarea
+        4096,                // Tamaño de la pila
+        &mavArgs,            // Parámetros de la tarea
+        1,                   // Prioridad de la tarea
+        NULL,                // Handler de la tarea
+        0                    // Núcleo al que se asigna la tarea (0 o 1)
     );
     
     while(1)

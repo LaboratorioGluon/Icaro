@@ -6,6 +6,7 @@
 #include <esp_wifi.h>
 
 #include "link/ilink.h"
+#include "link/rawlinkids.h"
 
 namespace Network
 {
@@ -22,7 +23,7 @@ public:
 
     bool initialize();
 
-    std::unique_ptr<Link::ILink> create80211Link();
+    std::unique_ptr<Link::ILink> create80211Link(Network::Link::RAW_LINK_ID linkID);
 };
 
 }

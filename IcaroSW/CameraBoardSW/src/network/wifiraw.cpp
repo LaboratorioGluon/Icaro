@@ -75,9 +75,9 @@ bool WiFiRaw::initialize()
     return true;
 }
 
-std::unique_ptr<Link::ILink> WiFiRaw::create80211Link()
+std::unique_ptr<Link::ILink> WiFiRaw::create80211Link(Network::Link::RAW_LINK_ID linkID)
 {
-    return std::make_unique<Link::Raw80211Link>(DEFAULT_MAC, BROADCAST_MAC);
+    return std::make_unique<Link::Raw80211Link>(DEFAULT_MAC, BROADCAST_MAC, linkID);
 }
 
 }
