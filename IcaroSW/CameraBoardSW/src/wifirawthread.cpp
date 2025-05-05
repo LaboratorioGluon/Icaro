@@ -14,6 +14,41 @@
 namespace
 {
 const char* MODULE_TAG = "TH_WIFI";
+
+void sendImage(std::shared_ptr<Device::ICamera>& camera, std::unique_ptr<Network::Link::ILink>& link)
+{
+    static int frameCounter = 0;
+
+    // 2.1 Grab frame
+    Device::frame_t* frame = camera->grabFrame();
+    if (frame != nullptr)
+    {
+        frameCounter = frameCounter + 1;
+        ESP_LOGI(MODULE_TAG, "Grabbed frame: %d", frameCounter);
+        ESP_LOGD(MODULE_TAG, "Frame size: %d Bytes", frame->len);
+    
+        // 2.2 Transform frame
+    
+        // 2.3 Send frame
+        int err = link->write((char*)frame->buf, frame->len);
+        if (err < 0)
+        {
+            ESP_LOGE(MODULE_TAG, "Failed to send frame: %d", frameCounter);
+        }
+        else if (err < frame->len)
+        {
+            ESP_LOGE(MODULE_TAG, "Partially failed to send frame: %d", frameCounter);
+        }
+    
+        // 2.4 Free frame
+        camera->freeFrame(frame);
+    }
+    else
+    {
+        ESP_LOGE(MODULE_TAG, "Wrong frame pointer: %d", frameCounter);
+    }
+}
+
 }
 
 void wifiThreadFunc (void* arg)
@@ -30,42 +65,17 @@ void wifiThreadFunc (void* arg)
 
     // 1.2 - Init thread data
     int delayCounter = 0;
-    int frameCounter = 0;
     
-    std::unique_ptr<Network::Link::ILink> raw_link = wifiraw->create80211Link();
-    ESP_LOGI(MODULE_TAG, "RAW Link created");
+    std::unique_ptr<Network::Link::ILink> cameraLink = wifiraw->create80211Link(Network::Link::RAW_LINK_ID::RAW_IMAGE);
+    ESP_LOGI(MODULE_TAG, "Camera Link created");
     
     // 2 - Thread loop
     while (true)
     {
-        // 2.1 Grab frame
-        Device::frame_t* frame = camera->grabFrame();
-        if (frame == nullptr)
-        {
-            ESP_LOGE(MODULE_TAG, "Wrong frame pointer: %d", frameCounter);
-            continue;
-        }
-        frameCounter = frameCounter + 1;
-        ESP_LOGI(MODULE_TAG, "Grabbed frame: %d", frameCounter);
-        ESP_LOGD(MODULE_TAG, "Frame size: %d Bytes", frame->len);
+        // 2.1 Send image
+        sendImage(camera, cameraLink);
 
-        // 2.2 Transform frame
-
-        // 2.3 Send frame
-        int err = raw_link->write((char*)frame->buf, frame->len);
-        if (err < 0)
-        {
-            ESP_LOGE(MODULE_TAG, "Failed to send frame: %d", frameCounter);
-        }
-        else if (err < frame->len)
-        {
-            ESP_LOGE(MODULE_TAG, "Partially failed to send frame: %d", frameCounter);
-        }
-
-        // 2.4 Free frame
-        camera->freeFrame(frame);
-
-        // 2.5 Sleep for watchdog
+        // 2.N Sleep for watchdog
         delayCounter++;
         if (delayCounter > 200)
         {

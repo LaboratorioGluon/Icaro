@@ -1,5 +1,7 @@
 #include "raw80211.h"
 
+#include <atomic>
+
 #include <esp_log.h>
 #include <esp_wifi.h>
 
@@ -15,7 +17,7 @@ const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_DEBUG;
 namespace Network::Link
 {
 
-Raw80211Link::Raw80211Link(mac_t src, mac_t dest) : src(src), dest(dest), packetBuffer{0}
+Raw80211Link::Raw80211Link(mac_t src, mac_t dest, RAW_LINK_ID linkID) : src(src), dest(dest), linkID(linkID), messageID(0), packetBuffer{0}
 {
     esp_log_level_set(MODULE_TAG, MODULE_LOG_LEVEL);
 }
@@ -45,7 +47,6 @@ size_t Raw80211Link::read(char* data, size_t length)
 
 size_t Raw80211Link::write(const char* data, size_t length)
 {
-    static uint16_t messageID = 0;
     messageID++;
 
     int pos = 0;
@@ -76,7 +77,7 @@ size_t Raw80211Link::write(const char* data, size_t length)
         fragmentLength = std::min(bytesLeft, MAX_FRAGMENT_SIZE);
         
         // Fill Frame Fragment header
-        fillFragmentHeader(reinterpret_cast<fragment_header_t*>(&packetBuffer[pos]), messageID, totalFragmentNum, fragmentCount, fragmentLength);
+        fillFragmentHeader(reinterpret_cast<fragment_header_t*>(&packetBuffer[pos]), linkID, messageID, totalFragmentNum, fragmentCount, fragmentLength);
         pos += sizeof(fragment_header_t);
 
         // Fill payload data
@@ -154,8 +155,9 @@ void Raw80211Link::fillLLCHeader(libwifi_logical_link_ctrl* frame)
     frame->type    = EXPERIMENTAL_ETHERTYPE;
 }
 
-void Raw80211Link::fillFragmentHeader(fragment_header_t* frame, uint16_t message_id, uint16_t total_frags, uint16_t frag_index, uint16_t payload_len)
+void Raw80211Link::fillFragmentHeader(fragment_header_t* frame, RAW_LINK_ID link_id, uint16_t message_id, uint16_t total_frags, uint16_t frag_index, uint16_t payload_len)
 {
+    frame->link_id     = static_cast<uint8_t>(link_id);
     frame->message_id  = message_id;
     frame->total_frags = total_frags;
     frame->frag_index  = frag_index;

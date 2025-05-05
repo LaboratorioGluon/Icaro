@@ -6,15 +6,13 @@
 
 #include <memory>
 
-#include "device/icam.h"
 #include "network/wifiraw.h"
 
 typedef struct
 {
-    std::shared_ptr<Device::ICamera> camera;
     std::shared_ptr<Network::WiFiRaw> wifiraw;
-} witiThreadArg_t;
+} mavStatusThreadArg_t;
 
-void wifiThreadFunc (void* arg);
+void mavStatusThreadFunc (void* arg);
 
 #endif

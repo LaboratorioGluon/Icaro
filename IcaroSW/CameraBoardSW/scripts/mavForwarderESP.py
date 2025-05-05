@@ -4,11 +4,11 @@ import time
 import threading
 import queue
 import struct
-import tkinter as tk
-from PIL import Image, ImageTk
+import socket
+from pymavlink.dialects.v20 import common as mavlink2
 
-# This script listens to an interface and displays the image received from 
-# an ESP32 with an specific 802.11 message format.
+# This script listens to an interface and displays processes the MAV
+# messages received from an ESP32 with an specific 802.11 message format.
 
 # Interface requirements:
 #   Interface must be configured in monitor mode. (See scripts 00_showIfaces.sh and 01_initIface.sh)
@@ -18,15 +18,14 @@ if os.geteuid() != 0:
     print("This script shall be run as root")
     sys.exit(1)
 
-# Script Configurations
-STORE_IMAGE=False # Set to 'True' to store each received frame as a jpg file 
+# if len(sys.argv) < 2:
+#     print(f"Usage: python {sys.argv[0]} interface")
+#     sys.exit(1)
 
-if len(sys.argv) < 2:
-    print(f"Usage: python {sys.argv[0]} interface")
-    sys.exit(1)
 
 # Interface must be in monitor mode
-iface = sys.argv[1]
+# iface = sys.argv[1]
+iface = "wlo1mon"
 print(f"Interface to be used: {iface}")
 
 # MAC to be monitorized, ESP32 mac
@@ -34,7 +33,7 @@ target_mac = "02:6A:9C:1F:3B:E8".lower()
 
 # Data queues
 packetQueue = queue.Queue()
-imageQueue = queue.Queue()
+mavQueue = queue.Queue()
 
 # Handler for packets received from the interface
 def packet_handler(pkt):
@@ -106,10 +105,6 @@ class MessageAssembler:
             full_payload = b''.join(
                 msg['fragments'][i] for i in range(msg['total'])
             )
-            # Store image if enabled
-            if STORE_IMAGE:
-                with open(f"debug_{fragment.message_id}.jpg", "wb") as f:
-                    f.write(full_payload)
 
             # Remove buffer for completed message
             del self.messages[mid]
@@ -128,63 +123,56 @@ def packet_assembler():
         if not packetQueue.empty():
             raw = packetQueue.get()
             fragment = FragmentHeader(raw)
-            print("Processing:", fragment)
-            fullPayload = assembler.add_fragment(fragment)
-            if fullPayload:
-                imageQueue.put(fullPayload)
+            if fragment.link_id == 1: # Raw image link
+                pass # Ignore
+            if fragment.link_id == 2: # MAV link
+                print("Processing:", fragment)
+                fullPayload = assembler.add_fragment(fragment)
+                if fullPayload:
+                    mavQueue.put(fullPayload)
 
-# Image viewer to display received images
-class ImageViewer:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Latest image received")
-        self.root.geometry("640x510")
-        self.label = tk.Label(self.root)
-        self.label.pack()
-        
-        # FPS counter
-        self.last_time = time.time()
-        self.frame_count = 0
-        self.fps = 0
-        self.fps_label = tk.Label(self.root, text="FPS: 0", font=("Arial", 12))
-        self.fps_label.pack()
+class fifo(object):
+    def __init__(self):
+        self.buf = []
+    def write(self, data):
+        self.buf += data
+        return len(data)
+    def read(self):
+        return self.buf.pop(0)
+    
 
-        self.root.after(100, self.check_queue)
+# Thread to forward messages to the MAV recepient application
+def mav_forwarder():
+    host = '127.0.0.1'  # MAV server ip
+    port = 48484        # MAV server port
+    f = fifo()
+    while True:
+        mav = mavlink2.MAVLink(f)
+        if not mavQueue.empty():
+            mavMessage = mavQueue.get()
+            # try:
+            #     m2 = mav.decode(mavMessage)
+            #     print("Got a message with id %u and fields %s" % (m2.get_msgId(), m2.get_fieldnames()))
+            # except Exception as ex:
+            #     print(f"Unable to parse mavMessage: ", ex)
+            # finally:
+            #     pass
 
-    def check_queue(self):
-        try:
-            while not imageQueue.empty():
-                img_data = imageQueue.get()
-                img = Image.open(io.BytesIO(img_data))
-                tk_img = ImageTk.PhotoImage(img)
-                self.label.config(image=tk_img)
-                self.label.image = tk_img
-                self.frame_count += 1
-
-            # Calculate images received every second
-            current_time = time.time()
-            if current_time - self.last_time >= 1.0:
-                self.fps = self.frame_count
-                self.frame_count = 0
-                self.last_time = current_time
-                self.fps_label.config(text=f"FPS: {self.fps}")
-
-        except Exception as e:
-            print("Error al mostrar imagen:", e)
-        finally:
-            self.root.after(100, self.check_queue)
-
-# Thread to receive packets from the interface
-def packet_sniffer():
-    # Start monitoring interface
-    print(f"📡 Listening to {iface}...")
-    sniff(iface=iface, prn=packet_handler, store=0)
+            try:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    s.connect((host, port))
+                    s.sendall(mavMessage)
+                    respuesta = s.recv(1024)
+                    print('Server response:', respuesta.decode())
+            except:
+                print(f"Unable to forward mavMessage: MAV connection error")
+            finally:
+                pass
 
 # Start processing threads
-threading.Thread(target=packet_sniffer, daemon=True).start()
 threading.Thread(target=packet_assembler, daemon=True).start()
+threading.Thread(target=mav_forwarder, daemon=True).start()
 
-# Start GUI
-root = tk.Tk()
-viewer = ImageViewer(root)
-root.mainloop()
+# Start monitoring interface
+print(f"📡 Listening to {iface}...")
+sniff(iface=iface, prn=packet_handler, store=0)
