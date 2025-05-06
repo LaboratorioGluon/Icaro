@@ -85,7 +85,7 @@ class MessageAssembler:
 
     def add_fragment(self, fragment: FragmentHeader):
         mid = fragment.message_id
-
+        
         # Initialize message buffers, if not already initialized 
         if mid not in self.messages:
             self.messages[mid] = {
@@ -128,10 +128,11 @@ def packet_assembler():
         if not packetQueue.empty():
             raw = packetQueue.get()
             fragment = FragmentHeader(raw)
-            print("Processing:", fragment)
-            fullPayload = assembler.add_fragment(fragment)
-            if fullPayload:
-                imageQueue.put(fullPayload)
+            if fragment.link_id == 1: # RAW_IMAGE link
+                print("Processing:", fragment)
+                fullPayload = assembler.add_fragment(fragment)
+                if fullPayload:
+                    imageQueue.put(fullPayload)
 
 # Image viewer to display received images
 class ImageViewer:
