@@ -1,9 +1,10 @@
 #pragma once
 
-// WIFI Configuration
-#define WIFI    1
-#define WIFIRAW 2
+// // WIFI Configuration
+// constexpr int WIFI    = 1;
+// constexpr int WIFIRAW = 2;
 
-#ifndef WIFI_TYPE
-#define WIFI_TYPE WIFIRAW
-#endif
+// constexpr int WIFI_TYPE = WIFIRAW;
+
+// constexpr char* UDP_IP_ADDRESS = "192.168.3.5";
+// constexpr int   UDP_IP_PORT    = 48485;
