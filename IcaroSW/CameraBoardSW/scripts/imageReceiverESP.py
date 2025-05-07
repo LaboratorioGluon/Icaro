@@ -85,7 +85,11 @@ class MessageAssembler:
 
     def add_fragment(self, fragment: FragmentHeader):
         mid = fragment.message_id
-        
+
+        # Remove old frames that will not receive more fragments
+        FRAG_BUFFER_LEN = 10
+        self.messages = {k: v for k, v in self.messages.items() if k >= mid-FRAG_BUFFER_LEN}
+
         # Initialize message buffers, if not already initialized 
         if mid not in self.messages:
             self.messages[mid] = {
