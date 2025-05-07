@@ -1,8 +1,18 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
+import 'dart:math';
 import 'package:dart_mavlink/dialects/common.dart';
 import 'package:dart_mavlink/mavlink.dart';
+import 'package:dart_mavlink/types.dart';
+
+class MAVCameraStatus
+{
+    int imageCaptureCount        = 0;
+    int storedImagesCount        = 0;
+    int imageCapturedErrors      = 0;
+    int lastImageCapturedIndex   = 0;
+    List<char> lastImageCapturedName = [];
+}
 
 class MAVService {
   static final MAVService _instance = MAVService._internal();
@@ -10,38 +20,73 @@ class MAVService {
 
   MAVService._internal() {
     _startMAVServer();
-    _startHBWatchdog();
-    _lastHB = DateTime.now();
+    _startCoverageChecker();
   }
 
   void dispose() {
+    _linkStatusController.close();
   }
 
   // MAV link status
-  final StreamController<bool> _linkStatusController = StreamController.broadcast();
-  Stream<bool> get linkStatusStream => _linkStatusController.stream;
+  final StreamController<int> _linkStatusController = StreamController.broadcast();
+  Stream<int> get linkStatusStream => _linkStatusController.stream;
 
-  late DateTime _lastHB;
+  final _heartbeats = <DateTime>[];
 
-  void _startHBWatchdog() {
+  void _startCoverageChecker() {
+    final hbPeriod = 0.5;
+    final hbExpiration = 5;
+    final Duration hbWindow = Duration(seconds: hbExpiration);
     Stream.periodic(const Duration(seconds: 1))
       .listen((_) {
-        if (DateTime.now().difference(_lastHB).inSeconds >= 5)
-        {
-          _linkStatusController.add(false);
-        }
+        // Update heartbeats/coverage
+        _heartbeats.removeWhere((time) => DateTime.now().difference(time) > hbWindow);
+        final int maxHeartbeats = (hbExpiration / hbPeriod).toInt();
+        final int coverage = min(((_heartbeats.length / maxHeartbeats) * 100).toInt(), 100);
+        _linkStatusController.add(coverage);
+
+        // Update camera info
+        _cameraStatusController.add(cameras);
       });
   }
+
+  // MAV camera status
+  final Map<int, MAVCameraStatus> cameras = {};
+  final StreamController<Map<int, MAVCameraStatus>> _cameraStatusController = StreamController.broadcast();
+  Stream<Map<int, MAVCameraStatus>> get cameraStatusStream => _cameraStatusController.stream;
 
   // MAV message processors
   void _processMAVHearbeat(Heartbeat hb)
   {
-    _lastHB = DateTime.now();
+    _heartbeats.add(DateTime.now());
     print("Heartbeat received");
-    _linkStatusController.add(true);
   }
 
+  void _processCameraImageCaptured(CameraImageCaptured cic)
+  {
+    if (!cameras.containsKey(cic.cameraId))
+    {
+        cameras[cic.cameraId] = MAVCameraStatus();
+        
+    }
 
+    var camera = cameras[cic.cameraId];
+    if (camera != null)
+    {
+        camera.imageCaptureCount++;
+        camera.lastImageCapturedIndex = cic.imageIndex;
+        // camera.lastImageCapturedName  = cic.fileUrl;
+        if (cic.captureResult != 0)
+        {
+            camera.storedImagesCount++;
+        }
+        else
+        {
+            camera.imageCapturedErrors++;
+        }
+    }
+    print("CameraImageCaptured received");
+  }
 
   // MAV server 
   late MavlinkDialectCommon _dialect;
@@ -56,6 +101,11 @@ class MAVService {
         var hb = frm.message as Heartbeat;
         _processMAVHearbeat(hb);
       }
+      else if  (frm.message is CameraImageCaptured)
+      {
+        var cic = frm.message as CameraImageCaptured;
+        _processCameraImageCaptured(cic);
+      }
     });
 
     // Start socket listening server
@@ -63,15 +113,11 @@ class MAVService {
     print('Servidor socket escuchando en ${server.address.address}:${server.port}');
   
     server.listen((Socket cliente) {
-      print('Cliente conectado: ${cliente.remoteAddress.address}:${cliente.remotePort}');
+      print('Cliente MAV conectado: ${cliente.remoteAddress.address}:${cliente.remotePort}');
 
       cliente.listen(
         (data) {
           _parser.parse(data);
-
-          // Enviar respuesta
-          final mensaje = data;
-          cliente.write('Echo: $mensaje\n');
         },
         onDone: () {
           print('Cliente desconectado.');

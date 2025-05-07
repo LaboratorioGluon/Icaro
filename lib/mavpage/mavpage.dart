@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../logo.dart';
-
 import 'package:icaro_app/common/services/mavservice.dart';
 
 class IcaroMAVPage extends StatefulWidget {
@@ -15,26 +13,36 @@ class IcaroMAVPage extends StatefulWidget {
 }
 
 class _IcaroMAVPageState extends State<IcaroMAVPage> {
-  late StreamSubscription<bool> _mavSub;
+  late StreamSubscription<int> _mavStatusSub;
+  late StreamSubscription<Map<int, MAVCameraStatus>> _mavCameraSub;
 
-  bool linkStatus = false;
+  int linkCoverage = 0;
+  Map<int, MAVCameraStatus> cameras = {};
 
   // Initial state
   @override
   void initState() {
     super.initState();
 
-    // Initialize ISS data subscription for tracking
-    _mavSub = MAVService().linkStatusStream.listen((newLinkStatus) {
+    // MAV link status monitor
+    _mavStatusSub = MAVService().linkStatusStream.listen((newCoverage) {
       setState((){
-        linkStatus = newLinkStatus;
+        linkCoverage = newCoverage;
+      });
+    });
+
+    // MAV link cameras data
+    _mavCameraSub = MAVService().cameraStatusStream.listen((newCameras) {
+      setState((){
+        cameras = newCameras;
       });
     });
   }
 
   @override
   void dispose() {
-    _mavSub.cancel();
+    _mavStatusSub.cancel();
+    _mavCameraSub.cancel();
     super.dispose();
   }
 
@@ -45,7 +53,7 @@ class _IcaroMAVPageState extends State<IcaroMAVPage> {
        color: theme.colorScheme.onPrimary,
        );
 
-    var activeText = (linkStatus) ? "Is active" : "Is not active";
+    var activeText = "Coverage $linkCoverage";
     var activeCard = Card(
             color: theme.colorScheme.primary,
             elevation: 10,
@@ -67,8 +75,29 @@ class _IcaroMAVPageState extends State<IcaroMAVPage> {
               child: Text(IcaroMAVPage.pageTitle, style: style,),
             ),
           ),
-          IcaroLogo()
+          buildCameraStatusList(cameras),
         ],
       );
+  }
+
+  Widget buildCameraStatusList(Map<int, MAVCameraStatus> cameras) {
+    
+    final entries = cameras.entries.toList();
+    return SizedBox(
+        height: 300,
+        width: 333,
+        child:ListView.builder(
+            
+      itemCount: entries.length,
+      itemBuilder: (context, index) {
+        final entry = entries[index];
+        return ListTile(
+          title: Text(entry.key.toString()),
+          subtitle: Text(entry.value.imageCaptureCount.toString()),
+        );
+      },
+    )
+    );
+    // }
   }
 }
