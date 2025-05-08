@@ -1,25 +1,38 @@
 from scapy.all import *
 from scapy.layers.dot11 import Dot11
-import time
 import threading
 import queue
 import struct
-import tkinter as tk
-from PIL import Image, ImageTk
+from mjpeg_streamer import MjpegServer, Stream
+from PIL import Image
+import numpy as np
 
-# This script listens to an interface and displays the image received from 
-# an ESP32 with an specific 802.11 message format.
+# This script listens to the interface <arg1> and receives the Images sent by the ESP32
+# in custom raw format, then provides these images in a mjpeg stream server.
 
 # Interface requirements:
 #   Interface must be configured in monitor mode. (See scripts 00_showIfaces.sh and 01_initIface.sh)
 #   Interface must be set to use the same channel as the emitter. (I use wireshark)
 
+# Packets format explained:
+# * Packets are received with the following format:
+#   - link id                : 4 bits
+#   - message id             : 12 bits
+#   - number of fragments    : 16 bits 
+#   - current fragment index : 16 bits
+#   - payload length         : 16 bits
+#   - payload                : variable length, max 1468 bytes
+# * Each link id is used for a data type:
+#   - ESP32 will send images with link id = 1
+#   - Other link ids are reserved for other data types
+#   - (e.g link id 0 is for testing purposes,
+#   -  link ids 2 and 3 are for MAV protocol messages)
+# * Images are trasmitted in JPEG format as bytes 
+
+# Check script requirements
 if os.geteuid() != 0:
     print("This script shall be run as root")
     sys.exit(1)
-
-# Script Configurations
-STORE_IMAGE=False # Set to 'True' to store each received frame as a jpg file 
 
 if len(sys.argv) < 2:
     print(f"Usage: python {sys.argv[0]} interface")
@@ -31,10 +44,11 @@ print(f"Interface to be used: {iface}")
 
 # MAC to be monitorized, ESP32 mac
 target_mac = "02:6A:9C:1F:3B:E8".lower()
+print(f"Listening for messages from: {target_mac}")
 
 # Data queues
 packetQueue = queue.Queue()
-imageQueue = queue.Queue()
+imageQueue  = queue.Queue()
 
 # Handler for packets received from the interface
 def packet_handler(pkt):
@@ -48,6 +62,7 @@ def packet_handler(pkt):
                 except Exception:
                     pass  # Ignore errors
 
+# This class will parse the fragment header of a packet
 class FragmentHeader:
     STRUCT_FORMAT = '<HHHH'  # Little-endian: 4x uint16_t
 
@@ -79,16 +94,18 @@ class FragmentHeader:
         return (f"<FragmentHeader link_id={self.link_id} message_id={self.message_id} total_frags={self.total_frags} "
                 f"frag_index={self.frag_index} payload_len={self.payload_len}>")
 
+# This class manages packets and composes the messages
 class MessageAssembler:
-    def __init__(self):
+    def __init__(self, buffer_len=None):
         self.messages = {}  # message_id → dict con { 'total', 'received', 'data' }
+        self.buffer_len = buffer_len
 
     def add_fragment(self, fragment: FragmentHeader):
         mid = fragment.message_id
 
         # Remove old frames that will not receive more fragments
-        FRAG_BUFFER_LEN = 10
-        self.messages = {k: v for k, v in self.messages.items() if k >= mid-FRAG_BUFFER_LEN}
+        if self.buffer_len is not None:
+            self.messages = {k: v for k, v in self.messages.items() if k >= mid-self.buffer_len}
 
         # Initialize message buffers, if not already initialized 
         if mid not in self.messages:
@@ -110,10 +127,6 @@ class MessageAssembler:
             full_payload = b''.join(
                 msg['fragments'][i] for i in range(msg['total'])
             )
-            # Store image if enabled
-            if STORE_IMAGE:
-                with open(f"debug_{fragment.message_id}.jpg", "wb") as f:
-                    f.write(full_payload)
 
             # Remove buffer for completed message
             del self.messages[mid]
@@ -126,70 +139,74 @@ class MessageAssembler:
 # Thread to assembly messages
 #   This thread receives all packets from and uses the assembler to recompose images
 #   When an image is fully received, it is sent to the image viewer
-assembler = MessageAssembler()
+imageAssember = MessageAssembler(10)
 def packet_assembler():
     while True:
         if not packetQueue.empty():
             raw = packetQueue.get()
             fragment = FragmentHeader(raw)
-            if fragment.link_id == 1: # RAW_IMAGE link
-                print("Processing:", fragment)
-                fullPayload = assembler.add_fragment(fragment)
+            if fragment.link_id == 1: # Raw image link
+                print("Image link fragment:", fragment)
+                fullPayload = imageAssember.add_fragment(fragment)
                 if fullPayload:
+                    print("Full image received")
                     imageQueue.put(fullPayload)
 
-# Image viewer to display received images
-class ImageViewer:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Latest image received")
-        self.root.geometry("640x510")
-        self.label = tk.Label(self.root)
-        self.label.pack()
-        
-        # FPS counter
-        self.last_time = time.time()
-        self.frame_count = 0
-        self.fps = 0
-        self.fps_label = tk.Label(self.root, text="FPS: 0", font=("Arial", 12))
-        self.fps_label.pack()
+# Image streaming server
+last_image = None
+stream = Stream("icaro_camera", size=(640, 480), quality=50, fps=20)
+server = MjpegServer("localhost", 48485)
+server.add_stream(stream)
 
-        self.root.after(100, self.check_queue)
-
-    def check_queue(self):
-        try:
-            while not imageQueue.empty():
+# Thread to update the latest received image and provide it to the streaming server
+def image_forwarder():
+    global last_image
+    while True:
+        if not imageQueue.empty():
+            try:
                 img_data = imageQueue.get()
-                img = Image.open(io.BytesIO(img_data))
-                tk_img = ImageTk.PhotoImage(img)
-                self.label.config(image=tk_img)
-                self.label.image = tk_img
-                self.frame_count += 1
+                img = Image.open(io.BytesIO(img_data)).convert('RGB')
+                image = np.array(img)[:, :, ::-1].copy()
+                stream.set_frame(image)
+            except Exception as e:
+                print(f"Unable to convert image: {e}")
+            finally:
+                pass
 
-            # Calculate images received every second
-            current_time = time.time()
-            if current_time - self.last_time >= 1.0:
-                self.fps = self.frame_count
-                self.frame_count = 0
-                self.last_time = current_time
-                self.fps_label.config(text=f"FPS: {self.fps}")
-
-        except Exception as e:
-            print("Error al mostrar imagen:", e)
-        finally:
-            self.root.after(100, self.check_queue)
-
-# Thread to receive packets from the interface
-def packet_sniffer():
-    # Start monitoring interface
+# Thread to receive data from the interface 
+def interface_sniffer():
     print(f"📡 Listening to {iface}...")
     sniff(iface=iface, prn=packet_handler, store=0)
 
-# Start processing threads
-threading.Thread(target=packet_sniffer, daemon=True).start()
-threading.Thread(target=packet_assembler, daemon=True).start()
 
-# Start GUI
-root = tk.Tk()
-viewer = ImageViewer(root)
-root.mainloop()
+# Start program
+if __name__=="__main__":
+    # Initialize threads
+    threads = {}
+    threads["image_forwarder"] = threading.Thread(target=image_forwarder, daemon=True)
+    threads["packet_assembler"] = threading.Thread(target=packet_assembler, daemon=True)
+    threads["interface_sniffer"] = threading.Thread(target=interface_sniffer, daemon=True)
+    
+    threads["image_forwarder"].start()
+    threads["packet_assembler"].start()
+    threads["interface_sniffer"].start()
+
+    # Start streaming server
+    server.start()
+    
+    # Supervise threads to keep them running
+    while True:
+        for name, thread in list(threads.items()):
+            if not thread.is_alive():
+                print(f"Thread '{name}' stopped. Restarting...")
+    
+                if name == "image_forwarder":
+                    threads[name] = threading.Thread(target=image_forwarder, daemon=True)
+                elif name == "packet_assembler":
+                    threads[name] = threading.Thread(target=packet_assembler, daemon=True)
+                elif name == "interface_sniffer":
+                    threads[name] = threading.Thread(target=interface_sniffer, daemon=True)
+
+                threads[name].start()
+                print(f"Restarted thread: {name}")
+        time.sleep(2)

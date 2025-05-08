@@ -1,39 +1,57 @@
 from scapy.all import *
 from scapy.layers.dot11 import Dot11
-import time
 import threading
 import queue
 import struct
 import socket
-from pymavlink.dialects.v20 import common as mavlink2
+from mjpeg_streamer import MjpegServer, Stream
+from PIL import Image
+import numpy as np
 
-# This script listens to an interface and displays processes the MAV
-# messages received from an ESP32 with an specific 802.11 message format.
+# This script listens to the interface <arg1> and receives the MAV messages sent by the ESP32
+# in custom raw format, then forwards the MAV message to a TCP server.
 
 # Interface requirements:
 #   Interface must be configured in monitor mode. (See scripts 00_showIfaces.sh and 01_initIface.sh)
 #   Interface must be set to use the same channel as the emitter. (I use wireshark)
 
+# Packets format explained:
+# * Packets are received with the following format:
+#   - link id                : 4 bits
+#   - message id             : 12 bits
+#   - number of fragments    : 16 bits 
+#   - current fragment index : 16 bits
+#   - payload length         : 16 bits
+#   - payload                : variable length, max 1468 bytes
+# * Each link id is used for a data type:
+#   - ESP32 will send MAV messages with the following Link ids:
+#     - Link id 2 is for status messages
+#     - Link id 3 is for data messages
+#   - Other link ids are reserved for other data types
+#   - (e.g link id 0 is for testing purposes,
+#   -  link id 1 is for jpeg images)
+
+# Check script requirements
 if os.geteuid() != 0:
     print("This script shall be run as root")
     sys.exit(1)
 
-# if len(sys.argv) < 2:
-#     print(f"Usage: python {sys.argv[0]} interface")
-#     sys.exit(1)
-
+if len(sys.argv) < 2:
+    print(f"Usage: python {sys.argv[0]} interface")
+    sys.exit(1)
 
 # Interface must be in monitor mode
-# iface = sys.argv[1]
-iface = "wlo1mon"
+iface = sys.argv[1]
 print(f"Interface to be used: {iface}")
 
 # MAC to be monitorized, ESP32 mac
 target_mac = "02:6A:9C:1F:3B:E8".lower()
+print(f"Listening for messages from: {target_mac}")
 
 # Data queues
-packetQueue = queue.Queue()
-mavQueue = queue.Queue()
+packetQueue    = queue.Queue()
+mavStatusQueue = queue.Queue()
+mavDataQueue   = queue.Queue()
 
 # Handler for packets received from the interface
 def packet_handler(pkt):
@@ -47,6 +65,7 @@ def packet_handler(pkt):
                 except Exception:
                     pass  # Ignore errors
 
+# This class will parse the fragment header of a packet
 class FragmentHeader:
     STRUCT_FORMAT = '<HHHH'  # Little-endian: 4x uint16_t
 
@@ -78,12 +97,18 @@ class FragmentHeader:
         return (f"<FragmentHeader link_id={self.link_id} message_id={self.message_id} total_frags={self.total_frags} "
                 f"frag_index={self.frag_index} payload_len={self.payload_len}>")
 
+# This class manages packets and composes the messages
 class MessageAssembler:
-    def __init__(self):
+    def __init__(self, buffer_len=None):
         self.messages = {}  # message_id → dict con { 'total', 'received', 'data' }
+        self.buffer_len = buffer_len
 
     def add_fragment(self, fragment: FragmentHeader):
         mid = fragment.message_id
+
+        # Remove old frames that will not receive more fragments
+        if self.buffer_len is not None:
+            self.messages = {k: v for k, v in self.messages.items() if k >= mid-self.buffer_len}
 
         # Initialize message buffers, if not already initialized 
         if mid not in self.messages:
@@ -117,62 +142,84 @@ class MessageAssembler:
 # Thread to assembly messages
 #   This thread receives all packets from and uses the assembler to recompose images
 #   When an image is fully received, it is sent to the image viewer
-assembler = MessageAssembler()
+mavStatusAssembler = MessageAssembler(5)
+mavDataAssember = MessageAssembler(5)
 def packet_assembler():
     while True:
         if not packetQueue.empty():
             raw = packetQueue.get()
             fragment = FragmentHeader(raw)
-            if fragment.link_id == 1: # Raw image link
-                pass # Ignore
-            if fragment.link_id == 2: # MAV link
-                print("Processing:", fragment)
-                fullPayload = assembler.add_fragment(fragment)
+            if fragment.link_id == 2: # MAV status link
+                print("MAV data link fragment:", fragment)
+                fullPayload = mavStatusAssembler.add_fragment(fragment)
                 if fullPayload:
-                    mavQueue.put(fullPayload)
-
-class fifo(object):
-    def __init__(self):
-        self.buf = []
-    def write(self, data):
-        self.buf += data
-        return len(data)
-    def read(self):
-        return self.buf.pop(0)
-    
+                    mavStatusQueue.put(fullPayload)
+            elif fragment.link_id == 3: # MAV data link
+                print("MAV data link fragment:", fragment)
+                fullPayload = mavDataAssember.add_fragment(fragment)
+                if fullPayload:
+                    mavDataQueue.put(fullPayload)
 
 # Thread to forward messages to the MAV recepient application
 def mav_forwarder():
     host = '127.0.0.1'  # MAV server ip
     port = 48484        # MAV server port
-    f = fifo()
-    while True:
-        mav = mavlink2.MAVLink(f)
-        if not mavQueue.empty():
-            mavMessage = mavQueue.get()
-            # try:
-            #     m2 = mav.decode(mavMessage)
-            #     print("Got a message with id %u and fields %s" % (m2.get_msgId(), m2.get_fieldnames()))
-            # except Exception as ex:
-            #     print(f"Unable to parse mavMessage: ", ex)
-            # finally:
-            #     pass
 
+    while True:
+        if not mavStatusQueue.empty():
+            mavStatusMessage = mavStatusQueue.get()
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     s.connect((host, port))
-                    s.sendall(mavMessage)
-                    respuesta = s.recv(1024)
-                    print('Server response:', respuesta.decode())
+                    s.sendall(mavStatusMessage)
             except:
                 print(f"Unable to forward mavMessage: MAV connection error")
             finally:
                 pass
 
-# Start processing threads
-threading.Thread(target=packet_assembler, daemon=True).start()
-threading.Thread(target=mav_forwarder, daemon=True).start()
+        if not mavDataQueue.empty():
+            mavDataMessage = mavDataQueue.get()
+            try:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    s.connect((host, port))
+                    s.sendall(mavDataMessage)
+            except:
+                print(f"Unable to forward mavMessage: MAV connection error")
+            finally:
+                pass
 
-# Start monitoring interface
-print(f"📡 Listening to {iface}...")
-sniff(iface=iface, prn=packet_handler, store=0)
+# Thread to receive data from the interface 
+def interface_sniffer():
+    print(f"📡 Listening to {iface}...")
+    sniff(iface=iface, prn=packet_handler, store=0)
+
+    
+# Start program
+if __name__=="__main__":
+    # Initialize threads
+    threads = {}
+
+    threads["mav_forwarder"] = threading.Thread(target=mav_forwarder, daemon=True)
+    threads["packet_assembler"] = threading.Thread(target=packet_assembler, daemon=True)
+    threads["interface_sniffer"] = threading.Thread(target=interface_sniffer, daemon=True)
+    
+    threads["mav_forwarder"].start()
+    threads["packet_assembler"].start()
+    threads["interface_sniffer"].start()
+
+    # Supervise threads to keep them running
+    while True:
+        for name, thread in list(threads.items()):
+            if not thread.is_alive():
+                print(f"Thread '{name}' stopped. Restarting...")
+    
+                if name == "mav_forwarder":
+                    threads[name] = threading.Thread(target=mav_forwarder, daemon=True)
+                elif name == "packet_assembler":
+                    threads[name] = threading.Thread(target=packet_assembler, daemon=True)
+                elif name == "interface_sniffer":
+                    threads[name] = threading.Thread(target=interface_sniffer, daemon=True)
+
+                threads[name].start()
+                print(f"Restarted thread: {name}")
+        time.sleep(2)
