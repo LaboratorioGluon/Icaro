@@ -5,7 +5,9 @@
 
 #include <esp_log.h>
 
+#include "systemdef.h"
 #include "data/states.h"
+#include "mav/mav_camera.h"
 
 namespace
 {
@@ -23,7 +25,7 @@ void storeThreadFunc (void* arg)
     // 1.1 - Parse arguments
     auto convertedArg = reinterpret_cast<storeThreadArg_t*>(arg);
     std::shared_ptr<const Data::systemStatus_t>& systemStatus = convertedArg->systemStatus;
-    std::shared_ptr<Network::WiFiRaw>&           wifiraw      = convertedArg->wifiraw;
+    std::shared_ptr<Network::WiFiRaw>&           wifi         = convertedArg->wifiraw;
     std::shared_ptr<Device::ICamera>&            camera       = convertedArg->camera;
     std::shared_ptr<Device::IFileSystem>&        fs           = convertedArg->fs;
     std::shared_ptr<Data::storeThreadStatus_t>&  status       = convertedArg->threadStatus;
@@ -32,6 +34,10 @@ void storeThreadFunc (void* arg)
     int delayCounter = 0;
     int frameCounter = 0;
     char imagefile[20];
+
+    MAVLink::MAVCamera mavCamera (SYSTEM_ID,
+                                COMP_ID_STORECAMERA,
+                                wifi->create80211Link(Network::Link::RAW_LINK_ID::MAV_DATA));
 
     // 2 - Thread loop
     while (true)
@@ -49,7 +55,12 @@ void storeThreadFunc (void* arg)
             
             // 2.3 Store frame
             sprintf(imagefile, "/%08d.jpg", frameCounter);
-            if(fs->write(imagefile, frame->buf, frame->len))
+            bool imageStored = fs->write(imagefile, frame->buf, frame->len);
+            
+            // 2.4 Free frame
+            camera->freeFrame(frame);
+            
+            if (imageStored)
             {
                 ESP_LOGD(MODULE_TAG, "Image stored: %s", imagefile);
             }
@@ -58,16 +69,12 @@ void storeThreadFunc (void* arg)
                 ESP_LOGE(MODULE_TAG, "Failed to store image: %s", imagefile);
             }
             
-            // 2.4 Free frame
-            camera->freeFrame(frame);
-            
-            // 2.5 Sleep for watchdog
-            delayCounter++;
-            if (delayCounter > 200)
-            {
-                vTaskDelay(10 / portTICK_PERIOD_MS);
-                delayCounter = 0;
-            }
+            // 2.5 Notify captured image
+            mavCamera.notifyCapture(frameCounter, imageStored, imagefile, 0,0,0);
+
+            // Limit cycles per minute (max)
+            static TickType_t lastWakeUpTime = 0;
+            xTaskDelayUntil(&lastWakeUpTime, pdMS_TO_TICKS(50));
         }
         else
         {

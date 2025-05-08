@@ -1,6 +1,6 @@
 #include "mav_system.h"
 
-#include "../systemdef.h"
+#include <minimal/mavlink_msg_heartbeat.h>
 
 namespace MAVLink
 {
@@ -13,7 +13,7 @@ MAVSystem::MAVSystem(uint8_t systemID,
     systemType(systemType)
 {}
 
-void MAVSystem::sendHeartBeat(uint8_t system_status, uint32_t custom_mode, uint8_t base_mode)
+bool MAVSystem::sendHeartBeat(uint8_t system_status, uint32_t custom_mode, uint8_t base_mode)
 {
     mavlink_message_t mavMessage;
     size_t message_length = mavlink_msg_heartbeat_pack(
@@ -25,7 +25,8 @@ void MAVSystem::sendHeartBeat(uint8_t system_status, uint32_t custom_mode, uint8
         custom_mode,
         system_status
     );
-    send(mavMessage);
+    bool ok = (send(mavMessage) == message_length);
+    return ok;
 }
 
 }

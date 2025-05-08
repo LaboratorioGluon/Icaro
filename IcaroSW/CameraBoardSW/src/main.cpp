@@ -229,7 +229,7 @@ void app_main()
                 mavSystem.sendHeartBeat(MAV_STATE_ACTIVE, static_cast<uint32_t>(systemStatus->state));
 
                 systemStatus->capturingEnabled = true;
-                systemStatus->streamingEnabled = false;
+                systemStatus->streamingEnabled = true;
 
                 if (false) // TODO: Condition for transition
                 {

@@ -2,16 +2,22 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
 #include <esp_log.h>
 
-#include <string.h>
+#include "systemdef.h"
+#include "data/states.h"
+#include "mav/mav_camera.h"
 
 namespace
 {
+const char* EMPTY_STRING = "";
 const char* MODULE_TAG = "TH_STREAM";
+const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_NONE;
 
 bool sendImage(std::shared_ptr<Device::ICamera>& camera, std::unique_ptr<Network::Link::ILink>& link)
 {
@@ -42,7 +48,7 @@ bool sendImage(std::shared_ptr<Device::ICamera>& camera, std::unique_ptr<Network
         // 2.4 Free frame
         camera->freeFrame(frame);
 
-        imageSent = true;
+        imageSent = (err == frame->len);
     }
     else
     {
@@ -56,7 +62,7 @@ bool sendImage(std::shared_ptr<Device::ICamera>& camera, std::unique_ptr<Network
 
 void streamThreadFunc (void* arg)
 {
-    esp_log_level_set(MODULE_TAG, ESP_LOG_DEBUG);
+    esp_log_level_set(MODULE_TAG, MODULE_LOG_LEVEL);    
     ESP_LOGI(MODULE_TAG, "Thread launched");
     ESP_LOGI(MODULE_TAG, "Running in core %d", xPortGetCoreID());
 
@@ -64,15 +70,19 @@ void streamThreadFunc (void* arg)
     // 1.1 - Parse arguments
     auto convertedArg = reinterpret_cast<streamThreadArg_t*>(arg);
     std::shared_ptr<const Data::systemStatus_t>& systemStatus = convertedArg->systemStatus;
-    std::shared_ptr<Network::WiFiRaw>&           wifiraw      = convertedArg->wifiraw;
+    std::shared_ptr<Network::WiFiRaw>&           wifi         = convertedArg->wifiraw;
     std::shared_ptr<Device::ICamera>&            camera       = convertedArg->camera;
     std::shared_ptr<Data::streamThreadStatus_t>& status       = convertedArg->threadStatus;
 
     // 1.2 - Init thread data
     int delayCounter = 0;
     
-    std::unique_ptr<Network::Link::ILink> cameraLink = wifiraw->create80211Link(Network::Link::RAW_LINK_ID::RAW_IMAGE);
-    ESP_LOGI(MODULE_TAG, "Camera Link created");
+    std::unique_ptr<Network::Link::ILink> cameraLink = wifi->create80211Link(Network::Link::RAW_LINK_ID::RAW_IMAGE);
+    ESP_LOGI(MODULE_TAG, "Camera streaming link created");
+
+    MAVLink::MAVCamera mavCamera (SYSTEM_ID,
+        COMP_ID_STREAMCAMERA,
+        wifi->create80211Link(Network::Link::RAW_LINK_ID::MAV_DATA));
 
     // 2 - Thread loop
     while (true)
@@ -85,18 +95,12 @@ void streamThreadFunc (void* arg)
             bool imageSent = sendImage(camera, cameraLink);
 
             // 2.2 Notify image sent through MAV
-            if (imageSent)
-            {
-                // TODO: Send MAV message
-            }
+            static int frameCounter = 0;
+            mavCamera.notifyCapture(frameCounter++, imageSent, EMPTY_STRING, 0,0,0);
 
-            // 2.N Sleep for watchdog
-            delayCounter++;
-            if (delayCounter > 200)
-            {
-                vTaskDelay(10 / portTICK_PERIOD_MS);
-                delayCounter = 0;
-            }
+            // Limit cycles per minute (max)
+            static TickType_t lastWakeUpTime = 0;
+            xTaskDelayUntil(&lastWakeUpTime, pdMS_TO_TICKS(40));            
         }
         else
         {

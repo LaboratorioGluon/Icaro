@@ -19,7 +19,7 @@ public:
               std::unique_ptr<Network::Link::ILink> link);
     virtual ~MAVSystem() = default;
 
-    void sendHeartBeat(uint8_t  system_status = 0,
+    bool sendHeartBeat(uint8_t  system_status = 0,
                        uint32_t custom_mode   = 0,
                        uint8_t  base_mode     = 0);
 };
