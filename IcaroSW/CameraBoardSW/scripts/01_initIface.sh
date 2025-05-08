@@ -6,6 +6,8 @@ if [ -z "$1" ]; then
     exit 1
 fi
 INTERFACE=$1
+MON_INTERFACE=${INTERFACE}mon
+CHANNEL=13
 
 # Configure monitor mode for interface
 sudo ip link set $INTERFACE down
@@ -17,8 +19,11 @@ sudo ip link set $INTERFACE up
 sudo airmon-ng check kill
 sudo airmon-ng start wlo1
 
+# Configure channel to ESP32 channel
+sudo iwconfig ${MON_INTERFACE} channel ${CHANNEL}
+
 # Print current mode of interface
-echo "The ${INTERFACE}mon should be in monitor mode."
+echo "The ${MON_INTERFACE} should be in monitor mode."
 echo "Please verify before continuing:"
-iw dev ${INTERFACE}mon info
+iw dev ${MON_INTERFACE} info
 
