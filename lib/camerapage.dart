@@ -204,17 +204,34 @@ class _IcaroCameraPageState extends State<IcaroCameraPage> {
       default: cameraName = "Unknown";
     }
 
+
+    // Position widgets
+    List<Widget> posWidgets = [];
+    if (cameraInfo.latitute  != 0.0 &&
+        cameraInfo.longitude != 0.0 && 
+        cameraInfo.altitude  != 0.0)
+    {
+      posWidgets = [
+        Text("Latitude: ${cameraInfo.latitute.toString()}"),
+        Text("Longitude: ${cameraInfo.longitude.toString()}"),
+        Text("Altitude: ${cameraInfo.altitude.toString()}"),
+      ];
+    }
+
+    List<Widget> widgets = [
+      Text("Updates received: ${cameraInfo.imageCaptureCount.toString()}"),
+      Text("Image index: ${cameraInfo.lastImageCapturedIndex.toString()}"),
+      Text("Error count: ${cameraInfo.imageCapturedErrors.toString()}"),
+    ];
+    widgets.addAll(posWidgets);
+
     return ListTile(
         title: Text(cameraName),
         subtitle: Container (
           // color: Colors.yellow,
           child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Updates received: ${cameraInfo.imageCaptureCount.toString()}"),
-            Text("Image index: ${cameraInfo.lastImageCapturedIndex.toString()}"),
-            Text("Error count: ${cameraInfo.imageCapturedErrors.toString()}"),
-          ]
+          children: widgets
         )
       ));
   }
