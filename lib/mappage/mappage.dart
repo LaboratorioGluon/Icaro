@@ -262,14 +262,14 @@ class _DetailsBottomSheetState extends State<DetailsBottomSheet> {
               ),
             ),
             child: SingleChildScrollView(
-                  controller: scrollController,
-            child: Column(
-              children: <Widget>[
-                grabber,
-                realHeader,
-                realBody,
-              ],
-            ),
+              controller: scrollController,
+              child: Column(
+                children: <Widget>[
+                  grabber,
+                  realHeader,
+                  realBody,
+                ],
+              ),
             ),
           );
       },

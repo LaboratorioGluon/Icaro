@@ -11,6 +11,9 @@ class MAVCameraStatus
     int storedImagesCount        = 0;
     int imageCapturedErrors      = 0;
     int lastImageCapturedIndex   = 0;
+    double latitute              = 0.0;
+    double longitude             = 0.0;
+    double altitude              = 0.0;
     List<char> lastImageCapturedName = [];
 }
 
@@ -33,11 +36,12 @@ class MAVService {
 
   final _heartbeats = <DateTime>[];
 
+  // Periodic update of MAV messages updates
   void _startCoverageChecker() {
     final hbPeriod = 0.5;
     final hbExpiration = 5;
     final Duration hbWindow = Duration(seconds: hbExpiration);
-    Stream.periodic(const Duration(seconds: 1))
+    Stream.periodic(const Duration(milliseconds: 500))
       .listen((_) {
         // Update heartbeats/coverage
         _heartbeats.removeWhere((time) => DateTime.now().difference(time) > hbWindow);
@@ -75,7 +79,7 @@ class MAVService {
     {
         camera.imageCaptureCount++;
         camera.lastImageCapturedIndex = cic.imageIndex;
-        // camera.lastImageCapturedName  = cic.fileUrl;
+        camera.lastImageCapturedName  = cic.fileUrl;
         if (cic.captureResult != 0)
         {
             camera.storedImagesCount++;
@@ -84,6 +88,10 @@ class MAVService {
         {
             camera.imageCapturedErrors++;
         }
+
+        camera.latitute  = cic.lat.toDouble() / 1E7;
+        camera.longitude = cic.lon.toDouble() / 1E7;
+        camera.altitude  = cic.alt.toDouble() / 1E3;
     }
     print("CameraImageCaptured received");
   }

@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:icaro_app/common/data/icarosensors.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
@@ -31,7 +28,6 @@ class TemperatureWidget extends StatefulWidget {
 }
 
 class _TemperatureWidgetState extends State<TemperatureWidget> {
-  late StreamSubscription<IcaroSensors> _sensorsSub;
 
   final Map<String, List<TemperaturePoint>> history = {};
 
@@ -48,11 +44,11 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
         history[temp.label] = <TemperaturePoint>[];
       }
     }
+
   }
 
   @override
   void dispose() {
-    _sensorsSub.cancel();
     for (var temp in widget.temperatures) {
       if (!history.containsKey(temp.label)) {
         history[temp.label]!.clear();
