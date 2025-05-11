@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:icaro_app/appsettings.dart';
 import 'package:icaro_app/common/services/mavservice.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mjpeg_stream/mjpeg_stream.dart';
@@ -18,8 +19,6 @@ class _IcaroCameraPageState extends State<IcaroCameraPage> {
   Uint8List? imageBytes;
   late StreamSubscription<int> _mavStatusSub;
   late StreamSubscription<Map<int, MAVCameraStatus>> _mavCameraSub;
-
-  final streamUrl = "http://localhost:48485/icaro_camera";
 
   int linkCoverage = 0;
   Map<int, MAVCameraStatus> cameras = {};
@@ -59,6 +58,10 @@ class _IcaroCameraPageState extends State<IcaroCameraPage> {
        );
 
     final panelBorderRadius = 15.0;
+
+    final cameraSettings = IcaroSettings.getCameraSettings();
+
+    String streamUrl = "http://${cameraSettings.host}:${cameraSettings.port}/${cameraSettings.name}";
 
     // Right panel
     var stream = Padding(

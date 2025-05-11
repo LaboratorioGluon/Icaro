@@ -9,16 +9,18 @@ import 'mappage/mappage.dart';
 import 'mavpage/mavpage.dart';
 import 'powerpage.dart';
 import 'sensorspage/sensorspage.dart';
-import 'settingspage.dart';
-// import 'state.dart';
+import 'settingspage/settingspage.dart';
+import 'appsettings.dart';
 
 /* App entry point */
-void main() {
-  runApp(const ScaffoldExampleApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await IcaroSettings.init();
+  runApp(const IcaroApp());
 }
 
-class ScaffoldExampleApp extends StatelessWidget {
-  const ScaffoldExampleApp({super.key});
+class IcaroApp extends StatelessWidget {
+  const IcaroApp({super.key});
 
   @override
   Widget build(BuildContext context) {
