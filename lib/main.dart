@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // import 'package:provider/provider.dart';
 
-import 'camerapage.dart';
+import 'camerapage/camerapage.dart';
 import 'homepage.dart';
 import 'logspage.dart';
 import 'lorapage.dart';
