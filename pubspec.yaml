@@ -25,6 +25,7 @@ dependencies:
   based_battery_indicator: ^1.0.3
   syncfusion_flutter_gauges: ^28.2.12
   syncfusion_flutter_charts: ^28.2.12
+  dart_mavlink: ^0.1.0
 
 dev_dependencies:
   flutter_test:

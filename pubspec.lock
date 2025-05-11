@@ -97,6 +97,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  dart_mavlink:
+    dependency: "direct main"
+    description:
+      name: dart_mavlink
+      sha256: a0cfdf97b33a44496456ff37a2170514d7b3e8dd697944fded44b91149599cef
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   fake_async:
     dependency: "direct dev"
     description:

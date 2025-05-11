@@ -64,7 +64,6 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
     super.dispose();
   }
 
-
   BasedBatteryStatus getBatteryStatus(int value) {
     const lowBatteryThreshold = 40;
     BasedBatteryStatusType type = (value >= lowBatteryThreshold) ? BasedBatteryStatusType.normal : BasedBatteryStatusType.low;

@@ -15,7 +15,8 @@ class ISSservice {
     _startPositionUpdates();
     _startPrecisePositionUpdates();
   }
-    void dispose() {
+
+  void dispose() {
     _fetchTimer?.cancel();
     _satelliteController.close();
   }
@@ -79,7 +80,7 @@ class ISSservice {
       _satelliteController.add(newSatellite);
       _receivedCount++;
 
-      if (_receivedCount == 2) {
+      if (_receivedCount == 5) {
         _fetchInterval = const Duration(seconds: 10); // Cambia a 10 segundos
         _receivedCount = 0; // Reinicia el contador
         _startSatelliteUpdates(); // Reinicia el stream con el nuevo intervalo
