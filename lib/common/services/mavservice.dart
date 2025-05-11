@@ -33,11 +33,12 @@ class MAVService {
 
   final _heartbeats = <DateTime>[];
 
+  // Periodic update of MAV messages updates
   void _startCoverageChecker() {
     final hbPeriod = 0.5;
     final hbExpiration = 5;
     final Duration hbWindow = Duration(seconds: hbExpiration);
-    Stream.periodic(const Duration(seconds: 1))
+    Stream.periodic(const Duration(milliseconds: 500))
       .listen((_) {
         // Update heartbeats/coverage
         _heartbeats.removeWhere((time) => DateTime.now().difference(time) > hbWindow);
