@@ -27,8 +27,11 @@ struct IMS_PACK ImsMessageBase{
         uint8_t raw[IMS_MESSAGE_MAXSIZE];
         T msg;
     };
+    static_assert(sizeof(T) <= sizeof(raw));
     
 };
+
+typedef ImsMessageBase<uint8_t[IMS_MESSAGE_MAXSIZE]> ImsMessageRaw;
 
 
 /**
