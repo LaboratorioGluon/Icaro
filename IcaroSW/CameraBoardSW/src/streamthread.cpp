@@ -69,14 +69,13 @@ void streamThreadFunc (void* arg)
     // 1 - Init thread
     // 1.1 - Parse arguments
     auto convertedArg = reinterpret_cast<streamThreadArg_t*>(arg);
-    std::shared_ptr<const Data::systemStatus_t>& systemStatus = convertedArg->systemStatus;
-    std::shared_ptr<Network::WiFiRaw>&           wifi         = convertedArg->wifiraw;
-    std::shared_ptr<Device::ICamera>&            camera       = convertedArg->camera;
-    std::shared_ptr<Data::streamThreadStatus_t>& status       = convertedArg->threadStatus;
+    std::shared_ptr<const Data::systemStatus_t>&   systemStatus   = convertedArg->systemStatus;
+    std::shared_ptr<const Data::ExternalStatus_t>  externalStatus = convertedArg->externalStatus;
+    std::shared_ptr<Network::WiFiRaw>&             wifi           = convertedArg->wifiraw;
+    std::shared_ptr<Device::ICamera>&              camera         = convertedArg->camera;
+    std::shared_ptr<Data::streamThreadStatus_t>&   status         = convertedArg->threadStatus;
 
     // 1.2 - Init thread data
-    int delayCounter = 0;
-    
     std::unique_ptr<Network::Link::ILink> cameraLink = wifi->create80211Link(Network::Link::RAW_LINK_ID::RAW_IMAGE);
     ESP_LOGI(MODULE_TAG, "Camera streaming link created");
 

@@ -3,14 +3,15 @@
 #include <time.h>
 #include <memory>
 
-// #include <freertos/FreeRTOS.h>
-// #include <freertos/task.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 #include <esp_log.h>
 
 #include "systemdef.h"
 // #include "config.h"
 #include "data/systemstatus.h"
+#include "data/externalstatus.h"
 
 // Hardware
 #include "platform.h"
@@ -47,6 +48,9 @@ std::shared_ptr<const Data::streamThreadStatus_t> c_streamThreadStatus = std::co
 
 std::shared_ptr<Data::i2cSlaveThreadStatus_t> i2cSlaveThreadStatus = std::make_shared<Data::i2cSlaveThreadStatus_t>();
 std::shared_ptr<const Data::i2cSlaveThreadStatus_t> c_i2cSlaveThreadStatus = std::const_pointer_cast<const Data::i2cSlaveThreadStatus_t>(i2cSlaveThreadStatus);
+
+std::shared_ptr<Data::ExternalStatus_t> externalStatus = std::make_shared<Data::ExternalStatus_t>();
+std::shared_ptr<const Data::ExternalStatus_t> c_externalStatus = std::const_pointer_cast<const Data::ExternalStatus_t>(externalStatus);
 
 /* Devices */
 std::shared_ptr<Device::IFileSystem> fs = Platform::buildFileSystem();
@@ -140,24 +144,10 @@ void app_main()
         return;
     }
 
-    
-// #if defined(WIFI_TYPE)
-// #if WIFI_TYPE == WIFI
-//     MAVLink::MAVSystem system(SYSTEM_ID,
-//                             COMP_ID_CAMERABOARD,
-//                             MAV_TYPE_FREE_BALLOON,
-//                             wifi->createUDPLink(UDP_IP_ADDRESS, UDP_IP_PORT));
-// #elif WIFI_TYPE == WIFIRAW
     MAVLink::MAVSystem mavSystem(SYSTEM_ID,
                             COMP_ID_CAMERABOARD,
                             MAV_TYPE_FREE_BALLOON,
                             wifi->create80211Link(Network::Link::RAW_LINK_ID::MAV_STATUS));
-// #else
-// #error "Wifi type not valid"
-// #endif
-// #else
-// #error "No wifi type defined"
-// #endif
 
     // Send 5 hearbeats in booting sequence
     for (int i=0; i<=5; i++)
@@ -173,26 +163,29 @@ void app_main()
     
     // Create threads
     {
-
         streamThreadArg_t streamArgs {
-            .systemStatus = c_systemStatus,
-            .wifiraw      = wifi,
-            .camera       = camera,
-            .threadStatus = streamThreadStatus
+            .systemStatus   = c_systemStatus,
+            .externalStatus = c_externalStatus,
+            .wifiraw        = wifi,
+            .camera         = camera,
+            .threadStatus   = streamThreadStatus,
         };
         
         storeThreadArg_t storeArgs {
-            .systemStatus = c_systemStatus,
-            .wifiraw      = wifi,
-            .camera       = camera,
-            .fs           = fs,
-            .threadStatus = storeThreadStatus,
+            .systemStatus   = c_systemStatus,
+            .externalStatus = c_externalStatus,
+            .wifiraw        = wifi,
+            .camera         = camera,
+            .fs             = fs,
+            .threadStatus   = storeThreadStatus,
         };
 
         i2cSlaveThreadArg_t i2cSlaveArgs {
-            .systemStatus = c_systemStatus,
-            .i2cSlave     = i2cSlave,
-            .threadStatus = i2cSlaveThreadStatus,
+            .systemStatus   = c_systemStatus,
+            .wifiraw        = wifi,
+            .i2cSlave       = i2cSlave,
+            .threadStatus   = i2cSlaveThreadStatus,
+            .externalStatus = externalStatus,
         };
                 
         xTaskCreatePinnedToCore(
