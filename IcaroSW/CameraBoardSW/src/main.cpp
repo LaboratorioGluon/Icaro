@@ -14,33 +14,26 @@
 
 // Hardware
 #include "platform.h"
+#include "interboards/i2cslave.h"
+#include "network/wifiraw.h"
 
 // Threads
 #include "storethread.h"
 #include "data/storethreadstatus.h"
 
+#include "streamthread.h"
+#include "data/streamthreadstatus.h"
+
+#include "i2cslavethread.h"
+#include "data/i2cslavethreadstatus.h"
+
 // Main dependencies
 #include "mav/mav_system.h"
 
-// #if defined(WIFI_TYPE)
-// #if WIFI_TYPE == WIFI
-// #include "network/wifi.h"
-// #elif WIFI_TYPE == WIFIRAW
-#include "network/wifiraw.h"
-#include "streamthread.h"
-#include "data/streamthreadstatus.h"
-// #include "data/mavthreadstatus.h"
-// #else
-// #error "Wifi type not valid"
-// #endif
-// #else
-// #error "No wifi type defined"
-// #endif
 
 namespace
 {
 const char* MODULE_TAG = "MAIN";
-
 
 /* Threads status */
 std::shared_ptr<Data::systemStatus_t> systemStatus = std::make_shared<Data::systemStatus_t>();
@@ -52,21 +45,16 @@ std::shared_ptr<const Data::storeThreadStatus_t> c_storeThreadStatus = std::cons
 std::shared_ptr<Data::streamThreadStatus_t> streamThreadStatus = std::make_shared<Data::streamThreadStatus_t>();
 std::shared_ptr<const Data::streamThreadStatus_t> c_streamThreadStatus = std::const_pointer_cast<const Data::streamThreadStatus_t>(streamThreadStatus);
 
+std::shared_ptr<Data::i2cSlaveThreadStatus_t> i2cSlaveThreadStatus = std::make_shared<Data::i2cSlaveThreadStatus_t>();
+std::shared_ptr<const Data::i2cSlaveThreadStatus_t> c_i2cSlaveThreadStatus = std::const_pointer_cast<const Data::i2cSlaveThreadStatus_t>(i2cSlaveThreadStatus);
+
 /* Devices */
 std::shared_ptr<Device::IFileSystem> fs = Platform::buildFileSystem();
 std::shared_ptr<Device::ICamera> camera = Platform::buildCamera();
 
-// #if defined(WIFI_TYPE)
-// #if WIFI_TYPE == WIFI
-// std::shared_ptr<Network::WiFi> wifi = Platform::buildWiFi();
-// #elif WIFI_TYPE == WIFIRAW
 std::shared_ptr<Network::WiFiRaw> wifi = Platform::buildWiFiRaw();
-// #else
-// #error "Wifi type not valid"
-// #endif
-// #else
-// #error "No wifi type defined"
-// #endif
+std::shared_ptr<InterBoards::I2CSlave> i2cSlave = Platform::buildI2CSlave();
+
 }
 
 bool initialize()
@@ -93,6 +81,13 @@ bool initialize()
     if (!camera->initialize())
     {
         ESP_LOGE(MODULE_TAG, "Failed to initialize camera.");
+        initialized = false;
+    }
+
+    ESP_LOGI(MODULE_TAG, "Initializing i2c slave.");
+    if (!i2cSlave->initialize())
+    {
+        ESP_LOGE(MODULE_TAG, "Failed to initialize i2c slave.");
         initialized = false;
     }
 
@@ -181,17 +176,23 @@ void app_main()
 
         streamThreadArg_t streamArgs {
             .systemStatus = c_systemStatus,
-            .wifiraw = wifi,
-            .camera = camera,
+            .wifiraw      = wifi,
+            .camera       = camera,
             .threadStatus = streamThreadStatus
         };
         
         storeThreadArg_t storeArgs {
             .systemStatus = c_systemStatus,
-            .wifiraw = wifi,
-            .camera = camera,
-            .fs = fs,
+            .wifiraw      = wifi,
+            .camera       = camera,
+            .fs           = fs,
             .threadStatus = storeThreadStatus,
+        };
+
+        i2cSlaveThreadArg_t i2cSlaveArgs {
+            .systemStatus = c_systemStatus,
+            .i2cSlave     = i2cSlave,
+            .threadStatus = i2cSlaveThreadStatus,
         };
                 
         xTaskCreatePinnedToCore(
@@ -213,6 +214,16 @@ void app_main()
             NULL,            // Handler de la tarea
             0                // Núcleo al que se asigna la tarea (0 o 1)
         );
+
+        xTaskCreatePinnedToCore(
+            i2cSlaveThreadFunc, // Función de la tarea
+            "i2cSlaveTask",     // Nombre de la tarea
+            4096,               // Tamaño de la pila
+            &i2cSlaveArgs,      // Parámetros de la tarea
+            1,                  // Prioridad de la tarea
+            NULL,               // Handler de la tarea
+            0                   // Núcleo al que se asigna la tarea (0 o 1)
+        );
     }
 
     // Start
@@ -230,6 +241,7 @@ void app_main()
 
                 systemStatus->capturingEnabled = true;
                 systemStatus->streamingEnabled = true;
+                systemStatus->i2cSlaveEnabled  = true;
 
                 if (false) // TODO: Condition for transition
                 {
