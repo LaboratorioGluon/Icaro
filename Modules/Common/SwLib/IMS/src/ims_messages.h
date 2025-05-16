@@ -13,13 +13,14 @@ template<typename T>
 struct IMS_PACK ImsMessageBase{
 
     /** Common header */
-    struct {
+    struct IMS_PACK {
         uint64_t timestamp;
         uint8_t tag;
         uint8_t source;
         uint8_t len;
         uint8_t dummy;
     } header;
+    static_assert(sizeof(header) ==  12);
 
     /** Message data */
     union 
@@ -27,8 +28,11 @@ struct IMS_PACK ImsMessageBase{
         uint8_t raw[IMS_MESSAGE_MAXSIZE];
         T msg;
     };
+    static_assert(sizeof(T) <= sizeof(raw));
     
 };
+
+typedef ImsMessageBase<uint8_t[IMS_MESSAGE_MAXSIZE]> ImsMessageRaw;
 
 
 /**

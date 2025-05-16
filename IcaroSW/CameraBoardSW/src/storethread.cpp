@@ -24,14 +24,14 @@ void storeThreadFunc (void* arg)
     // 1 - Init thread
     // 1.1 - Parse arguments
     auto convertedArg = reinterpret_cast<storeThreadArg_t*>(arg);
-    std::shared_ptr<const Data::systemStatus_t>& systemStatus = convertedArg->systemStatus;
-    std::shared_ptr<Network::WiFiRaw>&           wifi         = convertedArg->wifiraw;
-    std::shared_ptr<Device::ICamera>&            camera       = convertedArg->camera;
-    std::shared_ptr<Device::IFileSystem>&        fs           = convertedArg->fs;
-    std::shared_ptr<Data::storeThreadStatus_t>&  status       = convertedArg->threadStatus;
+    std::shared_ptr<const Data::systemStatus_t>&  systemStatus   = convertedArg->systemStatus;
+    std::shared_ptr<const Data::ExternalStatus_t> externalStatus = convertedArg->externalStatus;
+    std::shared_ptr<Network::WiFiRaw>&            wifi           = convertedArg->wifiraw;
+    std::shared_ptr<Device::ICamera>&             camera         = convertedArg->camera;
+    std::shared_ptr<Device::IFileSystem>&         fs             = convertedArg->fs;
+    std::shared_ptr<Data::storeThreadStatus_t>&   status         = convertedArg->threadStatus;
 
     // 1.2 - Init thread data
-    int delayCounter = 0;
     int frameCounter = 0;
     char imagefile[20];
 

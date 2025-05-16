@@ -1,7 +1,5 @@
 #include "raw80211.h"
 
-#include <atomic>
-
 #include <esp_log.h>
 #include <esp_wifi.h>
 
