@@ -68,6 +68,7 @@ namespace InterBoards::Messages
         AttitudeAccel,
         AttitudeGyro,
         GPS,
+        DateTime,
     };
 
     typedef ImsMessageBase<IMS_Sensors>       ImsMessageSensors;
@@ -76,4 +77,5 @@ namespace InterBoards::Messages
     typedef ImsMessageBase<IMS_AttitudeAccel> ImsMessageAccel;
     typedef ImsMessageBase<IMS_AttitudeGyro>  ImsMessageGyro;
     typedef ImsMessageBase<IMS_GPS>           ImsMessageGPS;
+    typedef ImsMessageBase<IMS_DateTime>      ImsMessageDateTime;
 }

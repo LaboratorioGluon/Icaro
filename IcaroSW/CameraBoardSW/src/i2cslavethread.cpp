@@ -89,6 +89,22 @@ void copyGPSStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatu
     };
 }
 
+void copyDateTimeStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatus_t>& externalStatus)
+{
+    using namespace InterBoards::Messages;
+    auto ims_gps = reinterpret_cast<const ImsMessageDateTime*>(raw);
+    externalStatus->time = {
+        .externalTS  = ims_gps->header.timestamp,
+        .year        = ims_gps->msg.year,
+        .month       = ims_gps->msg.month,
+        .day         = ims_gps->msg.day,
+        .hour        = ims_gps->msg.hour,
+        .minute      = ims_gps->msg.minute,
+        .second      = ims_gps->msg.second,
+        .millisecond = ims_gps->msg.millisecond,
+    };
+}
+
 }
 
 void i2cSlaveThreadFunc (void* arg)
@@ -104,7 +120,7 @@ void i2cSlaveThreadFunc (void* arg)
     std::shared_ptr<Network::WiFiRaw>&                   wifi           = convertedArg->wifiraw;
     std::shared_ptr<InterBoards::I2CSlave>&              i2cSlave       = convertedArg->i2cSlave;
     std::shared_ptr<Data::i2cSlaveThreadStatus_t>&       status         = convertedArg->threadStatus;
-    std::shared_ptr<Data::ExternalStatus_t>&              externalStatus = convertedArg->externalStatus;
+    std::shared_ptr<Data::ExternalStatus_t>&             externalStatus = convertedArg->externalStatus;
 
     constexpr size_t IMS_MESSAGE_SIZE = sizeof(ImsMessageRaw);
     uint8_t i2cBuffer[IMS_MESSAGE_SIZE];
@@ -127,7 +143,8 @@ void i2cSlaveThreadFunc (void* arg)
             }
             printf("\n");
             
-            if (lenRecv == sizeof(ImsMessageRaw))
+            // if (lenRecv == sizeof(ImsMessageRaw))
+            if (lenRecv > 0)
             {
                 using namespace InterBoards::Messages;
                 
@@ -138,29 +155,84 @@ void i2cSlaveThreadFunc (void* arg)
                 case IMS_TAGS::Status:
                     ESP_LOGI(MODULE_TAG, "Received IMS message: Status");
                     copyBoardStatus(raw, externalStatus);
+                    ESP_LOGD(MODULE_TAG, "TAG    = %u", raw->header.tag);
+                    ESP_LOGD(MODULE_TAG, "Source = %u", raw->header.source);
+                    ESP_LOGD(MODULE_TAG, "Length = %u", raw->header.len);
+                    ESP_LOGD(MODULE_TAG, "Dummy  = %u", raw->header.dummy);
+                    ESP_LOGD(MODULE_TAG, "Status: { ts: %llu, sensorboard: %u, commsboard: %u, powerboard: %u }", 
+                        externalStatus->boards.externalTS, externalStatus->boards.sensorBoardStatus, 
+                        externalStatus->boards.commsBoardStatus, externalStatus->boards.powerBoardStatus);
                     break;
                 case IMS_TAGS::Power:
                     ESP_LOGI(MODULE_TAG, "Received IMS message: Power");
                     copyPowerStatus(raw, externalStatus);
+                    ESP_LOGD(MODULE_TAG, "TAG    = %u", raw->header.tag);
+                    ESP_LOGD(MODULE_TAG, "Source = %u", raw->header.source);
+                    ESP_LOGD(MODULE_TAG, "Length = %u", raw->header.len);
+                    ESP_LOGD(MODULE_TAG, "Dummy  = %u", raw->header.dummy);
+                    ESP_LOGD(MODULE_TAG, "Power: { ts: %llu, status3v3: %u, status5v: %u, batteryLevel: %f }", 
+                        externalStatus->power.externalTS, externalStatus->power.status3v3, 
+                        externalStatus->power.status5v, externalStatus->power.batteryLevel);
                     break;
                 case IMS_TAGS::Sensors:
                     ESP_LOGI(MODULE_TAG, "Received IMS message: Sensors");
                     copySensorsStatus(raw, externalStatus);
+                    ESP_LOGD(MODULE_TAG, "TAG    = %u", raw->header.tag);
+                    ESP_LOGD(MODULE_TAG, "Source = %u", raw->header.source);
+                    ESP_LOGD(MODULE_TAG, "Length = %u", raw->header.len);
+                    ESP_LOGD(MODULE_TAG, "Dummy  = %u", raw->header.dummy);
+                    ESP_LOGD(MODULE_TAG, "Sensors: { ts: %llu, ExternalTemp: %f, InternalTemp: %f, OnboardTemp: %f, Humidity: %f}", 
+                        externalStatus->sensors.externalTS, externalStatus->sensors.ExternalTemp, 
+                        externalStatus->sensors.InternalTemp, externalStatus->sensors.OnboardTemp, 
+                        externalStatus->sensors.Humidity);
                     break;
                 case IMS_TAGS::AttitudeAccel:
                     ESP_LOGI(MODULE_TAG, "Received IMS message: AttitudeAccel");
                     copyAccelStatus(raw, externalStatus);
+                    ESP_LOGD(MODULE_TAG, "TAG    = %u", raw->header.tag);
+                    ESP_LOGD(MODULE_TAG, "Source = %u", raw->header.source);
+                    ESP_LOGD(MODULE_TAG, "Length = %u", raw->header.len);
+                    ESP_LOGD(MODULE_TAG, "Dummy  = %u", raw->header.dummy);
+                    ESP_LOGD(MODULE_TAG, "AttitudeAccel: { ts: %llu, X: %f, Y: %f, Z: %f}", 
+                        externalStatus->accel.externalTS, externalStatus->accel.accelX, 
+                        externalStatus->accel.accelY, externalStatus->accel.accelZ);
                     break;
                 case IMS_TAGS::AttitudeGyro:
                     ESP_LOGI(MODULE_TAG, "Received IMS message: AttitudeGyro");
                     copyGyroStatus(raw, externalStatus);
+                    ESP_LOGD(MODULE_TAG, "TAG    = %u", raw->header.tag);
+                    ESP_LOGD(MODULE_TAG, "Source = %u", raw->header.source);
+                    ESP_LOGD(MODULE_TAG, "Length = %u", raw->header.len);
+                    ESP_LOGD(MODULE_TAG, "Dummy  = %u", raw->header.dummy);
+                    ESP_LOGD(MODULE_TAG, "AttitudeGyro: { ts: %llu, X: %f, Y: %f, Z: %f}", 
+                        externalStatus->gyro.externalTS, externalStatus->gyro.gyroX, 
+                        externalStatus->gyro.gyroY, externalStatus->gyro.gyroZ);
                     break;
                 case IMS_TAGS::GPS:
                     ESP_LOGI(MODULE_TAG, "Received IMS message: GPS");
                     copyGPSStatus(raw, externalStatus);
+                    ESP_LOGD(MODULE_TAG, "TAG    = %u", raw->header.tag);
+                    ESP_LOGD(MODULE_TAG, "Source = %u", raw->header.source);
+                    ESP_LOGD(MODULE_TAG, "Length = %u", raw->header.len);
+                    ESP_LOGD(MODULE_TAG, "Dummy  = %u", raw->header.dummy);
+                    ESP_LOGD(MODULE_TAG, "GPS: { ts: %llu, lat: %f, lon: %f, alt: %f}", 
+                        externalStatus->gps.externalTS, externalStatus->gps.latitude, 
+                        externalStatus->gps.longitude, externalStatus->gps.altitude);
+                    break;
+                case IMS_TAGS::DateTime:
+                    ESP_LOGI(MODULE_TAG, "Received IMS message: DateTime");
+                    copyDateTimeStatus(raw, externalStatus);
+                    ESP_LOGD(MODULE_TAG, "TAG    = %u", raw->header.tag);
+                    ESP_LOGD(MODULE_TAG, "Source = %u", raw->header.source);
+                    ESP_LOGD(MODULE_TAG, "Length = %u", raw->header.len);
+                    ESP_LOGD(MODULE_TAG, "Dummy  = %u", raw->header.dummy);
+                    ESP_LOGD(MODULE_TAG, "DateTime: { ts: %llu, date: %04u/%02u/%02u, time: %02u:%02u:%02u.%03u}", 
+                        externalStatus->time.externalTS, externalStatus->time.year, externalStatus->time.month, 
+                        externalStatus->time.day, externalStatus->time.hour, externalStatus->time.minute, 
+                        externalStatus->time.second, externalStatus->time.millisecond);
                     break;
                 default:
-                    ESP_LOGI(MODULE_TAG, "Received IMS message: Unknown TAG (%d)", raw->header.tag);
+                    ESP_LOGW(MODULE_TAG, "Received IMS message: Unknown TAG (%d)", raw->header.tag);
                     break;
                 }
             }
