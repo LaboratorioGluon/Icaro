@@ -9,14 +9,15 @@
 #define LORA_SPREADFACTOR 8          // Do not change, change LORA_MODE instead
 #define LORA_CODERATE 8              // Do not change, change LORA_MODE instead
 #define LORA_SYNCWORD 0x12           // Default syncword
-#define LORA_POWER 13                // in dBm between 2 and 17. 10 = 10mW (recommended)
+#define LORA_POWER 10                // in dBm between 2 and 17. 10 = 10mW (recommended)
 #define LORA_CURRENTLIMIT 0
 #define LORA_PREAMBLELENGTH 8
 #define LORA_GAIN 0
 
 #define LORA_PAYLOAD_ID  "ICARO-01"  // This will show on Sondehub. Payload ID for LoRa protocol. CHANGE THIS!
 #define LORA_PREFIX "$$"             // Prefix for "Telemetry". Some older LoRa software does not accept a prefix of more than 2x "$"
-#define LORA_FREQUENCY  432.662      // in MHz
+//#define LORA_FREQUENCY  432.662      // in MHz
+#define LORA_FREQUENCY  434.0f      // in MHz
 #define LORA_REPEATS 1               // number of LoRa transmits during a cycle
 #define LORA_LOOPTIME 15            // Transmit LoRa every xx seconds
 
@@ -27,15 +28,15 @@
 ************************************************************************************/
 #define MESSAGE_LENGTH 100     // Maximum length of telemetry line to send
 
-constexpr gpio_num_t PIN_NSS   = GPIO_NUM_18; //Same than CS
-constexpr gpio_num_t PIN_DIO0  = GPIO_NUM_26;
-constexpr gpio_num_t PIN_RESET = GPIO_NUM_23;
+constexpr gpio_num_t PIN_NSS   = GPIO_NUM_5; //Same than CS
+constexpr gpio_num_t PIN_DIO0  = GPIO_NUM_39;
+constexpr gpio_num_t PIN_RESET = GPIO_NUM_14;
 constexpr gpio_num_t PIN_BUSY  = GPIO_NUM_NC; // Not used in this sketch for sx1278
 constexpr gpio_num_t PIN_DIO1  = GPIO_NUM_NC; // Not used in this sketch for sx1278
 
-constexpr gpio_num_t PIN_SCK  = GPIO_NUM_5;
-constexpr gpio_num_t PIN_MISO = GPIO_NUM_19;
-constexpr gpio_num_t PIN_MOSI = GPIO_NUM_27;
+constexpr gpio_num_t PIN_SCK  = GPIO_NUM_18;
+constexpr gpio_num_t PIN_MISO = GPIO_NUM_23;
+constexpr gpio_num_t PIN_MOSI = GPIO_NUM_19;
 
 // Lora settings
 struct TLoRaSettings

@@ -21,3 +21,19 @@ extern "C" void I2C1_IRQHandler(void)
     HAL_I2C_EV_IRQHandler(hI2c);
   }
 }
+
+extern uint32_t start, end;
+
+extern "C" void DMA1_Channel1_IRQHandler(void)
+{
+  DMA_HandleTypeDef *hDma = &supplyBoard.hDma;
+
+  end = TIM2->CNT;
+  /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel1_IRQn 0 */
+  HAL_DMA_IRQHandler(hDma);
+  /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel1_IRQn 1 */
+}

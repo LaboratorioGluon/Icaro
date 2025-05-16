@@ -3455,7 +3455,7 @@
 				)
 				(uuid "c33b2ad0-c6f0-4be0-aa2b-068c79bb3f50")
 			)
-			(table_cell "R_{Arriba}"
+			(table_cell "R_{Abajo}"
 				(exclude_from_sim no)
 				(at 29.21 55.88 0)
 				(size 8.89 3.81)
@@ -3475,7 +3475,7 @@
 				)
 				(uuid "cf61571a-5f50-4569-af83-7c1221197099")
 			)
-			(table_cell "R_{Abajo}"
+			(table_cell "R_{Arriba}"
 				(exclude_from_sim no)
 				(at 38.1 55.88 0)
 				(size 8.89 3.81)
@@ -3566,7 +3566,7 @@
 				)
 				(uuid "7a0215eb-666d-487f-ab95-45f380b007f5")
 			)
-			(table_cell "2.91 V ( a 4.2V)"
+			(table_cell "2.86 V ( a 4.2V)"
 				(exclude_from_sim no)
 				(at 46.99 59.69 0)
 				(size 20.32 2.54)

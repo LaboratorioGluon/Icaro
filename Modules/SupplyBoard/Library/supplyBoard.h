@@ -10,38 +10,48 @@
 
 extern "C" I2C_HandleTypeDef getSlave();
 
+
 class SupplyBoard
 {
 public:
-    typedef struct
-    {
-        struct
-        {
-            uint8_t enable;
-            uint8_t samplingTime;
-        } adc;
 
-        struct
-        {
-            uint8_t enable;
-            uint8_t address;
-            uint8_t i2cSpeed;
-            uint8_t i2cMode;
-        }i2c;
+    typedef struct{
+        struct{
+            float bypassOhm;
+            float inputOhm;
+            float v3_3Ohm;
+            float v5Ohm;
+            float inputGain;
+            float regulatedGain;
+        } currentSense;
+        struct{
+            float v5Gain;
+            float inputGain;
+        } voltageSense;
+    } SupplyBoardHardware;
 
-        struct 
-        {
-            uint8_t enable3v3;
-            uint8_t enable5v;
-            uint8_t enableInput;
-            uint8_t enableBypass;
-        } currentSense;        
-        
-    }SupplyBoardInit;
+    SupplyBoard(SupplyBoardHardware hw);
 
-    SupplyBoard();
+    /**
+     * @brief Configure the system clock.
+     */
+    void configureClock();
 
-    void initHw(SupplyBoardInit initConfig);
+    /**
+     * @brief Initialize the UART peripheral.
+     * 
+     * @param baudrate Baudrate for the UART communication.
+     */
+    void initUart(uint32_t baudrate);
+
+    /**
+     * @brief Initialize the ADC peripheral and DMA.
+     * 
+     * @note The ADC is configured to use DMA for data transfer.
+     */
+    void initAdcDma();
+
+    void initGpio();
 
     /** 
      * Initialize the I2C slave peripheral
@@ -72,23 +82,41 @@ public:
     SupplyErr i2cSlaveStart();
 
 
-    /**
-     * @return Temperatura en mCº. i.e.: 25700 -> 25.7º
-     */
-    uint16_t getSensorTemp();
+    void updateAdcValues();
+
+    void enable5vOutput(uint8_t enable);
+
 
     ADC_HandleTypeDef hAdc;
     
     static I2C_HandleTypeDef s_hI2cSlave;
+    static DMA_HandleTypeDef hDma;
+
 
 private:
 
-    void initAdc();
     uint8_t isAdcInitialized = 0;
 
+    SupplyBoardHardware hwConfig;
+
+    uint16_t adcRawData[7];
+
+};
 
 
-
+constexpr SupplyBoard::SupplyBoardHardware DEFAULT_SUPPLY_HW = {
+    .currentSense = {
+        .bypassOhm = 0.01f,
+        .inputOhm = 0.01f,
+        .v3_3Ohm = 0.1f,
+        .v5Ohm = 0.1f,
+        .inputGain = 0.1f,
+        .regulatedGain = 0.1f
+    },
+    .voltageSense = {
+        .v5Gain = 10.0f/20.0f,
+        .inputGain = 4.7f/14.7f
+    }
 };
 
 #endif //SUPPLYBOARD_H__

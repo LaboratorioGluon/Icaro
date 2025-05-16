@@ -16,21 +16,31 @@ void Lora::Init()
     config.pull_up_en = GPIO_PULLUP_DISABLE;
     gpio_config(&config);
 
+    config.pin_bit_mask = (1<< GPIO_NUM_15);
+    gpio_config(&config);
+    gpio_set_level(GPIO_NUM_15, 0); 
+
+    config.pin_bit_mask = (1<< GPIO_NUM_13);
+    gpio_config(&config);
+    gpio_set_level(GPIO_NUM_13, 0); 
+    gpio_set_level(GPIO_NUM_15, 1);
+
     // Initialize radio
     printf("[LoRA] Initializing ...\n");
-
-    int16_t state = radio.begin(LoRaSettings.Frequency,
+    //radio.setRfSwitchPins(GPIO_NUM_13, GPIO_NUM_15);
+    /*int16_t state = radio.begin(LoRaSettings.Frequency,
                                 LoRaSettings.Bandwidth,
                                 LoRaSettings.SpreadFactor,
                                 LoRaSettings.CodeRate,
                                 LoRaSettings.SyncWord,
                                 LoRaSettings.Power,
                                 LoRaSettings.PreambleLength, 
-                                LoRaSettings.Gain);
+                                3.3f);*/
+    int16_t state = radio.begin();
                         
-    radio.explicitHeader();
-    radio.forceLDRO(false);
-    radio.setCRC(true);
+    //radio.explicitHeader();
+    //radio.forceLDRO(false);
+    //radio.setCRC(true);
 
     if (state != RADIOLIB_ERR_NONE)  printf("[LoRA] Init failed, code %d\n", state);
     else                             printf("[LoRA] Init done\n");

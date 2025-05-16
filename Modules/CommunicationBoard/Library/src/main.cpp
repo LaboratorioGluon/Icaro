@@ -6,6 +6,8 @@ Lora LoraModule;
 
 void app_main(void) 
 {
+  vTaskDelay(pdMS_TO_TICKS(1000));
+
   printf("Start\n");
 
   //Initialize radio

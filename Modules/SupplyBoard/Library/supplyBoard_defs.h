@@ -10,11 +10,16 @@ typedef struct{
 } pinDef;
 
 enum {
-    IO_CURRENT_SENSE_3v3 = 0
+    IO_5V_ENABLE = 0,
+    IO_BYPASS_ENABLE,
+    IO_STM_SPEED
 } functionalPin;
 
 constexpr pinDef supplyBoardIO[] = {
-    [IO_CURRENT_SENSE_3v3] = { GPIO_PIN_3, GPIOA}
+    [IO_5V_ENABLE]     = { GPIO_PIN_15, GPIOC },
+    [IO_BYPASS_ENABLE] = { GPIO_PIN_14, GPIOC },
+    [IO_STM_SPEED]     = { GPIO_PIN_15, GPIOA }
+
 };
 
 #endif //SUPPLYBOARD_DEFS_H__

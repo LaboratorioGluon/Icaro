@@ -195,6 +195,10 @@ class EspHal : public RadioLibHal {
     }
 
     void delay(unsigned long ms) override {
+      if(ms < 20)
+      {
+        vTaskDelay(2);
+      }
       vTaskDelay(ms / portTICK_PERIOD_MS);
     }
 

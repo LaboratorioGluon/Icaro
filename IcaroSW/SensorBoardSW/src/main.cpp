@@ -154,7 +154,6 @@ BME280_INTF_RET_TYPE main_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, u
     buf[0] = reg_addr;
     memcpy(&buf[1], reg_data, len);
 
-
     esp_err_t err = i2c_master_transmit(dev_handle,
         buf,
         len+1,
@@ -199,7 +198,6 @@ void coreAThread(void *arg)
                         bz251Data.day,bz251Data.month, bz251Data.year,
                         bz251Data.hour, bz251Data.minute
                     );
-        //uart_flush(UART_NUM_2);
 
         vTaskDelay(pdMS_TO_TICKS(50));
     }
@@ -254,43 +252,45 @@ extern "C" void app_main() {
 
     uint8_t addr = 0x4;
 
+    uint8_t addr_onoff = DATAMAP_CONFIG_OFFSET;
+    uint8_t onoff[2] = {DATAMAP_CONFIG_OFFSET, 0x00};
+
+    
     for(;;)
     {
-        addr = DATAMAP_TEMP_OFFSET;
+        //addr = DATAMAP_TEMP_OFFSET;
+        addr = DATAMAP_V5_OFFSET;
         esp_err_t err = i2c_master_transmit(i2cSupplyDev, &addr, 1, 1000);
         if (err == ESP_OK)
         {
             err = i2c_master_receive(i2cSupplyDev, (uint8_t*)&supplyTemp, 2, 1000);
-            ESP_LOGE("MAIN", "Temperatura supply: %d mV", ((supplyTemp&0xFF)<<8) + (supplyTemp>>8) );
+            ESP_LOGE("MAIN", "Temperatura supply: %d mDegrees", supplyTemp);
 
         }
         else
         {
             ESP_LOGE("MAIN", "I2C Tx Error: %d", err);
         }
-        /*
-        esp_err_t err = i2c_master_transmit(i2cSupplyDev, &addr, 1, 1000);
-        if (err == ESP_OK)
-        {
-            err = i2c_master_receive(i2cSupplyDev, (uint8_t*)&i2cRecv, 4, 1000);
-            if (err == ESP_OK)
-            {
-                addr++;
-                if (addr > 10)
-                    addr = 0;
-                ESP_LOGE("MAIN", "I2C Recv(%d): 0x%08lX", addr, i2cRecv);
-            }
-            else
-            {
-                ESP_LOGE("MAIN", "I2C Recv Error: %d", err);
-            }
 
+        /*if ( onoff[1] == 0x00)
+        {
+            onoff[1] = 0x01;
         }
         else
         {
-            ESP_LOGE("MAIN", "I2C Tx Error: %d", err);
-            //i2c_master_bus_reset(i2cSupplyDev);
+            onoff[1] = 0x00;
+        }
+
+        esp_err_t err2 = i2c_master_transmit(i2cSupplyDev, onoff, 2, 1000);
+        if (err2 != ESP_OK)
+        {
+            ESP_LOGE("MAIN", "I2C Tx Error: %d", err2);
+        }
+        else
+        {
+            ESP_LOGE("MAIN", "I2C Tx Success");   
         }*/
+
         // Request single ended on pin AIN0
         ADS1115_request_diff_AIN0_AIN1(); // all functions except for get_conversion_X return 'esp_err_t' for logging
 
@@ -303,7 +303,7 @@ extern "C" void app_main() {
         ESP_LOGE("MAIN", "Conversion Value: %d", result);
 
         ESP_LOGE("MAIN", "Hello World!");
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(3000));
     }
 
     bmi.init({SPI2_HOST, GPIO_NUM_23, GPIO_NUM_19, GPIO_NUM_18, GPIO_NUM_5, 1000000});

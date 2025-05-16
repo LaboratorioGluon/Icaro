@@ -18,7 +18,7 @@ public:
 private:
 
     EspHal* hal  = new EspHal(PIN_SCK, PIN_MISO, PIN_MOSI);
-    SX1278 radio = new Module(hal, PIN_NSS, PIN_DIO0, PIN_RESET, PIN_DIO1);
+    SX1268 radio = new Module(hal, PIN_NSS, PIN_DIO0, PIN_RESET, PIN_DIO1);
 
     TLoRaSettings LoRaSettings;
     TLoraMessage  LoraMessage;
