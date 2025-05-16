@@ -1,5 +1,7 @@
 #include "i2cslavethread.h"
 
+#include <time.h>
+
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
@@ -94,6 +96,7 @@ void copyDateTimeStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::External
     using namespace InterBoards::Messages;
     auto ims_gps = reinterpret_cast<const ImsMessageDateTime*>(raw);
     externalStatus->time = {
+        .boardTS     = static_cast<uint64_t>(time(NULL)),
         .externalTS  = ims_gps->header.timestamp,
         .year        = ims_gps->msg.year,
         .month       = ims_gps->msg.month,
@@ -103,6 +106,22 @@ void copyDateTimeStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::External
         .second      = ims_gps->msg.second,
         .millisecond = ims_gps->msg.millisecond,
     };
+}
+
+void updateSystemTime(const Data::ExternalTimeStatus_t& current)
+{
+    struct tm tm = {
+        .tm_sec  = current.second,
+        .tm_min  = current.minute,
+        .tm_hour = current.hour,
+        .tm_mday = current.day,
+        .tm_mon  = current.month - 1,
+        .tm_year = current.year - 1900,
+    };
+
+    time_t t = mktime(&tm);
+    struct timeval now = { .tv_sec = t };
+    settimeofday(&now, NULL);
 }
 
 }
@@ -222,6 +241,7 @@ void i2cSlaveThreadFunc (void* arg)
                 case IMS_TAGS::DateTime:
                     ESP_LOGI(MODULE_TAG, "Received IMS message: DateTime");
                     copyDateTimeStatus(raw, externalStatus);
+                    updateSystemTime(externalStatus->time);
                     ESP_LOGD(MODULE_TAG, "TAG    = %u", raw->header.tag);
                     ESP_LOGD(MODULE_TAG, "Source = %u", raw->header.source);
                     ESP_LOGD(MODULE_TAG, "Length = %u", raw->header.len);
