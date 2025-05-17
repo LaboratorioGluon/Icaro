@@ -11,6 +11,6 @@ namespace Data
 typedef struct
 {
     ThreadState state;
-} i2cSlaveThreadStatus_t;
+} i2cListenerThreadStatus_t;
     
 }

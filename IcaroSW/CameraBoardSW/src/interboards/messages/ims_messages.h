@@ -43,9 +43,9 @@ namespace InterBoards::Messages
         
     struct IMS_PACK IMS_GPS
     {
-        float latitude;
-        float longitude;
-        float altitude;
+        double latitude;
+        double longitude;
+        double altitude;
     };
 
     struct IMS_PACK IMS_DateTime

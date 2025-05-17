@@ -1,4 +1,4 @@
-#include "i2cslavethread.h"
+#include "i2clistenerthread.h"
 
 #include <time.h>
 
@@ -15,7 +15,7 @@
 
 namespace
 {
-const char*           MODULE_TAG       = "TH_I2CSLAVE";
+const char*           MODULE_TAG       = "TH_I2CLISTENER";
 const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_DEBUG;
 
 void copyBoardStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatus_t>& externalStatus)
@@ -126,7 +126,7 @@ void updateSystemTime(const Data::ExternalTimeStatus_t& current)
 
 }
 
-void i2cSlaveThreadFunc (void* arg)
+void i2cListenerThreadFunc (void* arg)
 {
     esp_log_level_set(MODULE_TAG, MODULE_LOG_LEVEL);    
     ESP_LOGI(MODULE_TAG, "Thread launched");
@@ -134,11 +134,11 @@ void i2cSlaveThreadFunc (void* arg)
 
     // 1 - Init thread
     // 1.1 - Parse arguments
-    auto convertedArg = reinterpret_cast<i2cSlaveThreadArg_t*>(arg);
+    auto convertedArg = reinterpret_cast<i2cListenerThreadArg_t*>(arg);
     std::shared_ptr<const Data::systemStatus_t>&         systemStatus   = convertedArg->systemStatus;
     std::shared_ptr<Network::WiFiRaw>&                   wifi           = convertedArg->wifiraw;
     std::shared_ptr<InterBoards::I2CSlave>&              i2cSlave       = convertedArg->i2cSlave;
-    std::shared_ptr<Data::i2cSlaveThreadStatus_t>&       status         = convertedArg->threadStatus;
+    std::shared_ptr<Data::i2cListenerThreadStatus_t>&      status         = convertedArg->threadStatus;
     std::shared_ptr<Data::ExternalStatus_t>&             externalStatus = convertedArg->externalStatus;
 
     constexpr size_t IMS_MESSAGE_SIZE = sizeof(ImsMessageRaw);
@@ -148,7 +148,7 @@ void i2cSlaveThreadFunc (void* arg)
     // 2 - Thread loop
     while (true)
     {
-        if(systemStatus->i2cSlaveEnabled)
+        if(systemStatus->i2cListenEnabled)
         {
             status->state = Data::ThreadState::RUNNING;
 
