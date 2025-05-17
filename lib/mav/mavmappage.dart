@@ -17,8 +17,6 @@ class IcaroMAVMapPage extends StatefulWidget {
 class _IcaroMAVMapPageState extends State<IcaroMAVMapPage> with TickerProviderStateMixin{
   late StreamSubscription<MAVGPSStatus> _mavGPSStatusSub;
 
-  // MAVGPSStatus gpsStatus = MAVGPSStatus();
-
   // Initial state
   @override
   void initState() {
@@ -84,6 +82,11 @@ class _IcaroMAVMapPageState extends State<IcaroMAVMapPage> with TickerProviderSt
   // Widget creation
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final style = theme.textTheme.displayMedium!.copyWith(
+       color: theme.colorScheme.onPrimary,
+       );
+
     icaroMarker = Marker(
                       point: icaroPosition, 
                       child: Image.asset("assets/icaro.png")
@@ -92,7 +95,26 @@ class _IcaroMAVMapPageState extends State<IcaroMAVMapPage> with TickerProviderSt
     // Tracking switch
     var trackingSwitch = Switch(
       value: issTrackEnable,
-      onChanged: (bool value) {_setTrackingEnable(value);},
+      onChanged: (bool value) {
+        _setTrackingEnable(value);
+      },
+      thumbColor: WidgetStateProperty.all(Colors.white),
+      trackColor: WidgetStateProperty.all(Colors.white70),
+    );
+
+    var trackingCard = Card(
+      color: theme.colorScheme.primary,
+      elevation: 10,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row( 
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("Enable tracking", style: style,),
+            trackingSwitch
+          ],
+        ),
+      )
     );
 
     // Map widget
@@ -120,7 +142,10 @@ class _IcaroMAVMapPageState extends State<IcaroMAVMapPage> with TickerProviderSt
     var pageWidget = Stack(
         children: [
             map,
-            trackingSwitch
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: trackingCard
+            )
         ],
     );
 
