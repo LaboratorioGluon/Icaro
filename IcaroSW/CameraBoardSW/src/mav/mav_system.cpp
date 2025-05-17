@@ -1,45 +1,32 @@
 #include "mav_system.h"
 
 #include <minimal/mavlink_msg_heartbeat.h>
-
 namespace
 {
 
 int16_t floatToMilliInt16(const float orig)
 {
     constexpr int e3 = 1000;
-    int units = static_cast<int> (orig);
-    int decimals = static_cast<int> ((orig-units) * e3);
-    int16_t converted = (units * e3) + decimals;
-    return converted;
+    return static_cast<int16_t>(orig * e3);
 }
 
 int16_t floatToCentiInt16(const float orig)
 {
     constexpr int e2 = 100;
-    int units = static_cast<int> (orig);
-    int decimals = static_cast<int> ((orig-units) * e2);
-    int16_t converted = (units * e2) + decimals;
-    return converted;
+    return static_cast<int16_t>(orig * e2);
+
 }
 
 int32_t doubleToDegE7Int32(const double orig)
 {
     constexpr int e7 = 10000000;
-    int units = static_cast<int> (orig);
-    int decimals = static_cast<int> ((orig-units) * e7);
-    int16_t converted = (units * e7) + decimals;
-    return converted;
-
+    return static_cast<int32_t>(orig * e7);
 }
 
 int32_t doubleToMMInt32(const double orig)
 {
     constexpr int e3 = 1000;
-    int units = static_cast<int> (orig);
-    int decimals = static_cast<int> ((orig-units) * e3);
-    int16_t converted = (units * e3) + decimals;
-    return converted;
+    return static_cast<int32_t>(orig * e3);
 }
 
 }
