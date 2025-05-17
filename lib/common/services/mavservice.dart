@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:dart_mavlink/dialects/common.dart';
 import 'package:dart_mavlink/mavlink.dart';
 import 'package:dart_mavlink/types.dart';
+import 'package:icaro_app/common/data/threeaxis.dart';
 
 class MAVCameraStatus
 {
@@ -15,6 +16,19 @@ class MAVCameraStatus
     double longitude             = 0.0;
     double altitude              = 0.0;
     List<char> lastImageCapturedName = [];
+}
+
+class MAVGPSStatus
+{
+  double latitute  = 0.0;
+  double longitude = 0.0;
+  double altitude  = 0.0;
+}
+
+class MAVIMUStatus
+{
+  ThreeAxis accel = ThreeAxis(x:0.0, y:0.0, z:0.0);
+  ThreeAxis gyro = ThreeAxis(x:0.0, y:0.0, z:0.0);
 }
 
 class MAVService {
@@ -51,6 +65,13 @@ class MAVService {
 
         // Update camera info
         _cameraStatusController.add(cameras);
+
+        // Update gps info
+        _gpsStatusController.add(gpsStatus);
+        
+        // Update imu info
+        _imuStatusController.add(imuStatus);
+
       });
   }
 
@@ -58,6 +79,17 @@ class MAVService {
   final Map<int, MAVCameraStatus> cameras = {};
   final StreamController<Map<int, MAVCameraStatus>> _cameraStatusController = StreamController.broadcast();
   Stream<Map<int, MAVCameraStatus>> get cameraStatusStream => _cameraStatusController.stream;
+
+  // MAV GPS status
+  final gpsStatus = MAVGPSStatus();
+  final StreamController<MAVGPSStatus> _gpsStatusController = StreamController.broadcast();
+  Stream<MAVGPSStatus> get gpsStatusStream => _gpsStatusController.stream;
+
+  // MAV IMU status
+  final imuStatus = MAVIMUStatus();
+  final StreamController<MAVIMUStatus> _imuStatusController = StreamController.broadcast();
+  Stream<MAVIMUStatus> get imuStatusStream => _imuStatusController.stream;
+
 
   // MAV message processors
   void _processMAVHearbeat(Heartbeat hb)
@@ -71,7 +103,6 @@ class MAVService {
     if (!cameras.containsKey(cic.cameraId))
     {
         cameras[cic.cameraId] = MAVCameraStatus();
-        
     }
 
     var camera = cameras[cic.cameraId];
@@ -96,6 +127,29 @@ class MAVService {
     print("CameraImageCaptured received");
   }
 
+  void _processGlobalPositionInt(GlobalPositionInt gpi)
+  {
+    final double e7 = 10000000.0;
+    final double e3 = 1000.0;
+    gpsStatus.latitute  = gpi.lat.toDouble() / e7;
+    gpsStatus.longitude = gpi.lon.toDouble() / e7;
+    gpsStatus.altitude  = gpi.alt / e3;
+  }
+
+  void _processScaledImu(ScaledImu imu)
+  {
+    imuStatus.accel = ThreeAxis(
+      x: imu.xacc.toDouble() / 1000.0,
+      y: imu.yacc.toDouble() / 1000.0,
+      z: imu.zacc.toDouble() / 1000.0,
+    );
+    imuStatus.gyro = ThreeAxis(
+      x: imu.xgyro.toDouble() / 1000.0,
+      y: imu.ygyro.toDouble() / 1000.0,
+      z: imu.zgyro.toDouble() / 1000.0,
+    );
+  }
+
   // MAV server 
   late MavlinkDialectCommon _dialect;
   late MavlinkParser _parser;
@@ -113,6 +167,16 @@ class MAVService {
       {
         var cic = frm.message as CameraImageCaptured;
         _processCameraImageCaptured(cic);
+      }
+      else if  (frm.message is GlobalPositionInt)
+      {
+        var gpi = frm.message as GlobalPositionInt;
+        _processGlobalPositionInt(gpi);
+      }
+      else if  (frm.message is ScaledImu)
+      {
+        var imu = frm.message as ScaledImu;
+        _processScaledImu(imu);
       }
     });
 

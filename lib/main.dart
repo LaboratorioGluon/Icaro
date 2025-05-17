@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
 
 import 'camerapage/camerapage.dart';
 import 'homepage.dart';
 import 'logspage.dart';
 import 'lorapage.dart';
 import 'mappage/mappage.dart';
-import 'mavpage/mavpage.dart';
+import 'mav/mavsensorspage.dart';
+import 'mav/mavmappage.dart';
 import 'powerpage.dart';
 import 'sensorspage/sensorspage.dart';
 import 'settingspage/settingspage.dart';
@@ -62,21 +62,21 @@ class _IcaroMainState extends State<IcaroMain> {
       case 0:
         page = IcaroHomePage();
       case 1:
-        page = IcaroSensorsPage();
+        page = IcaroMAVSensorsPage();
       case 2:
         page = IcaroCameraPage();
       case 3:
-        page = IcaroMapPage();
+        page = IcaroMAVMapPage();
       case 4:
-        page = IcaroPowerPage();
-      case 5:
-        page = IcaroLoraPage();
-      case 6:
-        page = IcaroMAVPage();
-      case 7:
         page = IcaroLogsPage();
-      case 8:
+      case 5:
         page = IcaroSettingsPage();
+      case 6:
+        page = IcaroSensorsPage();
+      case 7:
+        page = IcaroMapPage();
+      case 8:
+        page = IcaroLoraPage();
       default:
       throw UnimplementedError("No widget for $selectedIndex");
     }
@@ -89,28 +89,16 @@ class _IcaroMainState extends State<IcaroMain> {
                 label: Text('Home'),
               ),
               NavigationRailDestination(
-                icon: Icon(Icons.sensors),
-                label: Text('Sensors'),
+                icon: Icon(Icons.wifi_tethering),
+                label: Text('MAV Sensors'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.camera_alt),
-                label: Text('Camera'),
+                label: Text('MAV Camera'),
               ),
               NavigationRailDestination(
-                icon: Icon(Icons.map),
-                label: Text('Map'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.power),
-                label: Text('Power'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.wifi),
-                label: Text('Lora'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.cell_wifi),
-                label: Text('MAV'),
+                icon: Icon(Icons.map_outlined),
+                label: Text('MAV Map'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.file_present),
@@ -119,6 +107,18 @@ class _IcaroMainState extends State<IcaroMain> {
               NavigationRailDestination(
                 icon: Icon(Icons.settings),
                 label: Text('Settings'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.sensors),
+                label: Text('Sensors'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.map),
+                label: Text('Map'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.wifi),
+                label: Text('Lora'),
               ),
             ];
 

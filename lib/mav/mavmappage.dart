@@ -1,0 +1,129 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_animations/flutter_map_animations.dart';
+import 'package:icaro_app/common/services/mavservice.dart';
+import 'package:latlong2/latlong.dart';
+
+class IcaroMAVMapPage extends StatefulWidget {
+  const IcaroMAVMapPage({super.key});
+  static const String pageTitle = "Icaro Map page";
+
+  @override
+  State<IcaroMAVMapPage> createState() => _IcaroMAVMapPageState();
+}
+
+class _IcaroMAVMapPageState extends State<IcaroMAVMapPage> with TickerProviderStateMixin{
+  late StreamSubscription<MAVGPSStatus> _mavGPSStatusSub;
+
+  // MAVGPSStatus gpsStatus = MAVGPSStatus();
+
+  // Initial state
+  @override
+  void initState() {
+    super.initState();
+
+    // MAV GPS status monitor
+    _mavGPSStatusSub = MAVService().gpsStatusStream.listen((newStatus) {
+      setState((){
+        // gpsStatus = newStatus;
+        _setPosition(LatLng(newStatus.latitute, newStatus.longitude));
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _mavGPSStatusSub.cancel();
+    _animatedMapController.dispose();
+    super.dispose();
+  }
+
+  // Map controls
+  late final _animatedMapController = AnimatedMapController(
+                                        vsync: this, 
+                                        duration: const Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut);
+
+  static getDefaultLatLng() {
+    return LatLng(40.44254064814816, -3.952498215412911);
+  }
+  static getDefaultZoom() {
+    return 5.0;
+  }
+  static getDefaultRotation() {
+    return 0.0;
+  }
+
+  void _moveMap(LatLng position) {
+    _animatedMapController.animateTo(dest: position);
+  }
+
+  // Icaro tracking
+  bool issTrackEnable = true;
+  LatLng icaroPosition = const LatLng(40.44254064814816, -3.952498215412911);
+  late Marker icaroMarker;
+
+  void _setTrackingEnable(bool value) {
+    setState(() {
+      issTrackEnable = value;
+    });
+  }
+  
+  void _setPosition(LatLng newPosition) {
+    setState(() {
+      icaroPosition = newPosition;
+      if(issTrackEnable)
+      {
+        _moveMap(icaroPosition);
+      }
+    });
+  }
+
+  // Widget creation
+  @override
+  Widget build(BuildContext context) {
+    icaroMarker = Marker(
+                      point: icaroPosition, 
+                      child: Image.asset("assets/icaro.png")
+                    );
+
+    // Tracking switch
+    var trackingSwitch = Switch(
+      value: issTrackEnable,
+      onChanged: (bool value) {_setTrackingEnable(value);},
+    );
+
+    // Map widget
+    var map = FlutterMap(
+          options: MapOptions(
+            initialCenter: getDefaultLatLng(),
+            initialZoom: getDefaultZoom(),
+            initialRotation: getDefaultRotation(),
+          ),
+          mapController: _animatedMapController.mapController,
+          children: [
+            TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.icaro.app',
+            ),
+            MarkerLayer(
+              markers: [
+                icaroMarker,
+              ],
+            ),
+          ],
+        );
+
+    // Compose final widget and return
+    var pageWidget = Stack(
+        children: [
+            map,
+            trackingSwitch
+        ],
+    );
+
+    return pageWidget;
+  }
+}
