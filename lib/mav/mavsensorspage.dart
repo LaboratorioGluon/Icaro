@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:icaro_app/common/services/mavservice.dart';
+import 'package:icaro_app/sensorspage/humiditywidget.dart';
+import 'package:icaro_app/sensorspage/temperaturewidget.dart';
 import 'package:icaro_app/sensorspage/threeaxiswidget.dart';
 
 class IcaroMAVSensorsPage extends StatefulWidget {
@@ -14,13 +16,15 @@ class IcaroMAVSensorsPage extends StatefulWidget {
 }
 
 class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
-  late StreamSubscription<int>          _mavHeartBeatSub;
-  late StreamSubscription<MAVGPSStatus> _mavGPSStatusSub;
-  late StreamSubscription<MAVIMUStatus> _mavIMUStatusSub;
+  late StreamSubscription<int>              _mavHeartBeatSub;
+  late StreamSubscription<MAVGPSStatus>     _mavGPSStatusSub;
+  late StreamSubscription<MAVIMUStatus>     _mavIMUStatusSub;
+  late StreamSubscription<MAVSensorsStatus> _mavSensorsStatusSub;
 
-  int linkCoverage = 0;
-  MAVGPSStatus gpsStatus = MAVGPSStatus();
-  MAVIMUStatus imuStatus = MAVIMUStatus();
+  int              linkCoverage  = 0;
+  MAVGPSStatus     gpsStatus     = MAVGPSStatus();
+  MAVIMUStatus     imuStatus     = MAVIMUStatus();
+  MAVSensorsStatus sensorsStatus = MAVSensorsStatus();
 
   // Initial state
   @override
@@ -47,6 +51,13 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
         imuStatus = newStatus;
       });
     });
+
+    // MAV Sensors status monitor
+    _mavSensorsStatusSub = MAVService().sensorsStatusStream.listen((newStatus) {
+      setState((){
+        sensorsStatus = newStatus;
+      });
+    });
   }
 
   @override
@@ -54,6 +65,7 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
     _mavHeartBeatSub.cancel();
     _mavGPSStatusSub.cancel();
     _mavIMUStatusSub.cancel();
+    _mavSensorsStatusSub.cancel();
     super.dispose();
   }
 
@@ -76,6 +88,16 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
 
     var accel = ThreeAxisWidget(label: "Accelerometer", threeAxis: imuStatus.accel);
     var gyro = ThreeAxisWidget(label: "Gyroscope", threeAxis: imuStatus.gyro);
+    
+    var humidity = HumidityWidget(label: "Humidity", value: sensorsStatus.humidity);
+
+    var temperatures = TemperatureWidget(
+      temperatures: [
+        TemperatureSubject("Internal Temp", sensorsStatus.internalTemp, Colors.red),
+        TemperatureSubject("External Temp", sensorsStatus.externalTemp, Colors.blue),
+        TemperatureSubject("OnBoard Temp", sensorsStatus.onboardTemp, Colors.grey),
+        TemperatureSubject("Humidity", sensorsStatus.humidity, Colors.green),
+        ]);
 
     return Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -89,10 +111,16 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
               child: Text(IcaroMAVSensorsPage.pageTitle, style: style,),
             ),
           ),
-          Row(
+          Column( 
             children: [
-              accel,
-              gyro,
+              temperatures,
+              Row(
+                children: [
+                  accel,
+                  gyro,
+                  humidity,
+                ],
+              ),
             ],
           ),
         ],
