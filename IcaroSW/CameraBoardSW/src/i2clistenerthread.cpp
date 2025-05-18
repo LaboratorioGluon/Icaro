@@ -117,6 +117,7 @@ void updateSystemTime(const Data::ExternalTimeStatus_t& current)
         .tm_mday = current.day,
         .tm_mon  = current.month - 1,
         .tm_year = current.year - 1900,
+        .tm_isdst = 0,
     };
 
     time_t t = mktime(&tm);

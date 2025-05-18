@@ -2,24 +2,21 @@
 
 import messageGenerator
 import requests
+from datetime import datetime
 
 def sendSensorsStatusMessage(data):
-    pass
     print("Mensaje enviado:", data)
     messageGenerator.sendSensorsStatusMessage(data["ExternalTemp"], data["InternalTemp"], data["OnBoardTemp"], data["Humidity"])
 
 def sendAccelerometerStatusMessage(data):
-    pass
     print("Mensaje enviado:", data)
     messageGenerator.sendAccelerometerStatusMessage(data["X"], data["Y"], data["Z"])
 
 def sendGyroscopeStatusMessage(data):
-    pass
     print("Mensaje enviado:", data)
     messageGenerator.sendGyroscopeStatusMessage(data["X"], data["Y"], data["Z"])
 
 def sendGPSStatusMessage(data):
-    pass
     print("Mensaje enviado:", data)
     if data["Use ISS"]:
         url = "https://api.wheretheiss.at/v1/satellites/25544"
@@ -28,6 +25,18 @@ def sendGPSStatusMessage(data):
         messageGenerator.sendGPSStatusMessage(data["latitude"], data["longitude"], data["altitude"])
     else:
         messageGenerator.sendGPSStatusMessage(data["Latitude"], data["Longitude"], data["Altitude"])
+
+def sendPowerStatusMessage(data):
+    print("Mensaje enviado:", data)
+    messageGenerator.sendPowerStatusMessage(data["Status3v3"], data["Status5v0"], data["Percentage"])
+
+def sendTimeStatusMessage(data):
+    print("Mensaje enviado:", data)
+    if data["UseCurrentTime"]:
+        now = datetime.now()
+        messageGenerator.sendTimeStatusMessage(now.year, now.month, now.day, now.hour, now.minute, now.second, int(now.microsecond/1000))
+    else:
+        messageGenerator.sendTimeStatusMessage()
 
 import tkinter as tk
 from tkinter import ttk
@@ -120,6 +129,20 @@ def main():
     ]
     msg3 = MessageFrame(root, "GPS", fields_msg3, send_callback=sendGPSStatusMessage)
     msg3.grid(row=1, column=0, columnspan=1, padx=10, pady=10, sticky="nsew")
+
+    fields_msg5 = [
+        {"name": "Status3v3", "type": "check"},
+        {"name": "Status5v0", "type": "check"},
+        {"name": "Percentage", "type": "scale", "from": 0.0, "to": 100.0, "resolution": 1.0},
+    ]
+    msg5 = MessageFrame(root, "Battery", fields_msg5, send_callback=sendPowerStatusMessage)
+    msg5.grid(row=1, column=1, columnspan=1, padx=10, pady=10, sticky="nsew")
+
+    fields_msg5 = [
+        {"name": "UseCurrentTime", "type": "check"},
+    ]
+    msg5 = MessageFrame(root, "DateTime", fields_msg5, send_callback=sendTimeStatusMessage)
+    msg5.grid(row=1, column=2, columnspan=1, padx=10, pady=10, sticky="nsew")
 
     root.mainloop()
 

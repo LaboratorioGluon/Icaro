@@ -59,6 +59,20 @@ bool MAVSystem::sendHeartBeat(uint8_t system_status, uint32_t custom_mode, uint8
     return ok;
 }
 
+bool MAVSystem::sendSystemTime(uint64_t timestamp_us, uint32_t boottime_ms)
+{
+    mavlink_message_t mavMessage;
+    size_t message_length = mavlink_msg_system_time_pack(
+        systemID, componentID, 
+        &mavMessage, 
+        timestamp_us, 
+        boottime_ms
+    );
+
+    bool ok = (send(mavMessage) == message_length);
+    return ok;
+}
+
 bool MAVSystem::sendScaledIMU(uint64_t timestamp,
                               float accelX, float accelY, float accelZ,
                               float gyroX,  float gyroY,  float gyroZ,
@@ -66,7 +80,7 @@ bool MAVSystem::sendScaledIMU(uint64_t timestamp,
                               float temp)
 {
     mavlink_message_t mavMessage;
-    size_t message_length = mavlink_msg_scaled_imu_pack(
+    size_t message_length = mavlink_msg_raw_imu_pack(
         systemID, componentID, 
         &mavMessage, 
         timestamp, 
@@ -79,6 +93,7 @@ bool MAVSystem::sendScaledIMU(uint64_t timestamp,
         floatToMilliInt16(magX),
         floatToMilliInt16(magY),
         floatToMilliInt16(magZ),
+        0,
         floatToCentiInt16(temp)
     );
 
@@ -103,6 +118,53 @@ bool MAVSystem::sendGPS(uint64_t timestamp, double lat, double lon, double alt)
         UINT16_MAX
     );
 
+    bool ok = (send(mavMessage) == message_length);
+    return ok;
+}
+
+bool MAVSystem::sendBattery(bool status3v3, bool status5v0, float batteryRemaining)
+{
+    const uint16_t voltages[10] = {UINT16_MAX};
+    uint16_t voltages_ext[4] = {0};
+    
+    // Not official use
+    voltages_ext[0] = (status3v3) ? 1.0 : 0.0;
+    voltages_ext[1] = (status5v0) ? 1.0 : 0.0;
+
+    mavlink_message_t mavMessage;
+    size_t message_length = mavlink_msg_battery_status_pack(
+        systemID, componentID, 
+        &mavMessage, 
+        0, 
+        MAV_BATTERY_FUNCTION_ALL,
+        MAV_BATTERY_TYPE_UNKNOWN,
+        INT16_MAX,
+        voltages,
+        -1,
+        -1,
+        -1,
+        static_cast<int8_t>(batteryRemaining),
+        0,
+        MAV_BATTERY_CHARGE_STATE_UNDEFINED,
+        voltages_ext,
+        MAV_BATTERY_MODE_UNKNOWN,
+        0
+    );
+
+    bool ok = (send(mavMessage) == message_length);
+    return ok;
+}
+
+bool MAVSystem::sendNamedFloat(uint64_t timestamp, const char* name, float value)
+{
+    mavlink_message_t mavMessage;
+    size_t message_length = mavlink_msg_named_value_float_pack(
+        systemID, componentID, 
+        &mavMessage, 
+        timestamp,
+        name, 
+        value
+    );
     bool ok = (send(mavMessage) == message_length);
     return ok;
 }

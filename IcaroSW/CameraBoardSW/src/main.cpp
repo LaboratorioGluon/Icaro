@@ -7,6 +7,7 @@
 #include <freertos/task.h>
 
 #include <esp_log.h>
+#include <esp_timer.h>
 
 #include "systemdef.h"
 // #include "config.h"
@@ -128,13 +129,32 @@ void createInitFile()
 void sendStatusMAV(std::shared_ptr<const Data::ExternalStatus_t> c_externalStatus, MAVLink::MAVSystem& mavSystem)
 {
     auto now   = static_cast<uint64_t>(time(NULL));
-    auto accel = c_externalStatus->accel;
-    auto gyro  = c_externalStatus->gyro;
-    auto gps   = c_externalStatus->gps;
+    const Data::ExternalStatus_t s_externalStatus = *c_externalStatus;
+    const auto& accel   = s_externalStatus.accel;
+    const auto& gyro    = s_externalStatus.gyro;
+    const auto& gps     = s_externalStatus.gps;
+    const auto& power   = s_externalStatus.power;
+    const auto& sensors = s_externalStatus.sensors;
+
+    time_t epoch = time(NULL);
+    uint32_t boottimems = pdTICKS_TO_MS(xTaskGetTickCount());
+    mavSystem.sendSystemTime(epoch, boottimems);
 
     mavSystem.sendScaledIMU(now, accel.accelX, accel.accelY, accel.accelZ,
                                 gyro.gyroX, gyro.gyroY, gyro.gyroZ);
     mavSystem.sendGPS(now, gps.latitude, gps.longitude, gps.altitude);
+    mavSystem.sendBattery(power.status3v3, power.status5v, power.batteryLevel);
+
+    constexpr size_t NAME_SIZE = 10;
+    const char nameInternalT[NAME_SIZE] = "InternalT";
+    const char nameExternalT[NAME_SIZE] = "ExternalT";
+    const char nameOnboardT[NAME_SIZE]  = "OnboardT";
+    const char nameHumidity[NAME_SIZE]  = "Humidity";
+    
+    mavSystem.sendNamedFloat(now, nameInternalT, sensors.InternalTemp);
+    mavSystem.sendNamedFloat(now, nameExternalT, sensors.ExternalTemp);
+    mavSystem.sendNamedFloat(now, nameOnboardT,  sensors.OnboardTemp);
+    mavSystem.sendNamedFloat(now, nameHumidity,  sensors.Humidity);
 }
 
 extern "C"
@@ -234,7 +254,6 @@ void app_main()
     // Start
     systemStatus->state = Data::AppState::FULL_POWER;
     mavSystem.sendHeartBeat(MAV_STATE_BOOT, static_cast<uint32_t>(systemStatus->state));
-
 
     // State machine controller
     while(1)

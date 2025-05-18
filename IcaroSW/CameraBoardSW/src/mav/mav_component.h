@@ -30,6 +30,13 @@ protected:
         if (link->isAvailable())
         {
             size_t mavBuffer_length = mavlink_msg_to_send_buffer(mavBuffer, &mavMessage);
+            // printf("Sending MAVLink message: %d bytes\n", mavBuffer_length);
+            // printf("MAVLink message: ");
+            // for (size_t i = 0; i < mavBuffer_length; i++)
+            // {
+            //     printf("%02X ", mavBuffer[i]);
+            // }
+            // printf("\n");
             return link->write(reinterpret_cast<char*>(mavBuffer), mavBuffer_length);
         }
         return -1;

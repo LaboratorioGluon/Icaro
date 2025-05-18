@@ -23,6 +23,9 @@ public:
                        uint32_t custom_mode   = 0,
                        uint8_t  base_mode     = 0);
 
+    bool sendSystemTime(uint64_t timestamp_us,
+                        uint32_t boottime_ms);
+
     bool sendScaledIMU(uint64_t timestamp,
                        float accelX,    float accelY,    float accelZ,
                        float gyroX,     float gyroY,     float gyroZ,
@@ -30,6 +33,11 @@ public:
                        float temp=0.0f);
 
     bool sendGPS(uint64_t timestamp, double lat, double lon, double alt);
+
+    bool sendBattery(bool status3v3, bool status5v0, float batteryRemaining);
+
+    bool sendNamedFloat(uint64_t timestamp, const char* name, float value);
+
 };
 
 }
