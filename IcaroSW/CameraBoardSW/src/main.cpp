@@ -136,9 +136,9 @@ void sendStatusMAV(std::shared_ptr<const Data::ExternalStatus_t> c_externalStatu
     const auto& power   = s_externalStatus.power;
     const auto& sensors = s_externalStatus.sensors;
 
-    time_t epoch = time(NULL);
+    time_t epoch_us = time(NULL)  * 1000.0;
     uint32_t boottimems = pdTICKS_TO_MS(xTaskGetTickCount());
-    mavSystem.sendSystemTime(epoch, boottimems);
+    mavSystem.sendSystemTime(epoch_us, boottimems);
 
     mavSystem.sendScaledIMU(now, accel.accelX, accel.accelY, accel.accelZ,
                                 gyro.gyroX, gyro.gyroY, gyro.gyroZ);
