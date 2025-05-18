@@ -33,9 +33,9 @@ class MAVIMUStatus
 
 class MAVBatteryStatus
 {
-  bool status3v3        = false;
-  bool status5v0        = false;
-  int batteryPercentage = 0;
+  bool status3v3           = false;
+  bool status5v0           = false;
+  double batteryPercentage = 0;
 }
 
 class MAVSensorsStatus
@@ -166,20 +166,6 @@ class MAVService {
     gpsStatus.altitude  = gpi.alt.toDouble() / e3;
   }
 
-  void _processScaledImu(ScaledImu imu)
-  {
-    imuStatus.accel = ThreeAxis(
-      x: imu.xacc.toDouble() / 1000.0,
-      y: imu.yacc.toDouble() / 1000.0,
-      z: imu.zacc.toDouble() / 1000.0,
-    );
-    imuStatus.gyro = ThreeAxis(
-      x: imu.xgyro.toDouble() / 1000.0,
-      y: imu.ygyro.toDouble() / 1000.0,
-      z: imu.zgyro.toDouble() / 1000.0,
-    );
-  }
-
   void _processRawImu(RawImu imu)
   {
     imuStatus.accel = ThreeAxis(
@@ -198,7 +184,7 @@ class MAVService {
   {
     batteryStatus.status3v3 = bs.voltagesExt[0] != 0.0; // Not official purpose
     batteryStatus.status5v0 = bs.voltagesExt[1] != 0.0; // Not official purpose
-    batteryStatus.batteryPercentage = bs.batteryRemaining;
+    batteryStatus.batteryPercentage = bs.batteryRemaining.toDouble();
   }
 
   int _getNameLength(List<int> name)
@@ -279,40 +265,32 @@ class MAVService {
 
           parser.stream.listen((MavlinkFrame frm) {
             if (frm.message is Heartbeat) {
-              var hb = frm.message as Heartbeat;
+              final hb = frm.message as Heartbeat;
               _processMAVHearbeat(hb);
             }
             else if  (frm.message is CameraImageCaptured)
             {
-              var cic = frm.message as CameraImageCaptured;
+              final cic = frm.message as CameraImageCaptured;
               _processCameraImageCaptured(cic);
             }
             else if  (frm.message is GlobalPositionInt)
             {
-              var gpi = frm.message as GlobalPositionInt;
+              final gpi = frm.message as GlobalPositionInt;
               _processGlobalPositionInt(gpi);
-            }
-            else if  (frm.message is ScaledImu)
-            {
-              var imu = frm.message as ScaledImu;
-              _processScaledImu(imu);
             }
             else if  (frm.message is RawImu)
             {
-              // var imu = RawImu.parse(frm.message.serialize());
               final imu = frm.message as RawImu;
-              // frm.message
-
               _processRawImu(imu);
             }
             else if  (frm.message is BatteryStatus)
             {
-              var bs = BatteryStatus.parse(frm.message.serialize());
+              final bs = BatteryStatus.parse(frm.message.serialize());
               _processBatteryStatus(bs);
             }
             else if  (frm.message is NamedValueFloat)
             {
-              var nvf = NamedValueFloat.parse(frm.message.serialize());
+              final nvf = NamedValueFloat.parse(frm.message.serialize());
               _processNamedFloat(nvf);
             }
           });

@@ -1,15 +1,18 @@
 import 'dart:async';
 
+import 'package:dart_mavlink/dialects/common.dart';
 import 'package:flutter/material.dart';
 
 import 'package:icaro_app/common/services/mavservice.dart';
 import 'package:icaro_app/common/widgets/humiditywidget.dart';
+import 'package:icaro_app/common/widgets/powerwidget.dart';
 import 'package:icaro_app/common/widgets/temperaturewidget.dart';
 import 'package:icaro_app/common/widgets/threeaxiswidget.dart';
+import 'package:material_color_utilities/quantize/quantizer.dart';
 
 class IcaroMAVSensorsPage extends StatefulWidget {
   const IcaroMAVSensorsPage({super.key});
-  static const String pageTitle = "Icaro MAV page";
+  static const String pageTitle = "Icaro MAV Sensors page";
 
   @override
   State<IcaroMAVSensorsPage> createState() => _IcaroMAVSensorsPageState();
@@ -19,11 +22,13 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
   late StreamSubscription<int>              _mavHeartBeatSub;
   late StreamSubscription<MAVGPSStatus>     _mavGPSStatusSub;
   late StreamSubscription<MAVIMUStatus>     _mavIMUStatusSub;
+  late StreamSubscription<MAVBatteryStatus> _mavBatteryStatusSub;
   late StreamSubscription<MAVSensorsStatus> _mavSensorsStatusSub;
 
   int              linkCoverage  = 0;
   MAVGPSStatus     gpsStatus     = MAVGPSStatus();
   MAVIMUStatus     imuStatus     = MAVIMUStatus();
+  MAVBatteryStatus batteryStatus = MAVBatteryStatus();
   MAVSensorsStatus sensorsStatus = MAVSensorsStatus();
 
   // Initial state
@@ -52,6 +57,13 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
       });
     });
 
+    // MAV Battery status monitor
+    _mavBatteryStatusSub = MAVService().batteryStatusStream.listen((newStatus) {
+      setState((){
+        batteryStatus = newStatus;
+      });
+    });
+
     // MAV Sensors status monitor
     _mavSensorsStatusSub = MAVService().sensorsStatusStream.listen((newStatus) {
       setState((){
@@ -65,32 +77,29 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
     _mavHeartBeatSub.cancel();
     _mavGPSStatusSub.cancel();
     _mavIMUStatusSub.cancel();
+    _mavBatteryStatusSub.cancel();
     _mavSensorsStatusSub.cancel();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
+
+  Widget buildContent(BuildContext context) {
     final theme = Theme.of(context);
     final style = theme.textTheme.displayMedium!.copyWith(
        color: theme.colorScheme.onPrimary,
        );
-
-    var activeText = "Coverage $linkCoverage";
-    var activeCard = Card(
-            color: theme.colorScheme.primary,
-            elevation: 10,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Text(activeText, style: style,),
-            ),
-          );
 
     var accel = ThreeAxisWidget(label: "Accelerometer", threeAxis: imuStatus.accel);
     var gyro = ThreeAxisWidget(label: "Gyroscope", threeAxis: imuStatus.gyro);
     
     var humidity = HumidityWidget(label: "Humidity", value: sensorsStatus.humidity);
 
+    var power = Powerwidget(
+      label: "Battery", 
+      value: batteryStatus.batteryPercentage,
+      status3v3: batteryStatus.status3v3,
+      status5v0: batteryStatus.status5v0,
+    );
 
     var temperatures = TemperatureWidget(
       temperatures: [
@@ -100,18 +109,21 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
         TemperatureSubject("Humidity", sensorsStatus.humidity, Colors.green),
         ]);
 
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          activeCard,
-          Card(
+
+    var coverageText = "Coverage $linkCoverage";
+    var coverageCard = Card(
             color: theme.colorScheme.primary,
             elevation: 10,
             child: Padding(
               padding: const EdgeInsets.all(20),
-              child: Text(IcaroMAVSensorsPage.pageTitle, style: style,),
+              child: Text(coverageText, style: style,),
             ),
-          ),
+          );
+
+    var content = Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          coverageCard,
           Column( 
             children: [
               temperatures,
@@ -120,11 +132,121 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
                   accel,
                   gyro,
                   humidity,
+                  power,
                 ],
               ),
             ],
           ),
         ],
       );
+
+      // return content;
+
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          // Check the available width and height in constraints
+          double availableWidth = constraints.maxWidth;
+          // double availableHeight = constraints.maxHeight;
+        
+          if (availableWidth >= 735) {
+            // For larger screen width (e.g., tablets), show a two-column layout
+            // return Text("2 columns");
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                coverageCard,
+                Column( 
+                  children: [
+                    temperatures,
+                    Row(
+                      children: [
+                        accel,
+                        gyro,
+                        humidity,
+                        power,
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            );
+          } else if (availableWidth >= 450)  {
+            // For smaller screen width (e.g., smartphones), show a single-column layout
+            // return Text("1 column");
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                coverageCard,
+                Column( 
+                  children: [
+                    temperatures,
+                    Row(
+                      children: [
+                        accel,
+                        gyro,
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        humidity,
+                        power,
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            );
+          } else {
+            // For smaller screen width (e.g., smartphones), show a single-column layout
+            // return Text("1 column");
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                coverageCard,
+                Column( 
+                  children: [
+                    temperatures,
+                    accel,
+                    gyro,
+                    humidity,
+                    power,
+                  ],
+                ),
+              ],
+            );
+          }
+        },
+      );
+
+
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final style = theme.textTheme.displayMedium!.copyWith(
+       color: theme.colorScheme.onPrimary,
+       );
+
+    // Title
+    var title = Card(
+            color: theme.colorScheme.primary,
+            elevation: 10,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(IcaroMAVSensorsPage.pageTitle, style: style,),
+            ),
+          );
+
+    // Content  
+    var content = buildContent(context);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        title,
+        Expanded(child: SingleChildScrollView(child: content)),
+      ]
+    );
   }
 }

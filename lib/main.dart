@@ -7,7 +7,6 @@ import 'lorapage.dart';
 import 'mappage/mappage.dart';
 import 'mav/mavsensorspage.dart';
 import 'mav/mavmappage.dart';
-import 'powerpage.dart';
 import 'sensorspage/sensorspage.dart';
 import 'settingspage/settingspage.dart';
 import 'appsettings.dart';
