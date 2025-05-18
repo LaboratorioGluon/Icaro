@@ -7,7 +7,7 @@
 #include "network/wifiraw.h"
 #include "interboards/i2cslave.h"
 
-#include "data/i2cslavethreadstatus.h"
+#include "data/i2clistenerthreadstatus.h"
 #include "data/externalstatus.h"
 
 typedef struct
@@ -20,8 +20,8 @@ typedef struct
     std::shared_ptr<InterBoards::I2CSlave> i2cSlave;
 
     // Output info
-    std::shared_ptr<Data::i2cSlaveThreadStatus_t> threadStatus;
+    std::shared_ptr<Data::i2cListenerThreadStatus_t> threadStatus;
     std::shared_ptr<Data::ExternalStatus_t>       externalStatus;
-} i2cSlaveThreadArg_t;
+} i2cListenerThreadArg_t;
 
-void i2cSlaveThreadFunc (void* arg);
+void i2cListenerThreadFunc (void* arg);

@@ -66,7 +66,7 @@ def sendSensorsStatusMessage(externalTemp=10.0, internalTemp=20.0, onBoardTemp=3
 
     sendMessage(tag, payload) 
 
-def sendAccelerometerStatusMessage(x=1.0, y=1.0, z=1.0):
+def sendAccelerometerStatusMessage(x=0.0, y=0.0, z=0.0):
     global useCustomMessages
 
     tag = 4 # Accelerometer TAG
@@ -77,7 +77,7 @@ def sendAccelerometerStatusMessage(x=1.0, y=1.0, z=1.0):
 
     sendMessage(tag, payload) 
 
-def sendGyroscopeStatusMessage(x=1.0, y=1.0, z=1.0):
+def sendGyroscopeStatusMessage(x=0.0, y=0.0, z=0.0):
     global useCustomMessages
 
     tag = 5 # Gyroscope TAG
@@ -95,7 +95,7 @@ def sendGPSStatusMessage(lat=0.0, lon=0.0, alt=0.0):
     if useCustomMessages:
         pass # TODO: Ask for values
 
-    payload = struct.pack('<fff', lat, lon, alt)
+    payload = struct.pack('<ddd', lat, lon, alt)
 
     sendMessage(tag, payload) 
 

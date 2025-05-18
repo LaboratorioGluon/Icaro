@@ -24,12 +24,12 @@ void storeThreadFunc (void* arg)
     // 1 - Init thread
     // 1.1 - Parse arguments
     auto convertedArg = reinterpret_cast<storeThreadArg_t*>(arg);
-    std::shared_ptr<const Data::systemStatus_t>&  systemStatus   = convertedArg->systemStatus;
-    std::shared_ptr<const Data::ExternalStatus_t> externalStatus = convertedArg->externalStatus;
-    std::shared_ptr<Network::WiFiRaw>&            wifi           = convertedArg->wifiraw;
-    std::shared_ptr<Device::ICamera>&             camera         = convertedArg->camera;
-    std::shared_ptr<Device::IFileSystem>&         fs             = convertedArg->fs;
-    std::shared_ptr<Data::storeThreadStatus_t>&   status         = convertedArg->threadStatus;
+    std::shared_ptr<const Data::systemStatus_t>&   systemStatus   = convertedArg->systemStatus;
+    std::shared_ptr<const Data::ExternalStatus_t>& externalStatus = convertedArg->externalStatus;
+    std::shared_ptr<Network::WiFiRaw>&             wifi           = convertedArg->wifiraw;
+    std::shared_ptr<Device::ICamera>&              camera         = convertedArg->camera;
+    std::shared_ptr<Device::IFileSystem>&          fs             = convertedArg->fs;
+    std::shared_ptr<Data::storeThreadStatus_t>&    status         = convertedArg->threadStatus;
 
     // 1.2 - Init thread data
     int frameCounter = 0;
@@ -42,6 +42,7 @@ void storeThreadFunc (void* arg)
     // 2 - Thread loop
     while (true)
     {
+        ESP_LOGV(MODULE_TAG, "Cycle start");
         if(systemStatus->capturingEnabled)
         {
             status->state = Data::ThreadState::RUNNING;
@@ -78,6 +79,7 @@ void storeThreadFunc (void* arg)
         }
         else
         {
+            ESP_LOGV(MODULE_TAG, "Sleeping");
             status->state = Data::ThreadState::SLEEPING;
 
             // Sleep while thread is not enabled
@@ -87,5 +89,6 @@ void storeThreadFunc (void* arg)
     }
     
     // 3 - Deinit thread
+    ESP_LOGE(MODULE_TAG, "Fatal error: Thread stopped");
     status->state = Data::ThreadState::STOPPED;
 }

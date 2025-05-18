@@ -1,4 +1,4 @@
-#include "i2cslavethread.h"
+#include "i2clistenerthread.h"
 
 #include <time.h>
 
@@ -15,8 +15,8 @@
 
 namespace
 {
-const char*           MODULE_TAG       = "TH_I2CSLAVE";
-const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_DEBUG;
+const char*           MODULE_TAG       = "TH_I2CLISTENER";
+const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_NONE;
 
 void copyBoardStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatus_t>& externalStatus)
 {
@@ -117,6 +117,7 @@ void updateSystemTime(const Data::ExternalTimeStatus_t& current)
         .tm_mday = current.day,
         .tm_mon  = current.month - 1,
         .tm_year = current.year - 1900,
+        .tm_isdst = 0,
     };
 
     time_t t = mktime(&tm);
@@ -126,7 +127,7 @@ void updateSystemTime(const Data::ExternalTimeStatus_t& current)
 
 }
 
-void i2cSlaveThreadFunc (void* arg)
+void i2cListenerThreadFunc (void* arg)
 {
     esp_log_level_set(MODULE_TAG, MODULE_LOG_LEVEL);    
     ESP_LOGI(MODULE_TAG, "Thread launched");
@@ -134,11 +135,11 @@ void i2cSlaveThreadFunc (void* arg)
 
     // 1 - Init thread
     // 1.1 - Parse arguments
-    auto convertedArg = reinterpret_cast<i2cSlaveThreadArg_t*>(arg);
+    auto convertedArg = reinterpret_cast<i2cListenerThreadArg_t*>(arg);
     std::shared_ptr<const Data::systemStatus_t>&         systemStatus   = convertedArg->systemStatus;
     std::shared_ptr<Network::WiFiRaw>&                   wifi           = convertedArg->wifiraw;
     std::shared_ptr<InterBoards::I2CSlave>&              i2cSlave       = convertedArg->i2cSlave;
-    std::shared_ptr<Data::i2cSlaveThreadStatus_t>&       status         = convertedArg->threadStatus;
+    std::shared_ptr<Data::i2cListenerThreadStatus_t>&    status         = convertedArg->threadStatus;
     std::shared_ptr<Data::ExternalStatus_t>&             externalStatus = convertedArg->externalStatus;
 
     constexpr size_t IMS_MESSAGE_SIZE = sizeof(ImsMessageRaw);
@@ -148,7 +149,8 @@ void i2cSlaveThreadFunc (void* arg)
     // 2 - Thread loop
     while (true)
     {
-        if(systemStatus->i2cSlaveEnabled)
+        ESP_LOGV(MODULE_TAG, "Cycle start");
+        if(systemStatus->i2cListenEnabled)
         {
             status->state = Data::ThreadState::RUNNING;
 
@@ -156,14 +158,14 @@ void i2cSlaveThreadFunc (void* arg)
             size_t lenRecv = i2cSlave->read(i2cBuffer, sizeof(i2cBuffer));
             
             // 2.2 TODO: Process received data
-            printf("Datos recibidos: ");
-            for (int i = 0; i < lenRecv; i++) {
-                printf("%02X ", i2cBuffer[i]);
-            }
-            printf("\n");
+            // printf("Datos recibidos: ");
+            // for (int i = 0; i < lenRecv; i++) {
+            //     printf("%02X ", i2cBuffer[i]);
+            // }
+            // printf("\n");
             
             // if (lenRecv == sizeof(ImsMessageRaw))
-            if (lenRecv > 0)
+            if (lenRecv > 0) // TODO/FIX: Implement proper data reception/parsing
             {
                 using namespace InterBoards::Messages;
                 
@@ -259,6 +261,7 @@ void i2cSlaveThreadFunc (void* arg)
         }
         else
         {
+            ESP_LOGV(MODULE_TAG, "Sleeping");
             status->state = Data::ThreadState::SLEEPING;
 
             // Sleep while thread is not enabled
@@ -268,5 +271,6 @@ void i2cSlaveThreadFunc (void* arg)
     }
 
     // 3 - Deinit thread
+    ESP_LOGE(MODULE_TAG, "Fatal error: Thread stopped");
     status->state = Data::ThreadState::STOPPED;
 }

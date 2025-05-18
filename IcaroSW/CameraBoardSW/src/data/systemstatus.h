@@ -10,7 +10,7 @@ typedef struct
     AppState state;
     bool streamingEnabled;
     bool capturingEnabled;
-    bool i2cSlaveEnabled;
+    bool i2cListenEnabled;
 } systemStatus_t;
 
 }

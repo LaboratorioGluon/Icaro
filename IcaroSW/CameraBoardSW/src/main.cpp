@@ -7,6 +7,7 @@
 #include <freertos/task.h>
 
 #include <esp_log.h>
+#include <esp_timer.h>
 
 #include "systemdef.h"
 // #include "config.h"
@@ -25,8 +26,8 @@
 #include "streamthread.h"
 #include "data/streamthreadstatus.h"
 
-#include "i2cslavethread.h"
-#include "data/i2cslavethreadstatus.h"
+#include "i2clistenerthread.h"
+#include "data/i2clistenerthreadstatus.h"
 
 // Main dependencies
 #include "mav/mav_system.h"
@@ -46,8 +47,8 @@ std::shared_ptr<const Data::storeThreadStatus_t> c_storeThreadStatus = std::cons
 std::shared_ptr<Data::streamThreadStatus_t> streamThreadStatus = std::make_shared<Data::streamThreadStatus_t>();
 std::shared_ptr<const Data::streamThreadStatus_t> c_streamThreadStatus = std::const_pointer_cast<const Data::streamThreadStatus_t>(streamThreadStatus);
 
-std::shared_ptr<Data::i2cSlaveThreadStatus_t> i2cSlaveThreadStatus = std::make_shared<Data::i2cSlaveThreadStatus_t>();
-std::shared_ptr<const Data::i2cSlaveThreadStatus_t> c_i2cSlaveThreadStatus = std::const_pointer_cast<const Data::i2cSlaveThreadStatus_t>(i2cSlaveThreadStatus);
+std::shared_ptr<Data::i2cListenerThreadStatus_t> i2cListenerThreadStatus = std::make_shared<Data::i2cListenerThreadStatus_t>();
+std::shared_ptr<const Data::i2cListenerThreadStatus_t> c_i2cListenerThreadStatus = std::const_pointer_cast<const Data::i2cListenerThreadStatus_t>(i2cListenerThreadStatus);
 
 std::shared_ptr<Data::ExternalStatus_t> externalStatus = std::make_shared<Data::ExternalStatus_t>();
 std::shared_ptr<const Data::ExternalStatus_t> c_externalStatus = std::const_pointer_cast<const Data::ExternalStatus_t>(externalStatus);
@@ -65,7 +66,7 @@ bool initialize()
 {
     bool initialized = true;
 
-    esp_log_level_set(MODULE_TAG, ESP_LOG_MAX);
+    esp_log_level_set(MODULE_TAG, ESP_LOG_NONE);
 
     ESP_LOGI(MODULE_TAG, "Initializing wifi.");
     if (!wifi->initialize())
@@ -125,6 +126,37 @@ void createInitFile()
     }
 }
 
+void sendStatusMAV(std::shared_ptr<const Data::ExternalStatus_t> c_externalStatus, MAVLink::MAVSystem& mavSystem)
+{
+    auto now   = static_cast<uint64_t>(time(NULL));
+    const Data::ExternalStatus_t s_externalStatus = *c_externalStatus;
+    const auto& accel   = s_externalStatus.accel;
+    const auto& gyro    = s_externalStatus.gyro;
+    const auto& gps     = s_externalStatus.gps;
+    const auto& power   = s_externalStatus.power;
+    const auto& sensors = s_externalStatus.sensors;
+
+    time_t epoch_us = time(NULL)  * 1000.0;
+    uint32_t boottimems = pdTICKS_TO_MS(xTaskGetTickCount());
+    mavSystem.sendSystemTime(epoch_us, boottimems);
+
+    mavSystem.sendScaledIMU(now, accel.accelX, accel.accelY, accel.accelZ,
+                                gyro.gyroX, gyro.gyroY, gyro.gyroZ);
+    mavSystem.sendGPS(now, gps.latitude, gps.longitude, gps.altitude);
+    mavSystem.sendBattery(power.status3v3, power.status5v, power.batteryLevel);
+
+    constexpr size_t NAME_SIZE = 10;
+    const char nameInternalT[NAME_SIZE] = "InternalT";
+    const char nameExternalT[NAME_SIZE] = "ExternalT";
+    const char nameOnboardT[NAME_SIZE]  = "OnboardT";
+    const char nameHumidity[NAME_SIZE]  = "Humidity";
+    
+    mavSystem.sendNamedFloat(now, nameInternalT, sensors.InternalTemp);
+    mavSystem.sendNamedFloat(now, nameExternalT, sensors.ExternalTemp);
+    mavSystem.sendNamedFloat(now, nameOnboardT,  sensors.OnboardTemp);
+    mavSystem.sendNamedFloat(now, nameHumidity,  sensors.Humidity);
+}
+
 extern "C"
 void app_main()
 {
@@ -163,7 +195,7 @@ void app_main()
     
     // Create threads
     {
-        streamThreadArg_t streamArgs {
+        static streamThreadArg_t streamArgs {
             .systemStatus   = c_systemStatus,
             .externalStatus = c_externalStatus,
             .wifiraw        = wifi,
@@ -171,7 +203,7 @@ void app_main()
             .threadStatus   = streamThreadStatus,
         };
         
-        storeThreadArg_t storeArgs {
+        static storeThreadArg_t storeArgs {
             .systemStatus   = c_systemStatus,
             .externalStatus = c_externalStatus,
             .wifiraw        = wifi,
@@ -180,11 +212,11 @@ void app_main()
             .threadStatus   = storeThreadStatus,
         };
 
-        i2cSlaveThreadArg_t i2cSlaveArgs {
+        static i2cListenerThreadArg_t i2cListenerArgs {
             .systemStatus   = c_systemStatus,
             .wifiraw        = wifi,
             .i2cSlave       = i2cSlave,
-            .threadStatus   = i2cSlaveThreadStatus,
+            .threadStatus   = i2cListenerThreadStatus,
             .externalStatus = externalStatus,
         };
                 
@@ -209,13 +241,13 @@ void app_main()
         );
 
         xTaskCreatePinnedToCore(
-            i2cSlaveThreadFunc, // Función de la tarea
-            "i2cSlaveTask",     // Nombre de la tarea
-            4096,               // Tamaño de la pila
-            &i2cSlaveArgs,      // Parámetros de la tarea
-            1,                  // Prioridad de la tarea
-            NULL,               // Handler de la tarea
-            0                   // Núcleo al que se asigna la tarea (0 o 1)
+            i2cListenerThreadFunc, // Función de la tarea
+            "i2cListenerTask",     // Nombre de la tarea
+            4096,                  // Tamaño de la pila
+            &i2cListenerArgs,      // Parámetros de la tarea
+            1,                     // Prioridad de la tarea
+            NULL,                  // Handler de la tarea
+            0                      // Núcleo al que se asigna la tarea (0 o 1)
         );
     }
 
@@ -223,19 +255,24 @@ void app_main()
     systemStatus->state = Data::AppState::FULL_POWER;
     mavSystem.sendHeartBeat(MAV_STATE_BOOT, static_cast<uint32_t>(systemStatus->state));
 
-
     // State machine controller
     while(1)
     {
+        int delayMS = 500;
         switch(systemStatus->state)
         {            
             case Data::AppState::FULL_POWER:
                 mavSystem.sendHeartBeat(MAV_STATE_ACTIVE, static_cast<uint32_t>(systemStatus->state));
-
-                systemStatus->capturingEnabled = true;
+                
+                // Configure threads
                 systemStatus->streamingEnabled = true;
-                systemStatus->i2cSlaveEnabled  = true;
+                systemStatus->capturingEnabled = true;
+                systemStatus->i2cListenEnabled = true;
 
+                // Do actions
+                sendStatusMAV(c_externalStatus, mavSystem);
+
+                // Check transitions
                 if (false) // TODO: Condition for transition
                 {
                     systemStatus->state = Data::AppState::POWER_SAVE;
@@ -243,7 +280,21 @@ void app_main()
             break;
 
             case Data::AppState::POWER_SAVE:
-                mavSystem.sendHeartBeat(MAV_STATE_ACTIVE, static_cast<uint32_t>(systemStatus->state));
+                // Send 2 hearbeats 
+                for (int i=0; i<=2; i++)
+                {
+                    mavSystem.sendHeartBeat(MAV_STATE_ACTIVE, static_cast<uint32_t>(systemStatus->state));
+                }
+
+                // Configure threads
+                systemStatus->streamingEnabled = false;
+                systemStatus->capturingEnabled = true;
+                systemStatus->i2cListenEnabled = true;
+
+                // Do actions
+                delayMS = 1000;
+
+                // Check transitions
                 if (false) // TODO: Condition for transition
                 {
                     systemStatus->state = Data::AppState::FULL_POWER;
@@ -255,7 +306,16 @@ void app_main()
             break;
 
             case Data::AppState::BEACON:
-                mavSystem.sendHeartBeat(MAV_STATE_ACTIVE, static_cast<uint32_t>(systemStatus->state));
+                // Send 2 hearbeats 
+                for (int i=0; i<=10; i++)
+                {
+                    mavSystem.sendHeartBeat(MAV_STATE_ACTIVE, static_cast<uint32_t>(systemStatus->state));
+                }
+
+                // Do actions
+                delayMS = 5000;
+
+                // Check transitions
                 if (false) // TODO: Condition for transition
                 {
                     systemStatus->state = Data::AppState::FULL_POWER;
@@ -269,6 +329,10 @@ void app_main()
             case Data::AppState::RECOVERY:
             default:
                 mavSystem.sendHeartBeat(MAV_STATE_CRITICAL, static_cast<uint32_t>(systemStatus->state));
+
+                // Do actions
+
+                // Check transitions
                 if (false) // TODO: Condition for transition
                 {
                     systemStatus->state = Data::AppState::FULL_POWER;
@@ -286,7 +350,7 @@ void app_main()
 
         // Delay between transition checks
         static TickType_t lastWakeUpTime = 0;
-        xTaskDelayUntil(&lastWakeUpTime, pdMS_TO_TICKS(500));
+        xTaskDelayUntil(&lastWakeUpTime, pdMS_TO_TICKS(delayMS));
     }
 }
 

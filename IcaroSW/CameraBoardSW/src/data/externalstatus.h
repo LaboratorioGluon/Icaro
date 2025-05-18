@@ -49,9 +49,9 @@ namespace Data
     typedef struct
     {
         uint64_t externalTS;
-        float latitude;
-        float longitude;
-        float altitude;
+        double latitude;
+        double longitude;
+        double altitude;
     } ExternalGPSStatus_t;
 
     typedef struct
