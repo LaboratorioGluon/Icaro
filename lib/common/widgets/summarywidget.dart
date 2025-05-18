@@ -5,8 +5,9 @@ class SummaryWidget extends StatelessWidget {
 
   final double batteryPercentage;
   final double coveragePercentage;
+  final DateTime timestamp;
 
-  const SummaryWidget({super.key, required this.batteryPercentage, required this.coveragePercentage});
+  const SummaryWidget({super.key, required this.batteryPercentage, required this.coveragePercentage, required this.timestamp});
 
   Widget getBatteryIcon(double battery)
   {
@@ -85,8 +86,16 @@ class SummaryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    var dateSummary = Text(
+      "${timestamp.day.toString().padLeft(2, '0')}/${timestamp.month.toString().padLeft(2, '0')}/${timestamp.year}",
+    );
+
+    var timeSummary = Text(
+      "${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}",
+    );
+
     var batterySummary = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text('${batteryPercentage.toStringAsFixed(0)}%'),
         getBatteryIcon(batteryPercentage),
@@ -94,7 +103,7 @@ class SummaryWidget extends StatelessWidget {
     );
 
     var coverageSummary = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text('${coveragePercentage.toStringAsFixed(0)}%'),
         getCoverageIcon(coveragePercentage),
@@ -102,7 +111,11 @@ class SummaryWidget extends StatelessWidget {
     );
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
+        timeSummary,
+        dateSummary,
         batterySummary,
         coverageSummary,
       ],

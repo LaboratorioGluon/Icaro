@@ -10,6 +10,7 @@ import 'mav/mavmappage.dart';
 import 'sensorspage/sensorspage.dart';
 import 'settingspage/settingspage.dart';
 import 'appsettings.dart';
+import 'summary.dart';
 
 /* App entry point */
 void main() async {
@@ -39,9 +40,11 @@ class _IcaroMainState extends State<IcaroMain> {
   static const appTitle = Text("Project Icaro");
 
   final GlobalKey navKey = GlobalKey();
-  bool isExtended = true;
-  var buttonLeft = 0.0;
+  bool isExtended  = true;
+  var buttonLeft   = 0.0;
   var buttonBottom = 0.0;
+  var summaryLeft  = 0.0;
+  var summaryTop   = 0.0;
 
   int selectedIndex = 2;
   void updateIndex (int newIndex)
@@ -157,6 +160,8 @@ class _IcaroMainState extends State<IcaroMain> {
             child: Icon(isExtended ? Icons.arrow_back : Icons.arrow_forward),
           );
 
+          var summary = Summary();
+
           // Position extendedbutton
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final navContext = navKey.currentContext;
@@ -164,8 +169,10 @@ class _IcaroMainState extends State<IcaroMain> {
               setState(() {
                 final box = navContext.findRenderObject() as RenderBox;
                 final size = box.size;
-                buttonLeft = size.width - 20.0;
+                buttonLeft   = size.width - 20.0;
                 buttonBottom = 20.0;
+                summaryLeft = size.width + 20.0;
+                summaryTop  = 10.0;
                 isExtended = isExtended && (constraints.maxWidth >= 600);
               });
             }
@@ -185,6 +192,11 @@ class _IcaroMainState extends State<IcaroMain> {
                 left: buttonLeft,
                 bottom: buttonBottom,
                 child: extendButton,
+              ),
+              Positioned(
+                left: summaryLeft,
+                top: summaryTop,
+                child: summary
               )
             ],
           ),

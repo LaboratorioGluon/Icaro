@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:icaro_app/common/services/mavservice.dart';
 import 'package:icaro_app/common/widgets/humiditywidget.dart';
 import 'package:icaro_app/common/widgets/powerwidget.dart';
-import 'package:icaro_app/common/widgets/summarywidget.dart';
 import 'package:icaro_app/common/widgets/temperaturewidget.dart';
 import 'package:icaro_app/common/widgets/threeaxiswidget.dart';
 
@@ -23,12 +22,14 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
   late StreamSubscription<MAVIMUStatus>     _mavIMUStatusSub;
   late StreamSubscription<MAVBatteryStatus> _mavBatteryStatusSub;
   late StreamSubscription<MAVSensorsStatus> _mavSensorsStatusSub;
+  late StreamSubscription<DateTime>         _mavTimestampStatusSub;
 
-  double           linkCoverage  = 0;
-  MAVGPSStatus     gpsStatus     = MAVGPSStatus();
-  MAVIMUStatus     imuStatus     = MAVIMUStatus();
-  MAVBatteryStatus batteryStatus = MAVBatteryStatus();
-  MAVSensorsStatus sensorsStatus = MAVSensorsStatus();
+  double           linkCoverage    = 0;
+  MAVGPSStatus     gpsStatus       = MAVGPSStatus();
+  MAVIMUStatus     imuStatus       = MAVIMUStatus();
+  MAVBatteryStatus batteryStatus   = MAVBatteryStatus();
+  MAVSensorsStatus sensorsStatus   = MAVSensorsStatus();
+  DateTime         timestampStatus = DateTime.now();
 
   // Initial state
   @override
@@ -69,6 +70,13 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
         sensorsStatus = newStatus;
       });
     });
+
+    // MAV Timestamp status monitor
+    _mavTimestampStatusSub = MAVService().timestampStatusStream.listen((newStatus) {
+      setState((){
+        timestampStatus = newStatus;
+      });
+    });
   }
 
   @override
@@ -78,6 +86,7 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
     _mavIMUStatusSub.cancel();
     _mavBatteryStatusSub.cancel();
     _mavSensorsStatusSub.cancel();
+    _mavTimestampStatusSub.cancel();
     super.dispose();
   }
 
@@ -108,11 +117,6 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
       ]
     );
 
-    var summary = SummaryWidget(
-      batteryPercentage: batteryStatus.batteryPercentage,
-      coveragePercentage: linkCoverage,
-    );
-
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           // Check the available width and height in constraints
@@ -125,7 +129,6 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                summary,
                 temperatures,
                 Row(
                   children: [
@@ -143,7 +146,6 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                summary,
                 temperatures,
                 Row(
                   children: [
@@ -165,7 +167,6 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                summary,
                 temperatures,
                 accel,
                 gyro,

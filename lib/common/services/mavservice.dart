@@ -92,6 +92,9 @@ class MAVService {
 
         // Update sensors info
         _sensorsStatusController.add(sensorsStatus);
+
+        // Update timestamp info
+        _timestampStatusController.add(timestampStatus);
       });
   }
 
@@ -120,6 +123,10 @@ class MAVService {
   final StreamController<MAVSensorsStatus> _sensorsStatusController = StreamController.broadcast();
   Stream<MAVSensorsStatus> get sensorsStatusStream => _sensorsStatusController.stream;
 
+  // MAV Timestamp status
+  var timestampStatus = DateTime.now();
+  final StreamController<DateTime> _timestampStatusController = StreamController.broadcast();
+  Stream<DateTime> get timestampStatusStream => _timestampStatusController.stream;
 
   // MAV message processors
   void _processMAVHearbeat(Heartbeat hb)
@@ -247,6 +254,12 @@ class MAVService {
     }
   }
 
+  void _processSystemTime(SystemTime st)
+  {
+    timestampStatus = DateTime.fromMillisecondsSinceEpoch(st.timeUnixUsec.toInt());
+    print("SystemTime: $timestampStatus");
+  }
+
   // MAV server 
   late MavlinkDialectCommon _dialect;
 
@@ -285,13 +298,22 @@ class MAVService {
             }
             else if  (frm.message is BatteryStatus)
             {
-              final bs = BatteryStatus.parse(frm.message.serialize());
+              final bs = frm.message as BatteryStatus;
               _processBatteryStatus(bs);
             }
             else if  (frm.message is NamedValueFloat)
             {
-              final nvf = NamedValueFloat.parse(frm.message.serialize());
+              final nvf = frm.message as NamedValueFloat;
               _processNamedFloat(nvf);
+            }
+            else if  (frm.message is SystemTime)
+            {
+              final st = frm.message as SystemTime;
+              _processSystemTime(st);
+            }
+            else
+            {
+              print("Unknown message: ${frm.message}");
             }
           });
           parser.parse(data);
