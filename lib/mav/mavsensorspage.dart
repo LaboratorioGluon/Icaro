@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:icaro_app/common/services/mavservice.dart';
-import 'package:icaro_app/sensorspage/humiditywidget.dart';
-import 'package:icaro_app/sensorspage/temperaturewidget.dart';
-import 'package:icaro_app/sensorspage/threeaxiswidget.dart';
+import 'package:icaro_app/common/widgets/humiditywidget.dart';
+import 'package:icaro_app/common/widgets/temperaturewidget.dart';
+import 'package:icaro_app/common/widgets/threeaxiswidget.dart';
 
 class IcaroMAVSensorsPage extends StatefulWidget {
   const IcaroMAVSensorsPage({super.key});
@@ -90,6 +90,7 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
     var gyro = ThreeAxisWidget(label: "Gyroscope", threeAxis: imuStatus.gyro);
     
     var humidity = HumidityWidget(label: "Humidity", value: sensorsStatus.humidity);
+
 
     var temperatures = TemperatureWidget(
       temperatures: [

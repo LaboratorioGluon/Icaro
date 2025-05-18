@@ -3,14 +3,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
-import 'package:icaro_app/sensorspage/humiditywidget.dart';
+import 'package:icaro_app/common/widgets/humiditywidget.dart';
 
 import '../common/services/simulated/sensorsservicesim.dart';
 import '../common/data/icarosensors.dart';
 import '../common/data/threeaxis.dart';
 
-import 'temperaturewidget.dart';
-import 'threeaxiswidget.dart';
+import '../common/widgets/temperaturewidget.dart';
+import '../common/widgets/threeaxiswidget.dart';
 
 class IcaroSensorsPage extends StatefulWidget {
   const IcaroSensorsPage({super.key});
