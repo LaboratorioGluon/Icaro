@@ -100,7 +100,7 @@ class _IcaroCameraPageState extends State<IcaroCameraPage> {
     
     var cameraList = Container(
       // color: Colors.cyan,
-      height: 100.0 * entries.length,
+      height: 120.0 * entries.length,
       width: 200.0,
       child: ListView.builder(        
         itemCount: entries.length,

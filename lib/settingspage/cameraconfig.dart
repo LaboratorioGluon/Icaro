@@ -5,91 +5,77 @@ import 'package:flutter/services.dart';
 import 'configurationset.dart';
 import '../common/settings/camerasettings.dart';
 
-class CameraConfig extends StatelessWidget {
+class CameraConfig extends StatefulWidget {
+  final CameraSettings settings;
+  final void Function(CameraSettings updatedSettings) onSave;
 
-  late final CameraSettings _settings;
-  CameraConfig({super.key, required CameraSettings settings})
-  {
-    _settings = settings;
+  const CameraConfig({
+    super.key,
+    required this.settings,
+    required this.onSave,
+  });
+
+  @override
+  State<CameraConfig> createState() => _CameraConfigState();
+}
+
+class _CameraConfigState extends State<CameraConfig> {
+  late final TextEditingController _hostController;
+  late final TextEditingController _portController;
+  late final TextEditingController _nameController;
+
+  @override
+  void initState() {
+    super.initState();
+    _hostController = TextEditingController(text: widget.settings.host);
+    _portController = TextEditingController(text: widget.settings.port.toString());
+    _nameController = TextEditingController(text: widget.settings.name);
   }
 
-  final _hostController = TextEditingController();
-  final _portController = TextEditingController();
-  final _nameController = TextEditingController();
+  @override
+  void dispose() {
+    _hostController.dispose();
+    _portController.dispose();
+    _nameController.dispose();
+    super.dispose();
+  }
 
-  CameraSettings getSettings()
-  {
-    return CameraSettings(
-      host: _hostController.text, 
-      port: int.parse(_portController.text),
+  void _save() {
+    final updatedSettings = CameraSettings(
+      host: _hostController.text,
+      port: int.tryParse(_portController.text) ?? 0,
       name: _nameController.text,
     );
+    widget.onSave(updatedSettings);
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final style = theme.textTheme.displayMedium!.copyWith(
-       color: theme.colorScheme.onPrimary,
-       );
-
-    // Camera configuration
-    _hostController.text = _settings.host;
-    _portController.text = _settings.port.toString();
-    _nameController.text = _settings.name;
-
-    // URL
-    var url = TextFormField(
-      decoration: InputDecoration(labelText: 'Server address'),
-      controller: _hostController,
-    );
-
-    // Port
-    var port = TextFormField(
-      decoration: InputDecoration(labelText: 'Server port'),
-      controller: _portController,
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter a valid port (Default: 48485)';
-        }
-        else 
-        {
-          int? portNum = int.tryParse(value);
-          if (portNum == null)
-          {
-            return 'Invalid port number';
-          } 
-          else if (portNum <= 0 || portNum >= 65535)
-          {
-            return 'Port out of range (0 <= port <= 65535)';
-          }
-        }
-        return null;
-      },
-    );
-
-    // URL
-    var name = TextFormField(
-      decoration: InputDecoration(labelText: 'Camera name'),
-      controller: _nameController,
-    );
-
-    // Configuration set
-    var configs = Form(
+    return ConfiguracionSetWidget(
+      title: "Camera settings",
       child: Column(
         children: [
-          url,
-          port,
-          name,
+          TextFormField(
+            decoration: InputDecoration(labelText: 'Server address'),
+            controller: _hostController,
+          ),
+          TextFormField(
+            decoration: InputDecoration(labelText: 'Server port'),
+            controller: _portController,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          ),
+          TextFormField(
+            decoration: InputDecoration(labelText: 'Camera name'),
+            controller: _nameController,
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: _save,
+            child: const Text("Save"),
+          ),
         ],
-      )
-    );
-
-    return ConfiguracionSetWidget(
-      title: "Camera settings", 
-      child: configs
+      ),
     );
   }
 }

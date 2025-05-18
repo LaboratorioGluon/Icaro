@@ -59,20 +59,20 @@ class _IcaroMAVMapPageState extends State<IcaroMAVMapPage> with TickerProviderSt
   }
 
   // Icaro tracking
-  bool issTrackEnable = true;
+  bool trackingEnabled = false;
   LatLng icaroPosition = const LatLng(40.44254064814816, -3.952498215412911);
   late Marker icaroMarker;
 
   void _setTrackingEnable(bool value) {
     setState(() {
-      issTrackEnable = value;
+      trackingEnabled = value;
     });
   }
   
   void _setPosition(LatLng newPosition) {
     setState(() {
       icaroPosition = newPosition;
-      if(issTrackEnable)
+      if(trackingEnabled)
       {
         _moveMap(icaroPosition);
       }
@@ -94,7 +94,7 @@ class _IcaroMAVMapPageState extends State<IcaroMAVMapPage> with TickerProviderSt
 
     // Tracking switch
     var trackingSwitch = Switch(
-      value: issTrackEnable,
+      value: trackingEnabled,
       onChanged: (bool value) {
         _setTrackingEnable(value);
       },
