@@ -16,7 +16,7 @@
 namespace
 {
 const char*           MODULE_TAG       = "TH_I2CLISTENER";
-const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_DEBUG;
+const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_NONE;
 
 void copyBoardStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatus_t>& externalStatus)
 {
@@ -139,7 +139,7 @@ void i2cListenerThreadFunc (void* arg)
     std::shared_ptr<const Data::systemStatus_t>&         systemStatus   = convertedArg->systemStatus;
     std::shared_ptr<Network::WiFiRaw>&                   wifi           = convertedArg->wifiraw;
     std::shared_ptr<InterBoards::I2CSlave>&              i2cSlave       = convertedArg->i2cSlave;
-    std::shared_ptr<Data::i2cListenerThreadStatus_t>&      status         = convertedArg->threadStatus;
+    std::shared_ptr<Data::i2cListenerThreadStatus_t>&    status         = convertedArg->threadStatus;
     std::shared_ptr<Data::ExternalStatus_t>&             externalStatus = convertedArg->externalStatus;
 
     constexpr size_t IMS_MESSAGE_SIZE = sizeof(ImsMessageRaw);
@@ -149,6 +149,7 @@ void i2cListenerThreadFunc (void* arg)
     // 2 - Thread loop
     while (true)
     {
+        ESP_LOGV(MODULE_TAG, "Cycle start");
         if(systemStatus->i2cListenEnabled)
         {
             status->state = Data::ThreadState::RUNNING;
@@ -157,14 +158,14 @@ void i2cListenerThreadFunc (void* arg)
             size_t lenRecv = i2cSlave->read(i2cBuffer, sizeof(i2cBuffer));
             
             // 2.2 TODO: Process received data
-            printf("Datos recibidos: ");
-            for (int i = 0; i < lenRecv; i++) {
-                printf("%02X ", i2cBuffer[i]);
-            }
-            printf("\n");
+            // printf("Datos recibidos: ");
+            // for (int i = 0; i < lenRecv; i++) {
+            //     printf("%02X ", i2cBuffer[i]);
+            // }
+            // printf("\n");
             
             // if (lenRecv == sizeof(ImsMessageRaw))
-            if (lenRecv > 0)
+            if (lenRecv > 0) // TODO/FIX: Implement proper data reception/parsing
             {
                 using namespace InterBoards::Messages;
                 
@@ -260,6 +261,7 @@ void i2cListenerThreadFunc (void* arg)
         }
         else
         {
+            ESP_LOGV(MODULE_TAG, "Sleeping");
             status->state = Data::ThreadState::SLEEPING;
 
             // Sleep while thread is not enabled
@@ -269,5 +271,6 @@ void i2cListenerThreadFunc (void* arg)
     }
 
     // 3 - Deinit thread
+    ESP_LOGE(MODULE_TAG, "Fatal error: Thread stopped");
     status->state = Data::ThreadState::STOPPED;
 }

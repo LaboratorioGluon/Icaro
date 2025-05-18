@@ -19,7 +19,7 @@ namespace InterBoards
 I2CSlave::I2CSlave(i2c_port_t i2cPort, uint16_t slaveAddr, gpio_num_t sdaPin, gpio_num_t sclPin, uint32_t clkSpeed) :
     i2cPort(i2cPort)
 {
-    esp_log_level_set(MODULE_TAG, ESP_LOG_DEBUG);
+    esp_log_level_set(MODULE_TAG, ESP_LOG_NONE);
     
     config = {
         .mode = I2C_MODE_SLAVE,

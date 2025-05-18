@@ -112,7 +112,7 @@ namespace Network
 
 WiFi::WiFi() : netif(nullptr), m_config(WIFI_INIT_CONFIG_DEFAULT())
 {
-    esp_log_level_set(MODULE_TAG, ESP_LOG_VERBOSE);    
+    esp_log_level_set(MODULE_TAG, ESP_LOG_NONE);    
     s_wifi_event_group = xEventGroupCreate();
 }
 

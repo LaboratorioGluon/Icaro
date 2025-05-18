@@ -14,7 +14,7 @@ namespace Network::Link
 
 SocketLink::SocketLink(int sock, sockaddr_in dest) : sock(sock), dest(dest)
 {
-    esp_log_level_set(MODULE_TAG, ESP_LOG_DEBUG);
+    esp_log_level_set(MODULE_TAG, ESP_LOG_NONE);
     ESP_LOGD(MODULE_TAG, "Created socket: %d", sock);
 }
 

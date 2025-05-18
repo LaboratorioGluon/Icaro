@@ -66,7 +66,7 @@ bool initialize()
 {
     bool initialized = true;
 
-    esp_log_level_set(MODULE_TAG, ESP_LOG_MAX);
+    esp_log_level_set(MODULE_TAG, ESP_LOG_NONE);
 
     ESP_LOGI(MODULE_TAG, "Initializing wifi.");
     if (!wifi->initialize())
@@ -195,7 +195,7 @@ void app_main()
     
     // Create threads
     {
-        streamThreadArg_t streamArgs {
+        static streamThreadArg_t streamArgs {
             .systemStatus   = c_systemStatus,
             .externalStatus = c_externalStatus,
             .wifiraw        = wifi,
@@ -203,7 +203,7 @@ void app_main()
             .threadStatus   = streamThreadStatus,
         };
         
-        storeThreadArg_t storeArgs {
+        static storeThreadArg_t storeArgs {
             .systemStatus   = c_systemStatus,
             .externalStatus = c_externalStatus,
             .wifiraw        = wifi,
@@ -212,7 +212,7 @@ void app_main()
             .threadStatus   = storeThreadStatus,
         };
 
-        i2cListenerThreadArg_t i2cListenerArgs {
+        static i2cListenerThreadArg_t i2cListenerArgs {
             .systemStatus   = c_systemStatus,
             .wifiraw        = wifi,
             .i2cSlave       = i2cSlave,
@@ -265,8 +265,8 @@ void app_main()
                 mavSystem.sendHeartBeat(MAV_STATE_ACTIVE, static_cast<uint32_t>(systemStatus->state));
                 
                 // Configure threads
-                systemStatus->capturingEnabled = false;
-                systemStatus->streamingEnabled = false;
+                systemStatus->streamingEnabled = true;
+                systemStatus->capturingEnabled = true;
                 systemStatus->i2cListenEnabled = true;
 
                 // Do actions
@@ -287,8 +287,8 @@ void app_main()
                 }
 
                 // Configure threads
-                systemStatus->capturingEnabled = true;
                 systemStatus->streamingEnabled = false;
+                systemStatus->capturingEnabled = true;
                 systemStatus->i2cListenEnabled = true;
 
                 // Do actions

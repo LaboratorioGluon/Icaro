@@ -33,7 +33,7 @@ namespace Device::Camera
 
 OV2640::OV2640() : ICamera(), initialized(false)
 {
-    esp_log_level_set(MODULE_TAG, ESP_LOG_DEBUG);    
+    esp_log_level_set(MODULE_TAG, ESP_LOG_NONE);    
 }
 
 bool OV2640::initialize()

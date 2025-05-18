@@ -9,7 +9,7 @@
 namespace 
 {
 const char*           MODULE_TAG       = "RAW80211";
-const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_DEBUG;
+const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_NONE;
 }
 
 namespace Network::Link
