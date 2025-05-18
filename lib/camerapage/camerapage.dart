@@ -17,10 +17,10 @@ class IcaroCameraPage extends StatefulWidget {
 
 class _IcaroCameraPageState extends State<IcaroCameraPage> {
   Uint8List? imageBytes;
-  late StreamSubscription<int> _mavStatusSub;
+  late StreamSubscription<double>                    _mavStatusSub;
   late StreamSubscription<Map<int, MAVCameraStatus>> _mavCameraSub;
 
-  int linkCoverage = 0;
+  double linkCoverage               = 0;
   Map<int, MAVCameraStatus> cameras = {};
 
   // Initial state
@@ -168,21 +168,21 @@ class _IcaroCameraPageState extends State<IcaroCameraPage> {
     return page;
   }
 
-  Icon getCoverageIcon(int coverage)
+  Icon getCoverageIcon(double coverage)
   {
-    if (coverage >= 80)
+    if (coverage >= 80.0)
     {
       return Icon(MdiIcons.wifiStrength4);
     }
-    else if (coverage >= 60)
+    else if (coverage >= 60.0)
     {
       return Icon(MdiIcons.wifiStrength3);
     }
-    else if (coverage >= 40)
+    else if (coverage >= 40.0)
     {
       return Icon(MdiIcons.wifiStrength2);
     }
-    else if (coverage >= 20)
+    else if (coverage >= 20.0)
     {
       return Icon(MdiIcons.wifiStrength1);
     }

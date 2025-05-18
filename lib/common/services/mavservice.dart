@@ -60,8 +60,8 @@ class MAVService {
   }
 
   // MAV link status
-  final StreamController<int> _linkStatusController = StreamController.broadcast();
-  Stream<int> get linkStatusStream => _linkStatusController.stream;
+  final StreamController<double> _linkStatusController = StreamController.broadcast();
+  Stream<double> get linkStatusStream => _linkStatusController.stream;
 
   final _heartbeats = <DateTime>[];
 
@@ -75,7 +75,7 @@ class MAVService {
         // Update heartbeats/coverage
         _heartbeats.removeWhere((time) => DateTime.now().difference(time) > hbWindow);
         final int maxHeartbeats = (hbExpiration / hbPeriod).toInt();
-        final int coverage = min(((_heartbeats.length / maxHeartbeats) * 100).toInt(), 100);
+        final double coverage = min(((_heartbeats.length / maxHeartbeats) * 100.0), 100.0);
         _linkStatusController.add(coverage);
 
         // Update camera info

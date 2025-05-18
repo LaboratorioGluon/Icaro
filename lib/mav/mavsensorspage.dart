@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import 'package:dart_mavlink/dialects/common.dart';
 import 'package:flutter/material.dart';
 
 import 'package:icaro_app/common/services/mavservice.dart';
 import 'package:icaro_app/common/widgets/humiditywidget.dart';
 import 'package:icaro_app/common/widgets/powerwidget.dart';
+import 'package:icaro_app/common/widgets/summarywidget.dart';
 import 'package:icaro_app/common/widgets/temperaturewidget.dart';
 import 'package:icaro_app/common/widgets/threeaxiswidget.dart';
-import 'package:material_color_utilities/quantize/quantizer.dart';
 
 class IcaroMAVSensorsPage extends StatefulWidget {
   const IcaroMAVSensorsPage({super.key});
@@ -19,13 +18,13 @@ class IcaroMAVSensorsPage extends StatefulWidget {
 }
 
 class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
-  late StreamSubscription<int>              _mavHeartBeatSub;
+  late StreamSubscription<double>           _mavCoverageSub;
   late StreamSubscription<MAVGPSStatus>     _mavGPSStatusSub;
   late StreamSubscription<MAVIMUStatus>     _mavIMUStatusSub;
   late StreamSubscription<MAVBatteryStatus> _mavBatteryStatusSub;
   late StreamSubscription<MAVSensorsStatus> _mavSensorsStatusSub;
 
-  int              linkCoverage  = 0;
+  double           linkCoverage  = 0;
   MAVGPSStatus     gpsStatus     = MAVGPSStatus();
   MAVIMUStatus     imuStatus     = MAVIMUStatus();
   MAVBatteryStatus batteryStatus = MAVBatteryStatus();
@@ -37,7 +36,7 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
     super.initState();
 
     // MAV link status monitor
-    _mavHeartBeatSub = MAVService().linkStatusStream.listen((newCoverage) {
+    _mavCoverageSub = MAVService().linkStatusStream.listen((newCoverage) {
       setState((){
         linkCoverage = newCoverage;
       });
@@ -74,14 +73,13 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
 
   @override
   void dispose() {
-    _mavHeartBeatSub.cancel();
+    _mavCoverageSub.cancel();
     _mavGPSStatusSub.cancel();
     _mavIMUStatusSub.cancel();
     _mavBatteryStatusSub.cancel();
     _mavSensorsStatusSub.cancel();
     super.dispose();
   }
-
 
   Widget buildContent(BuildContext context) {
     final theme = Theme.of(context);
@@ -107,40 +105,13 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
         TemperatureSubject("External Temp", sensorsStatus.externalTemp, Colors.blue),
         TemperatureSubject("OnBoard Temp", sensorsStatus.onboardTemp, Colors.grey),
         TemperatureSubject("Humidity", sensorsStatus.humidity, Colors.green),
-        ]);
+      ]
+    );
 
-
-    var coverageText = "Coverage $linkCoverage";
-    var coverageCard = Card(
-            color: theme.colorScheme.primary,
-            elevation: 10,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Text(coverageText, style: style,),
-            ),
-          );
-
-    var content = Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          coverageCard,
-          Column( 
-            children: [
-              temperatures,
-              Row(
-                children: [
-                  accel,
-                  gyro,
-                  humidity,
-                  power,
-                ],
-              ),
-            ],
-          ),
-        ],
-      );
-
-      // return content;
+    var summary = SummaryWidget(
+      batteryPercentage: batteryStatus.batteryPercentage,
+      coveragePercentage: linkCoverage,
+    );
 
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -154,18 +125,14 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                coverageCard,
-                Column( 
+                summary,
+                temperatures,
+                Row(
                   children: [
-                    temperatures,
-                    Row(
-                      children: [
-                        accel,
-                        gyro,
-                        humidity,
-                        power,
-                      ],
-                    ),
+                    accel,
+                    gyro,
+                    humidity,
+                    power,
                   ],
                 ),
               ],
@@ -176,22 +143,18 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                coverageCard,
-                Column( 
+                summary,
+                temperatures,
+                Row(
                   children: [
-                    temperatures,
-                    Row(
-                      children: [
-                        accel,
-                        gyro,
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        humidity,
-                        power,
-                      ],
-                    ),
+                    accel,
+                    gyro,
+                  ],
+                ),
+                Row(
+                  children: [
+                    humidity,
+                    power,
                   ],
                 ),
               ],
@@ -202,16 +165,12 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                coverageCard,
-                Column( 
-                  children: [
-                    temperatures,
-                    accel,
-                    gyro,
-                    humidity,
-                    power,
-                  ],
-                ),
+                summary,
+                temperatures,
+                accel,
+                gyro,
+                humidity,
+                power,
               ],
             );
           }
