@@ -46,7 +46,7 @@ class _IcaroMainState extends State<IcaroMain> {
   var summaryLeft  = 0.0;
   var summaryTop   = 0.0;
 
-  int selectedIndex = 2;
+  int selectedIndex = 0;
   void updateIndex (int newIndex)
   {
       setState(() {selectedIndex = newIndex;});

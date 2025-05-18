@@ -177,10 +177,7 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
           }
         },
       );
-
-
   }
-
 
   @override
   Widget build(BuildContext context) {

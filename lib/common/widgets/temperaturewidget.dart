@@ -31,7 +31,7 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
 
   final Map<String, List<TemperaturePoint>> history = {};
 
-  final int maxElems = 50;
+  final int maxElems = 1000;
   int elemCounter = 0;
 
   // Initial state
