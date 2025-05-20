@@ -144,7 +144,7 @@ void i2cListenerThreadFunc (void* arg)
 
     constexpr size_t IMS_MESSAGE_SIZE = sizeof(ImsMessageRaw);
     uint8_t i2cBuffer[IMS_MESSAGE_SIZE];
-    const ImsMessageRaw* raw = reinterpret_cast<ImsMessageRaw*>(i2cBuffer);
+    ImsMessageRaw* raw = reinterpret_cast<ImsMessageRaw*>(i2cBuffer);
 
     // 2 - Thread loop
     while (true)
@@ -155,8 +155,18 @@ void i2cListenerThreadFunc (void* arg)
             status->state = Data::ThreadState::RUNNING;
 
             // 2.1 Wait for I2C incoming data
-            size_t lenRecv = i2cSlave->read(i2cBuffer, sizeof(i2cBuffer));
+            size_t lenRecv = i2cSlave->read(i2cBuffer, sizeof(raw->header));
             
+            if (lenRecv == sizeof(raw->header) && raw->header.len <= sizeof(raw->raw))
+            {
+                lenRecv = lenRecv + i2cSlave->read(raw->raw, raw->header.len);
+            }
+            else
+            {
+                // Not received a full header, skip for next cycle until bus is stabilized.
+                continue;
+            }
+
             // 2.2 TODO: Process received data
             // printf("Datos recibidos: ");
             // for (int i = 0; i < lenRecv; i++) {
@@ -164,8 +174,8 @@ void i2cListenerThreadFunc (void* arg)
             // }
             // printf("\n");
             
-            // if (lenRecv == sizeof(ImsMessageRaw))
-            if (lenRecv > 0) // TODO/FIX: Implement proper data reception/parsing
+            const size_t expectedSize = sizeof(raw->header) + raw->header.len;
+            if (lenRecv == expectedSize)
             {
                 using namespace InterBoards::Messages;
                 
