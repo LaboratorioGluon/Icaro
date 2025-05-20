@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:icaro_app/common/services/logservice.dart';
 
 import 'camerapage/camerapage.dart';
 import 'homepage.dart';
@@ -21,6 +22,7 @@ class IcaroApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    LogService().i("Starting Icaro App!");
     return const MaterialApp(home: IcaroMain());
   }
 }
