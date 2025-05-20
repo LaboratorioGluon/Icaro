@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:icaro_app/appsettings.dart';
 import 'package:icaro_app/common/services/mavservice.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mjpeg_stream/mjpeg_stream.dart';
@@ -16,12 +17,10 @@ class IcaroCameraPage extends StatefulWidget {
 
 class _IcaroCameraPageState extends State<IcaroCameraPage> {
   Uint8List? imageBytes;
-  late StreamSubscription<int> _mavStatusSub;
+  late StreamSubscription<double>                    _mavStatusSub;
   late StreamSubscription<Map<int, MAVCameraStatus>> _mavCameraSub;
 
-  final streamUrl = "http://localhost:48485/icaro_camera";
-
-  int linkCoverage = 0;
+  double linkCoverage               = 0;
   Map<int, MAVCameraStatus> cameras = {};
 
   // Initial state
@@ -60,6 +59,10 @@ class _IcaroCameraPageState extends State<IcaroCameraPage> {
 
     final panelBorderRadius = 15.0;
 
+    final cameraSettings = IcaroSettings.getCameraSettings();
+
+    String streamUrl = "http://${cameraSettings.host}:${cameraSettings.port}/${cameraSettings.name}";
+
     // Right panel
     var stream = Padding(
       padding: const EdgeInsets.all(8.0),
@@ -97,7 +100,7 @@ class _IcaroCameraPageState extends State<IcaroCameraPage> {
     
     var cameraList = Container(
       // color: Colors.cyan,
-      height: 100.0 * entries.length,
+      height: 120.0 * entries.length,
       width: 200.0,
       child: ListView.builder(        
         itemCount: entries.length,
@@ -165,21 +168,21 @@ class _IcaroCameraPageState extends State<IcaroCameraPage> {
     return page;
   }
 
-  Icon getCoverageIcon(int coverage)
+  Icon getCoverageIcon(double coverage)
   {
-    if (coverage >= 80)
+    if (coverage >= 80.0)
     {
       return Icon(MdiIcons.wifiStrength4);
     }
-    else if (coverage >= 60)
+    else if (coverage >= 60.0)
     {
       return Icon(MdiIcons.wifiStrength3);
     }
-    else if (coverage >= 40)
+    else if (coverage >= 40.0)
     {
       return Icon(MdiIcons.wifiStrength2);
     }
-    else if (coverage >= 20)
+    else if (coverage >= 20.0)
     {
       return Icon(MdiIcons.wifiStrength1);
     }

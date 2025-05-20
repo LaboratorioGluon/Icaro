@@ -3,14 +3,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
-import 'package:icaro_app/sensorspage/humiditywidget.dart';
+import 'package:icaro_app/common/widgets/humiditywidget.dart';
 
 import '../common/services/simulated/sensorsservicesim.dart';
 import '../common/data/icarosensors.dart';
 import '../common/data/threeaxis.dart';
 
-import 'temperaturewidget.dart';
-import 'threeaxiswidget.dart';
+import '../common/widgets/temperaturewidget.dart';
+import '../common/widgets/threeaxiswidget.dart';
 
 class IcaroSensorsPage extends StatefulWidget {
   const IcaroSensorsPage({super.key});
@@ -124,32 +124,40 @@ class _IcaroSensorsPageState extends State<IcaroSensorsPage> {
     var gyro = ThreeAxisWidget(label: "Gyroscope", threeAxis: gyroscope);
     var humWidget = HumidityWidget(label: "Humidity", value: boardHum);
 
-    return SingleChildScrollView( 
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Card(
-            color: theme.colorScheme.primary,
-            elevation: 10,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Text(IcaroSensorsPage.pageTitle, style: style,),
-            ),
-          ),
-
-          battery,
-          tempWidget,
-          Row( 
-            children: 
-              [
-                accel,
-                gyro,
-                humWidget,
-              ]
-          ),
-          Text(dataStr),
-        ],
+    // Title 
+    var title = Card(
+      color: theme.colorScheme.primary,
+      elevation: 10,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Text(IcaroSensorsPage.pageTitle, style: style,),
       ),
+    );
+
+    // Content
+    var content = Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        battery,
+        tempWidget,
+        Row( 
+          children: 
+            [
+              accel,
+              gyro,
+              humWidget,
+            ]
+        ),
+        Text(dataStr),
+      ],
+    );
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        title,
+        Expanded(child: SingleChildScrollView(child: content)),
+      ]
     );
   }
 }

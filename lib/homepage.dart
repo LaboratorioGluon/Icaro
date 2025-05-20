@@ -13,19 +13,29 @@ class IcaroHomePage extends StatelessWidget {
        color: theme.colorScheme.onPrimary,
        );
 
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Card(
+    // Title
+    var title = Card(
             color: theme.colorScheme.primary,
             elevation: 10,
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Text(pageTitle, style: style,),
             ),
-          ),
+          );
+
+    var content =  Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
           IcaroLogo()
         ],
       );
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        title,
+        Expanded(child: SingleChildScrollView(child: content)),
+      ]);
+
   }
 }
