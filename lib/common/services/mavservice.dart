@@ -5,6 +5,8 @@ import 'package:dart_mavlink/dialects/common.dart';
 import 'package:dart_mavlink/mavlink.dart';
 import 'package:dart_mavlink/types.dart';
 import 'package:icaro_app/common/data/threeaxis.dart';
+import 'package:icaro_app/common/services/logservice.dart';
+import 'package:intl/intl.dart';
 
 class MAVCameraStatus
 {
@@ -132,7 +134,7 @@ class MAVService {
   void _processMAVHearbeat(Heartbeat hb)
   {
     _heartbeats.add(DateTime.now());
-    print("Heartbeat received");
+    LogService().i("Received heartbeat!");
   }
 
   void _processCameraImageCaptured(CameraImageCaptured cic)
@@ -160,8 +162,8 @@ class MAVService {
         camera.latitute  = cic.lat.toDouble() / 1E7;
         camera.longitude = cic.lon.toDouble() / 1E7;
         camera.altitude  = cic.alt.toDouble() / 1E3;
+        LogService().i("Cam ${cic.cameraId}: Captured image at (${camera.latitute},${camera.longitude},${camera.altitude})!");
     }
-    print("CameraImageCaptured received");
   }
 
   void _processGlobalPositionInt(GlobalPositionInt gpi)
@@ -185,6 +187,8 @@ class MAVService {
       y: imu.ygyro.toDouble() / 1000.0,
       z: imu.zgyro.toDouble() / 1000.0,
     );
+    LogService().i("Received IMU Acccel data: (${imuStatus.accel.x},${imuStatus.accel.y},${imuStatus.accel.z})!");
+    LogService().i("Received IMU Gyro data: (${imuStatus.gyro.x},${imuStatus.gyro.y},${imuStatus.gyro.z})!");
   }
 
   void _processBatteryStatus(BatteryStatus bs)
@@ -192,6 +196,7 @@ class MAVService {
     batteryStatus.status3v3 = bs.voltagesExt[0] != 0.0; // Not official purpose
     batteryStatus.status5v0 = bs.voltagesExt[1] != 0.0; // Not official purpose
     batteryStatus.batteryPercentage = bs.batteryRemaining.toDouble();
+    LogService().i("Received Battery data: (${batteryStatus.batteryPercentage},${batteryStatus.status3v3},${batteryStatus.status5v0})!");
   }
 
   int _getNameLength(List<int> name)
@@ -239,18 +244,22 @@ class MAVService {
     if (_areNamesEqual(name, "InternalT".codeUnits.toList()))
     {
       sensorsStatus.internalTemp = nvf.value;
+      LogService().i("Received Internal temp: ${sensorsStatus.internalTemp}!");
     }
     else if (_areNamesEqual(name, "ExternalT".codeUnits.toList()))
     {
       sensorsStatus.externalTemp = nvf.value;
+      LogService().i("Received External temp: ${sensorsStatus.internalTemp}!");
     }
     else if (_areNamesEqual(name, "OnboardT".codeUnits.toList()))
     {
       sensorsStatus.onboardTemp = nvf.value;
+      LogService().i("Received OnBoard temp: ${sensorsStatus.internalTemp}!");
     }
     else if (_areNamesEqual(name, "Humidity".codeUnits.toList()))
     {
       sensorsStatus.humidity = nvf.value;
+      LogService().i("Received Humidity temp: ${sensorsStatus.internalTemp}!");
     }
   }
 
@@ -258,6 +267,7 @@ class MAVService {
   {
     timestampStatus = DateTime.fromMillisecondsSinceEpoch(st.timeUnixUsec.toInt());
     print("SystemTime: $timestampStatus");
+      LogService().i("Received SystemTime: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(timestampStatus)} (${st.timeUnixUsec.toInt()})!");
   }
 
   // MAV server 
