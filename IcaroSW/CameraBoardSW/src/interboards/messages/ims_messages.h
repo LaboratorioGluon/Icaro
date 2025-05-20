@@ -2,7 +2,7 @@
 
 #include "../../../Modules/Common/SwLib/IMS/src/ims_messages.h"
 
-namespace InterBoards::Messages
+namespace InterBoards::CameraMessages
 {
 
     struct IMS_PACK IMS_Status

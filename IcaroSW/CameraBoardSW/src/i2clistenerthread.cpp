@@ -20,7 +20,7 @@ const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_NONE;
 
 void copyBoardStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatus_t>& externalStatus)
 {
-    using namespace InterBoards::Messages;
+    using namespace InterBoards::CameraMessages;
     auto ims_status = reinterpret_cast<const ImsMessageStatus*>(raw);
     externalStatus->boards = {
         .externalTS        = ims_status->header.timestamp,
@@ -32,7 +32,7 @@ void copyBoardStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalSta
 
 void copyPowerStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatus_t>& externalStatus)
 {
-    using namespace InterBoards::Messages;
+    using namespace InterBoards::CameraMessages;
     auto ims_power = reinterpret_cast<const ImsMessagePower*>(raw);
     externalStatus->power = {
         .externalTS   = ims_power->header.timestamp,
@@ -44,7 +44,7 @@ void copyPowerStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalSta
 
 void copySensorsStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatus_t>& externalStatus)
 {
-    using namespace InterBoards::Messages;
+    using namespace InterBoards::CameraMessages;
     auto ims_sensors = reinterpret_cast<const ImsMessageSensors*>(raw);
     externalStatus->sensors = {
         .externalTS   = ims_sensors->header.timestamp,
@@ -57,7 +57,7 @@ void copySensorsStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalS
 
 void copyAccelStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatus_t>& externalStatus)
 {
-    using namespace InterBoards::Messages;
+    using namespace InterBoards::CameraMessages;
     auto ims_accel = reinterpret_cast<const ImsMessageAccel*>(raw);
     externalStatus->accel = {
         .externalTS = ims_accel->header.timestamp,
@@ -69,7 +69,7 @@ void copyAccelStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalSta
 
 void copyGyroStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatus_t>& externalStatus)
 {
-    using namespace InterBoards::Messages;
+    using namespace InterBoards::CameraMessages;
     auto ims_gyro = reinterpret_cast<const ImsMessageGyro*>(raw);
     externalStatus->gyro = {
         .externalTS = ims_gyro->header.timestamp,
@@ -81,7 +81,7 @@ void copyGyroStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStat
 
 void copyGPSStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatus_t>& externalStatus)
 {
-    using namespace InterBoards::Messages;
+    using namespace InterBoards::CameraMessages;
     auto ims_gps = reinterpret_cast<const ImsMessageGPS*>(raw);
     externalStatus->gps = {
         .externalTS = ims_gps->header.timestamp,
@@ -93,7 +93,7 @@ void copyGPSStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatu
 
 void copyDateTimeStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatus_t>& externalStatus)
 {
-    using namespace InterBoards::Messages;
+    using namespace InterBoards::CameraMessages;
     auto ims_gps = reinterpret_cast<const ImsMessageDateTime*>(raw);
     externalStatus->time = {
         .boardTS     = static_cast<uint64_t>(time(NULL)),
@@ -177,7 +177,7 @@ void i2cListenerThreadFunc (void* arg)
             const size_t expectedSize = sizeof(raw->header) + raw->header.len;
             if (lenRecv == expectedSize)
             {
-                using namespace InterBoards::Messages;
+                using namespace InterBoards::CameraMessages;
                 
                 switch (static_cast<IMS_TAGS>(raw->header.tag))
                 {
