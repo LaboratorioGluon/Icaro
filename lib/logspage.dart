@@ -47,12 +47,12 @@ class IcaroLogsPage extends StatelessWidget {
     );
 
     var content = Container(
-  decoration: BoxDecoration(
-      color: theme.colorScheme.secondary, // Color de fondo opcional
-      borderRadius: BorderRadius.circular(20.0),
+      decoration: BoxDecoration(
+        color: Color(0xfffef7ff), // Forced color from loggerWidget
+        borderRadius: BorderRadius.circular(20.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(6),
         child: loggerWidget,
       ),
     );
