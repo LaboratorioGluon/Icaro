@@ -3,11 +3,8 @@ import 'package:flutter/material.dart';
 import 'camerapage/camerapage.dart';
 import 'homepage.dart';
 import 'logspage.dart';
-import 'lorapage.dart';
-import 'mappage/mappage.dart';
 import 'mav/mavsensorspage.dart';
 import 'mav/mavmappage.dart';
-import 'sensorspage/sensorspage.dart';
 import 'settingspage/settingspage.dart';
 import 'appsettings.dart';
 import 'summary.dart';
@@ -73,12 +70,6 @@ class _IcaroMainState extends State<IcaroMain> {
         page = IcaroLogsPage();
       case 5:
         page = IcaroSettingsPage();
-      case 6:
-        page = IcaroSensorsPage();
-      case 7:
-        page = IcaroMapPage();
-      case 8:
-        page = IcaroLoraPage();
       default:
       throw UnimplementedError("No widget for $selectedIndex");
     }
@@ -109,18 +100,6 @@ class _IcaroMainState extends State<IcaroMain> {
               NavigationRailDestination(
                 icon: Icon(Icons.settings),
                 label: Text('Settings'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.sensors),
-                label: Text('Sensors'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.map),
-                label: Text('Map'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.wifi),
-                label: Text('Lora'),
               ),
             ];
 
