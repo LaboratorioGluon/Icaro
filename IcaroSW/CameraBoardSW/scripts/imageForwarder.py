@@ -52,15 +52,11 @@ imageQueue  = queue.Queue()
 
 # Handler for packets received from the interface
 def packet_handler(pkt):
-    if pkt.haslayer(Dot11) and pkt.type == 2: # Filter data packets
-        src_mac = pkt.addr2.lower() if pkt.addr2 else None
-        if src_mac == target_mac: # Filtrar paquetes del ESP32
-            if pkt.haslayer(Raw):
-                try:
-                    packetPayload = pkt[Raw].load
-                    packetQueue.put(packetPayload) # Send to the next stage
-                except Exception:
-                    pass  # Ignore errors
+    try:
+        packetPayload = pkt[Raw].load
+        packetQueue.put(packetPayload) # Send to the next stage
+    except Exception:
+        pass  # Ignore errors
 
 # This class will parse the fragment header of a packet
 class FragmentHeader:
@@ -176,7 +172,7 @@ def image_forwarder():
 # Thread to receive data from the interface 
 def interface_sniffer():
     print(f"📡 Listening to {iface}...")
-    sniff(iface=iface, prn=packet_handler, store=0)
+    sniff(iface=iface, prn=packet_handler, store=0, filter=f"ether src {target_mac}")
 
 
 # Start program
