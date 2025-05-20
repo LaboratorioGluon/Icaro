@@ -14,7 +14,7 @@ MAVCamera::MAVCamera(uint8_t systemID,
 {}
 
 bool MAVCamera::notifyCapture(int32_t index, int8_t result, const char* filename,
-                              int32_t lat, int32_t lon, int32_t alt)
+                              double lat, double lon, double alt)
 {
     mavlink_message_t mavMessage;
 
@@ -27,9 +27,9 @@ bool MAVCamera::notifyCapture(int32_t index, int8_t result, const char* filename
         pdTICKS_TO_MS(timeSinceBoot),
         0,
         cameraID,
-        lat,
-        lon,
-        alt,
+        static_cast<int32_t>(lat*10000000),
+        static_cast<int32_t>(lon*10000000),
+        static_cast<int32_t>(alt*1000),
         -1,
         q,
         index,

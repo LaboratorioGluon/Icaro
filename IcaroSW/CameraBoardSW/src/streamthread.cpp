@@ -96,7 +96,10 @@ void streamThreadFunc (void* arg)
 
             // 2.2 Notify image sent through MAV
             static int frameCounter = 0;
-            mavCamera.notifyCapture(frameCounter++, imageSent, EMPTY_STRING, 0,0,0);
+            mavCamera.notifyCapture(frameCounter++, imageSent, EMPTY_STRING, 
+                                    externalStatus->gps.latitude, 
+                                    externalStatus->gps.longitude, 
+                                    externalStatus->gps.altitude);
 
             // Limit cycles per minute (max)
             static TickType_t lastWakeUpTime = 0;

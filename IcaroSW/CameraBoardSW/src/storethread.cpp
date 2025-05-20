@@ -71,7 +71,10 @@ void storeThreadFunc (void* arg)
             }
             
             // 2.5 Notify captured image
-            mavCamera.notifyCapture(frameCounter, imageStored, imagefile, 0,0,0);
+            mavCamera.notifyCapture(frameCounter, imageStored, imagefile, 
+                                    externalStatus->gps.latitude, 
+                                    externalStatus->gps.longitude, 
+                                    externalStatus->gps.altitude);
 
             // Limit cycles per minute (max)
             static TickType_t lastWakeUpTime = 0;

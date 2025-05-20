@@ -18,7 +18,7 @@ public:
     virtual ~MAVCamera() = default;
 
     bool notifyCapture(int32_t index, int8_t result, const char* filename, 
-                       int32_t lat, int32_t lon, int32_t alt);
+                       double lat, double lon, double alt);
 };
 
 }
