@@ -193,7 +193,7 @@ uint32_t SDCard::findMaxImage() const
     for (int dir = 0; dir <= 99999; dir++)
     {
         constexpr int MAX_DIR_JPG = 999;
-        snprintf(file_path, sizeof(file_path),  "%s/%05d/%03d.JPG", MOUNT_POINT, dir, MAX_DIR_JPG);
+        snprintf(file_path, sizeof(file_path),  "%s/%04d/%03d.JPG", MOUNT_POINT, dir, MAX_DIR_JPG);
         if (exists(file_path)) {
             // File exists, continue with next directory
             ESP_LOGD(MODULE_TAG, "Directory %d full", dir);
@@ -209,7 +209,7 @@ uint32_t SDCard::findMaxImage() const
             while (i <= f)
             {
                 int c = (i + f) / 2;
-                snprintf(file_path, sizeof(file_path),  "%s/%05d/%03d.JPG", MOUNT_POINT, dir, c);
+                snprintf(file_path, sizeof(file_path),  "%s/%04d/%03d.JPG", MOUNT_POINT, dir, c);
                 if (exists(file_path))
                 {
                     // File exists, check numbers above

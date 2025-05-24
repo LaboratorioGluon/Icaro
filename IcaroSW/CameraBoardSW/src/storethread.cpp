@@ -12,7 +12,7 @@
 namespace
 {
 const char*           MODULE_TAG       = "TH_STORE";
-const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_NONE;
+const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_DEBUG;
 }
 
 void storeThreadFunc (void* arg)
@@ -55,9 +55,9 @@ void storeThreadFunc (void* arg)
             // 2.2 Transform frame
             
             // 2.3 Store frame            
-            sprintf(imagefile, "/%05d", frameCounter/1000);
+            sprintf(imagefile, "/%04d", frameCounter/1000);
             int ret = fs->makedir(imagefile);
-            sprintf(imagefile, "/%05d/%03d.jpg", frameCounter/1000, frameCounter%1000);
+            sprintf(imagefile, "/%04d/%03d.jpg", frameCounter/1000, frameCounter%1000);
             ESP_LOGD(MODULE_TAG, "Generated name for : %d - %s", frameCounter, imagefile);
             bool imageStored = fs->write(imagefile, frame->buf, frame->len);
             ESP_LOGD(MODULE_TAG, "Written : %d - %s", frameCounter, imagefile);

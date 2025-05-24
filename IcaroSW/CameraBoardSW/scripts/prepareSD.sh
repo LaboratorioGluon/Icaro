@@ -3,7 +3,7 @@ set -e
 
 # ------------- CONFIGURATION -------------
 # ⚠️ UNCOMMENT AND CHANGE THIS TO YOUR SD DEVICE! (e.g: /dev/sdb) ⚠️⚠️⚠️ It will be formatted ⚠️⚠️⚠️
-SD_DEVICE="/dev/sdb"          
+# SD_DEVICE=""          
 DEVICE_NAME="ICAROCAM"        # FAT32 volume label (max 11 chars)
 MOUNT_DIR="/media/${USER}/${DEVICE_NAME}"
 
