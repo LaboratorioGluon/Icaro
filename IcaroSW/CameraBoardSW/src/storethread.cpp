@@ -32,7 +32,7 @@ void storeThreadFunc (void* arg)
     std::shared_ptr<Data::storeThreadStatus_t>&    status         = convertedArg->threadStatus;
 
     // 1.2 - Init thread data
-    int frameCounter = 0;
+    int frameCounter = status->captureCount;
     char imagefile[20];
 
     MAVLink::MAVCamera mavCamera (SYSTEM_ID,
@@ -54,10 +54,14 @@ void storeThreadFunc (void* arg)
             
             // 2.2 Transform frame
             
-            // 2.3 Store frame
-            sprintf(imagefile, "/%08d.jpg", frameCounter);
+            // 2.3 Store frame            
+            sprintf(imagefile, "/%05d", frameCounter/1000);
+            int ret = fs->makedir(imagefile);
+            sprintf(imagefile, "/%05d/%03d.jpg", frameCounter/1000, frameCounter%1000);
+            ESP_LOGD(MODULE_TAG, "Generated name for : %d - %s", frameCounter, imagefile);
             bool imageStored = fs->write(imagefile, frame->buf, frame->len);
-            
+            ESP_LOGD(MODULE_TAG, "Written : %d - %s", frameCounter, imagefile);
+
             // 2.4 Free frame
             camera->freeFrame(frame);
             

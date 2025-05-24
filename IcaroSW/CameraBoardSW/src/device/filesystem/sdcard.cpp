@@ -2,14 +2,19 @@
 
 #include <esp_log.h>
 #include <esp_vfs_fat.h>
-
-#include <sdmmc_cmd.h>
 #include <driver/sdmmc_host.h>
+#include <sdmmc_cmd.h>
+
+#include <dirent.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/unistd.h>
+#include <errno.h>
 
 namespace
 {
 const char*           MODULE_TAG       = "SDCARD";
-const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_NONE;
+const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_DEBUG;
 
 const char* MOUNT_POINT = "/sdcard";
 
@@ -96,6 +101,25 @@ bool SDCard::isAvailable() const
     return (card != nullptr) && initialized;
 }
 
+bool SDCard::makedir(const std::string& dirpath)
+{
+    std::string sdpath = MOUNT_POINT + dirpath; 
+    int ret = mkdir(sdpath.c_str(), 0775);
+    if (ret == 0) 
+    {
+        ESP_LOGD(MODULE_TAG, "Created directory: %s", sdpath.c_str());
+    }
+    else
+    {       
+        if (errno == EEXIST) {
+            ESP_LOGD(MODULE_TAG, "El directorio ya existe: %s\n", sdpath.c_str());
+        } else {
+            ESP_LOGE(MODULE_TAG, "Error al crear el directorio %s: errno %d\n", sdpath.c_str(), errno);
+        }
+    }
+    return ret == 0;
+}
+
 bool SDCard::write(const std::string& filepath, uint8_t* data, size_t data_len)
 {
     ESP_LOGD(MODULE_TAG, "Writing file to SDCard.");
@@ -150,6 +174,58 @@ bool SDCard::append(const std::string& filepath, uint8_t* data, size_t data_len)
     }
 
     return appended;
+}
+
+bool exists(char* file_path)
+{
+    FILE *f = fopen(file_path, "r");
+    if (!f) {
+        return false;
+    }
+    fclose(f);
+    return true;
+}
+
+uint32_t SDCard::findMaxImage() const 
+{
+    char file_path[64];
+    
+    for (int dir = 0; dir <= 99999; dir++)
+    {
+        constexpr int MAX_DIR_JPG = 999;
+        snprintf(file_path, sizeof(file_path),  "%s/%05d/%03d.JPG", MOUNT_POINT, dir, MAX_DIR_JPG);
+        if (exists(file_path)) {
+            // File exists, continue with next directory
+            ESP_LOGD(MODULE_TAG, "Directory %d full", dir);
+            continue;
+        }
+        else
+        {
+            ESP_LOGD(MODULE_TAG, "Scanning dir %d", dir);
+            // File does not exist, find highest file that exists
+            int i = 0, f = MAX_DIR_JPG;
+            int candidate = 999;
+            
+            while (i <= f)
+            {
+                int c = (i + f) / 2;
+                snprintf(file_path, sizeof(file_path),  "%s/%05d/%03d.JPG", MOUNT_POINT, dir, c);
+                if (exists(file_path))
+                {
+                    // File exists, check numbers above
+                    i = c+1;
+                }
+                else
+                {
+                    // File does not exist, check numbers below
+                    candidate = c;
+                    f = c-1;
+                }
+            }
+            return dir * 1000 + candidate;
+        }
+    }
+    return 0;
 }
 
 }

@@ -99,31 +99,37 @@ bool initialize()
     return initialized;
 }
 
-void createInitFile()
+void log(std::string message)
 {
-    const std::string file = "/boot.txt";
+    const std::string file = "/log.txt";
 
-    #define DATE_SIZE    20
+    #define DATE_SIZE    25
     char timeBuffer[DATE_SIZE];
     
     time_t currentTime = time(nullptr);
     strftime(timeBuffer, 20, "%d/%m/%Y %H:%M:%S", localtime(&currentTime));
     
-    ESP_LOGI(MODULE_TAG, "Boot at %s", timeBuffer);
-
-    #define BUFFER_SIZE    64
+    #define BUFFER_SIZE    150
     char buffer[BUFFER_SIZE];
-    sprintf(buffer, "Last boot at %s\n", timeBuffer);
+    sprintf(buffer, "%s:%s\n", timeBuffer, message.substr(0, BUFFER_SIZE-DATE_SIZE).c_str());
 
     bool writeOk = fs->append(file, (uint8_t*)buffer, strlen(buffer));
     if (writeOk)
     {
-        ESP_LOGI(MODULE_TAG, "Logged boot time.");
+        ESP_LOGI(MODULE_TAG, "Logged message: %s", buffer);
     }
     else
     {
         ESP_LOGE(MODULE_TAG, "Error writting %s file.", file.c_str());
     }
+}
+
+uint32_t readLastImageIndex(std::shared_ptr<Device::IFileSystem> fs)
+{
+    ESP_LOGD(MODULE_TAG, "Looking for max image index...");
+    uint32_t maxIndex = fs->findMaxImage();
+    ESP_LOGD(MODULE_TAG, "Last image found is %u", static_cast<unsigned>(maxIndex));
+    return maxIndex;
 }
 
 void sendStatusMAV(std::shared_ptr<const Data::ExternalStatus_t> c_externalStatus, MAVLink::MAVSystem& mavSystem)
@@ -188,11 +194,11 @@ void app_main()
         vTaskDelay(pdMS_TO_TICKS(200));
     }
 
-    // TODO: Implement and initialize RTC?
-
-    // Create initial file
-    createInitFile();
+    // Read initialization files
+    // readConfigFile(systemStatus);
     
+    storeThreadStatus->captureCount = fs->findMaxImage();
+
     // Create threads
     {
         static streamThreadArg_t streamArgs {
@@ -306,7 +312,7 @@ void app_main()
             break;
 
             case Data::AppState::BEACON:
-                // Send 2 hearbeats 
+                // Send 10 hearbeats 
                 for (int i=0; i<=10; i++)
                 {
                     mavSystem.sendHeartBeat(MAV_STATE_ACTIVE, static_cast<uint32_t>(systemStatus->state));
