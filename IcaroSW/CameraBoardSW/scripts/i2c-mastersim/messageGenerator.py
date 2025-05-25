@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 
 import struct
-import sys
 import time
 from datetime import datetime
 from smbus2 import SMBus, i2c_msg
+
+from espcrc import esp_rom_crc8_le
 
 # Variables
 useCustomMessages = False
@@ -22,7 +23,7 @@ def sendMessage(tag, payload):
     timestamp   = int(time.time())
     source      = 42 
     length      = len(payload)
-    dummy       = 0xA5
+    dummy       = esp_rom_crc8_le(0x00, payload)
 
     header = struct.pack('<QBBBB',
                          timestamp,

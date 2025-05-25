@@ -5,6 +5,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
+#include <esp_crc.h>
 #include <esp_log.h>
 
 #include "systemdef.h"
@@ -16,7 +17,7 @@
 namespace
 {
 const char*           MODULE_TAG       = "TH_I2CLISTENER";
-const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_NONE;
+const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_DEBUG;
 
 void copyBoardStatus(const ImsMessageRaw* raw, std::shared_ptr<Data::ExternalStatus_t>& externalStatus)
 {
@@ -167,6 +168,7 @@ void i2cListenerThreadFunc (void* arg)
                 continue;
             }
 
+
             // 2.2 TODO: Process received data
             // printf("Datos recibidos: ");
             // for (int i = 0; i < lenRecv; i++) {
@@ -177,6 +179,18 @@ void i2cListenerThreadFunc (void* arg)
             const size_t expectedSize = sizeof(raw->header) + raw->header.len;
             if (lenRecv == expectedSize)
             {
+
+                // Check CRC
+                uint8_t calculatedCrc = esp_rom_crc8_le(0, raw->raw, raw->header.len);
+                if (raw->header.dummy != calculatedCrc)
+                {
+                    ESP_LOGW(MODULE_TAG, "Invalid CRC in IMS message");
+                    ESP_LOGW(MODULE_TAG, "Received: 0x%02x", raw->header.dummy);
+                    ESP_LOGW(MODULE_TAG, "Expected: 0x%02x", calculatedCrc);
+                    // TODO: ignore not valid messages:
+                    // continue;
+                }
+
                 using namespace InterBoards::CameraMessages;
                 
                 switch (static_cast<IMS_TAGS>(raw->header.tag))
