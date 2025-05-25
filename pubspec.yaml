@@ -32,6 +32,7 @@ dependencies:
   logger: ^2.5.0
   logger_screen: ^0.0.3
   isar_flutter_libs: ^4.0.0-dev.14
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:

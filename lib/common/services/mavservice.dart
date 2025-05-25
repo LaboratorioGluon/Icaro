@@ -165,7 +165,7 @@ class MAVService {
 
       if (camera.imageCaptureCount % 10 == 0)
       {
-        LogService().i("Cam ${cic.cameraId}: Captured image at (${camera.latitute},${camera.longitude},${camera.altitude})!");
+        LogService().i("Cam ${cic.cameraId}: Captured image ${camera.imageCaptureCount} at (${camera.latitute},${camera.longitude},${camera.altitude})!");
       }
     }
   }
