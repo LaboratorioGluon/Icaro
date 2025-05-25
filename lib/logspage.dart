@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:icaro_app/common/services/logservice.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
 import 'package:logger_screen/logger_screen.dart';
 
 

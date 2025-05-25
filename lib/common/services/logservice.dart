@@ -1,18 +1,13 @@
-import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:logger_screen/logger_screen.dart';
 
 class LogService {
-  // Instancia privada del singleton
   static final LogService _instance = LogService._internal();
 
-  // Instancia pública del logger
   late final Logger _logger;
 
-  // Printer para mostrar los logs en pantalla
   late final LoggerScreenPrinter printer;
 
-  // Constructor privado
   LogService._internal() {
     printer = LoggerScreenPrinter(
       fileName: "logs",
@@ -22,15 +17,12 @@ class LogService {
     _logger = Logger(printer: printer);
   }
 
-  // Fábrica para retornar la instancia
   factory LogService() {
     return _instance;
   }
 
-  // Método para acceder al logger
   static Logger get instance => _instance._logger;
 
-  // Método para acceder al printer
   static LoggerScreenPrinter get screenPrinter => _instance.printer;
 
   void d(String message) => _logger.d(message, time: DateTime.now());

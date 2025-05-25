@@ -147,22 +147,26 @@ class MAVService {
     var camera = cameras[cic.cameraId];
     if (camera != null)
     {
-        camera.imageCaptureCount++;
-        camera.lastImageCapturedIndex = cic.imageIndex;
-        camera.lastImageCapturedName  = cic.fileUrl;
-        if (cic.captureResult != 0)
-        {
-            camera.storedImagesCount++;
-        }
-        else
-        {
-            camera.imageCapturedErrors++;
-        }
+      camera.imageCaptureCount++;
+      camera.lastImageCapturedIndex = cic.imageIndex;
+      camera.lastImageCapturedName  = cic.fileUrl;
+      if (cic.captureResult != 0)
+      {
+        camera.storedImagesCount++;
+      }
+      else
+      {
+        camera.imageCapturedErrors++;
+      }
 
-        camera.latitute  = cic.lat.toDouble() / 1E7;
-        camera.longitude = cic.lon.toDouble() / 1E7;
-        camera.altitude  = cic.alt.toDouble() / 1E3;
+      camera.latitute  = cic.lat.toDouble() / 1E7;
+      camera.longitude = cic.lon.toDouble() / 1E7;
+      camera.altitude  = cic.alt.toDouble() / 1E3;
+
+      if (camera.imageCaptureCount % 10 == 0)
+      {
         LogService().i("Cam ${cic.cameraId}: Captured image at (${camera.latitute},${camera.longitude},${camera.altitude})!");
+      }
     }
   }
 
