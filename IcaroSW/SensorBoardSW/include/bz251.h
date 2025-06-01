@@ -30,16 +30,17 @@ typedef struct {
 
 typedef struct {
     uint8_t valid;
-    float latitude;     /* dd.mmmmmm */
-    float longitude;    /* dd.mmmmmm */
-    float altitude;     /* Antenna altitude above/below mean sea level (meters) */
     uint8_t year;       /* yy */
     uint8_t month;      /* mm */
     uint8_t day;        /* dd */
+    float latitude;     /* dd.mmmmmm */
+    float longitude;    /* dd.mmmmmm */
+    float altitude;     /* Antenna altitude above/below mean sea level (meters) */
     uint8_t hour;       /* hh */
     uint8_t minute;     /* mm */
-    float speedKmh;     /* Speed over ground, kms */
     uint8_t satellites; /* Number of satellites in use. May be different to the number in view */
+    uint8_t dummy;
+    float speedKmh;     /* Speed over ground, kms */
 } Bz251Data;
 
 class Bz251

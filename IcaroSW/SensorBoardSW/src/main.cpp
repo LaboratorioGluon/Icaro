@@ -1,6 +1,8 @@
 
 #include <freertos/FreeRTOS.h>
 #include <esp_log.h>
+#include "system.h"
+#include <esp_timer.h>
 
 #include "dataMapSupply.h"
 
@@ -71,109 +73,29 @@ extern "C" void app_main()
 #include "bme280.h"
 #include <driver/i2c_master.h>
 #include "bz251.h"
+#include "sdcard.h"
 extern "C" {
+    #include "i2cMessages.h"    
     #include "ADS1115.h"
 }
 
 
-ads1115_t ads1115_cfg = {
-    .reg_cfg =  ADS1115_CFG_MS_MODE_SS | ADS1115_CFG_LS_DR_128SPS | ADS1115_CFG_MS_MUX_DIFF_AIN0_AIN1 | ADS1115_CFG_MS_PGA_FSR_6_144V,
-    .dev_addr = 0x48,
-  };
+/** SENSORS **/
 
-
-Bmi160 bmi;
-bme280_dev dev;
-
-
-i2c_master_bus_handle_t bus_handle;
-i2c_master_dev_handle_t dev_handle;
-i2c_device_config_t dev_cfg;
-
-i2c_master_bus_handle_t i2cExternalBusHandle;
-i2c_master_dev_handle_t i2cSupplyDev;
-
-Bz251 bz251;
 Bz251Data bz251Data;
 
-// PINOUT UART
-#define UART_NUM UART_NUM_2
-#define GPIO_UART_TX GPIO_NUM_17
-#define GPIO_UART_RX GPIO_NUM_16
+SDCard::SDCardConfig sdCardConfig = {
+    .clk = GPIO_NUM_14,
+    .cmd = GPIO_NUM_15,
+    .data0 = GPIO_NUM_2,
+    .data1 = GPIO_NUM_4,
+    .data2 = GPIO_NUM_12,
+    .data3 = GPIO_NUM_13
+};
 
-esp_err_t uart_init(void)
-{
-    uart_config_t uart_config;
-    memset(&uart_config, 0, sizeof(uart_config_t));
-        uart_config.baud_rate = 115200;
-        uart_config.data_bits = UART_DATA_8_BITS;
-        uart_config.parity = UART_PARITY_DISABLE;
-        uart_config.stop_bits = UART_STOP_BITS_1;
-        uart_config.flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
-        uart_config.source_clk = UART_SCLK_DEFAULT;
-        
+SDCard sdCard(sdCardConfig);
 
-    // We won't use a buffer for sending data.
-    ESP_ERROR_CHECK(uart_driver_install(UART_NUM, 1024 * 2, 2048, 0, NULL, 0));
-    ESP_ERROR_CHECK(uart_param_config(UART_NUM, &uart_config));
-    ESP_ERROR_CHECK(uart_set_pin(UART_NUM, GPIO_UART_TX, GPIO_UART_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
 
-    return ESP_OK;
-}
-
-esp_err_t bz251_init(void)
-{
-    Bz251Config conf;
-        conf.uartNum = UART_NUM_2;
-        conf.timeZone = 1;  // Timezone UTC +1
-        conf.hasGps = 0;    // Disable GPS
-        conf.dynmodel = 6;  // Airborne with <1g acceleration
-
-    bz251.init(conf);
-
-    return ESP_OK;
-}
-
-BME280_INTF_RET_TYPE main_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr)
-{
-    ESP_LOGE("MAIN", "TEST!");
-    ESP_ERROR_CHECK(i2c_master_transmit(dev_handle, &reg_addr, 1, -1));
-    ESP_ERROR_CHECK(i2c_master_receive(dev_handle, reg_data, len, -1));
-    
-    /*ESP_ERROR_CHECK(
-        i2c_master_transmit_receive(dev_handle, &reg_addr, 1, reg_data, len, -1)
-        );*/
-    return BME280_INTF_RET_SUCCESS;
-
-}
-
-BME280_INTF_RET_TYPE main_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len,
-                                                    void *intf_ptr)
-{
-    uint8_t buf[50];
-    buf[0] = reg_addr;
-    memcpy(&buf[1], reg_data, len);
-
-    esp_err_t err = i2c_master_transmit(dev_handle,
-        buf,
-        len+1,
-        -1);
-
-    if (err == ESP_OK)
-    {
-        return BME280_INTF_RET_SUCCESS;
-    }
-    return -1;
-}
-
-void main_bmi_delay(uint32_t period, void *intf_ptr)
-{
-    if (period < 10)
-    {
-        period = 10;
-    }
-    vTaskDelay(pdMS_TO_TICKS(period));
-}
 
 TaskHandle_t taskGPS;
 
@@ -204,44 +126,67 @@ void coreAThread(void *arg)
 }
 
 extern "C" void app_main() {
+    
+    sdCard.init();
 
-    uart_init();
-    bz251_init();
-    i2c_master_bus_config_t i2cMasterConfig = 
+    system_init();
+    sensors_init();
+
+    // Status LED Update
+    led_setDelay(LED_ALWAYS_ON);
+    int32_t ledDelay = LED_ALWAYS_ON;
+
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    ESP_LOGE("MAIN", "Icaro Sonde Started");
+
+    i2cmessages_data supplyData;
+
+    for(;;)
     {
-        .i2c_port = I2C_NUM_0,                    /*!< I2C port number, `-1` for auto selecting, (not include LP I2C instance) */
-        .sda_io_num = GPIO_NUM_21,                /*!< GPIO number of I2C SDA signal, pulled-up internally */
-        .scl_io_num = GPIO_NUM_22,                /*!< GPIO number of I2C SCL signal, pulled-up internally */
-        .clk_source = I2C_CLK_SRC_DEFAULT,            /*!< Clock source of I2C master bus */
-        .glitch_ignore_cnt = 7U,                  /*!< If the glitch period on the line is less than this value, it can be filtered out, typically value is 7 (unit: I2C module clock cycle)*/
-        .intr_priority = 0U,                      /*!< I2C interrupt priority, if set to 0, driver will select the default priority (1,2,3). */
-        .trans_queue_depth = 0,                      /*!< Depth of internal transfer queue, increase this value can support more transfers pending in the background, only valid in asynchronous transaction. (Typically max_device_num * per_transaction)*/
-        .flags = {
-            .enable_internal_pullup = 1
-        }
-    };
 
-    ESP_ERROR_CHECK(i2c_new_master_bus(&i2cMasterConfig, &bus_handle));
+        // Read Supply Board data
+        i2cmessage_read(&supplyData);
 
-    i2cMasterConfig.i2c_port = I2C_NUM_1;
-    i2cMasterConfig.sda_io_num = GPIO_NUM_25;
-    i2cMasterConfig.scl_io_num = GPIO_NUM_26;
-    ESP_ERROR_CHECK(i2c_new_master_bus(&i2cMasterConfig, &i2cExternalBusHandle));
+        ESP_LOGE("MAIN", "Supply Data: ID: %d, Status: %d, V5: %d, VBatt: %d, I33: %d, I5: %d, Temp: %d, Config: %d",
+                 supplyData.id,
+                 supplyData.status,
+                 supplyData.v5,
+                 supplyData.vbatt,
+                 supplyData.i33,
+                 supplyData.i5,
+                 supplyData.temp,
+                 supplyData.config);
 
-    dev_cfg = {
-        .dev_addr_length = I2C_ADDR_BIT_LEN_7,
-        .device_address = 0x48,
-        .scl_speed_hz = 100000
-    };
+        sensorData.timestamp = esp_timer_get_time(); // Get timestamp in milliseconds
 
-    ESP_ERROR_CHECK(i2c_master_bus_add_device(bus_handle, &dev_cfg, &dev_handle));
+        // Temperature, humidity and pressure
+        bme280_get_sensor_data(BME280_ALL, &sensorData.bme, &bme280);
 
-    dev_cfg.device_address = 0x58;
-    ESP_ERROR_CHECK(i2c_master_bus_add_device(i2cExternalBusHandle, &dev_cfg, &i2cSupplyDev));
+        // IMU
+        bmi160.getData(sensorData.acc, sensorData.gyr);
+
+        // ADS1115 (PT100)
+        sensors_getPt100(sensorData.pt100_1, sensorData.pt100_2);
+    
+        // GPS
+        bz251.getData(sensorData.gps);
+        
+
+        // Store to SD Card
+        debugSensorData();
+
+        sdCard.logData(&sensorData);
+
+        // Send data to Comms Board
+
+        xTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000)); // Wait 1 second
+        ledDelay = (ledDelay == LED_ALWAYS_ON) ? 0 : LED_ALWAYS_ON; // Toggle LED delay
+        led_setDelay(ledDelay); // Update LED delay
+        
+    }
 
 
-    ESP_LOGE("MAIN", "Holi");
-    ADS1115_initiate(&ads1115_cfg);
+#if 0
     
     //xTaskCreatePinnedToCore(coreAThread, "core_A", 4096, NULL, 3, &taskGPS, 0);
 
@@ -306,9 +251,6 @@ extern "C" void app_main() {
         vTaskDelay(pdMS_TO_TICKS(3000));
     }
 
-    bmi.init({SPI2_HOST, GPIO_NUM_23, GPIO_NUM_19, GPIO_NUM_18, GPIO_NUM_5, 1000000});
-    bmi.calibrate(5000);
-    Bmi160::Data acc, gyr;
 
     vTaskDelay(pdMS_TO_TICKS(2000));
 
@@ -322,29 +264,6 @@ extern "C" void app_main() {
     conf.master.clk_speed = 100000;
     i2c_param_config(I2C_NUM_0, &conf);*/
 
-    dev.intf = BME280_I2C_INTF;
-    dev.delay_us = main_bmi_delay;
-    dev.read = main_i2c_read;
-    dev.write = main_i2c_write;
-
-
-    ESP_LOGE("MAIN", "Init: %d", bme280_init(&dev));
-
-    bme280_settings settings;
-
-    bme280_get_sensor_settings(&settings, &dev);
-
-    settings.osr_h = BME280_OVERSAMPLING_1X;
-    settings.osr_p = BME280_OVERSAMPLING_16X;
-    settings.osr_t = BME280_OVERSAMPLING_2X;
-    settings.filter = BME280_FILTER_COEFF_16;
-    settings.standby_time = BME280_STANDBY_TIME_0_5_MS;
-
-    bme280_set_sensor_settings(BME280_SEL_ALL_SETTINGS, &settings, &dev);
-    
-    bme280_set_sensor_mode(BME280_POWERMODE_NORMAL, &dev);
-
-    ESP_LOGE("MAIN", "Get sensor settings: %d", bme280_get_sensor_settings(&settings, &dev));
 
     // Print settings
     ESP_LOGE("MAIN", "Settings: %d %d %d %d %d", settings.osr_h, settings.osr_p, settings.osr_t, settings.filter, settings.standby_time);
@@ -375,7 +294,7 @@ extern "C" void app_main() {
         vTaskDelay(2);
 
     }
-
+#endif  
 }
 
 #endif
