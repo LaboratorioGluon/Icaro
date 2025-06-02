@@ -1,6 +1,7 @@
 #ifndef SENSORS_H__
 #define SENSORS_H__
 
+
 #include <freertos/FreeRTOS.h>
 #include "bme280.h"
 #include "classBmi160.h"
@@ -45,5 +46,6 @@ void sensors_getPt100(float &pt100_1, float &pt100_2);
 
 
 void debugSensorData();
+
 
 #endif // SENSORS_H__

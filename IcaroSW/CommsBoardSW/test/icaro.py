@@ -18,7 +18,7 @@ class Icaro(KaitaiStruct):
 
     def _read(self):
         self._debug['timestamp']['start'] = self._io.pos()
-        self.timestamp = self._io.read_s8be()
+        self.timestamp = self._io.read_s8le()
         self._debug['timestamp']['end'] = self._io.pos()
         self._debug['bme280']['start'] = self._io.pos()
         self.bme280 = Icaro.Bme(self._io, self, self._root)
@@ -37,26 +37,26 @@ class Icaro(KaitaiStruct):
         self.gps._read()
         self._debug['gps']['end'] = self._io.pos()
         self._debug['pt100_ext']['start'] = self._io.pos()
-        self.pt100_ext = self._io.read_f4be()
+        self.pt100_ext = self._io.read_f4le()
         self._debug['pt100_ext']['end'] = self._io.pos()
         self._debug['pt100_int']['start'] = self._io.pos()
-        self.pt100_int = self._io.read_f4be()
+        self.pt100_int = self._io.read_f4le()
         self._debug['pt100_int']['end'] = self._io.pos()
         self._debug['vin']['start'] = self._io.pos()
-        self.vin = self._io.read_f4be()
+        self.vin = self._io.read_f4le()
         self._debug['vin']['end'] = self._io.pos()
         self._debug['v5']['start'] = self._io.pos()
-        self.v5 = self._io.read_f4be()
+        self.v5 = self._io.read_f4le()
         self._debug['v5']['end'] = self._io.pos()
         self._debug['currentv3']['start'] = self._io.pos()
-        self.currentv3 = self._io.read_f4be()
+        self.currentv3 = self._io.read_f4le()
         self._debug['currentv3']['end'] = self._io.pos()
         self._debug['currentv5']['start'] = self._io.pos()
-        self.currentv5 = self._io.read_f4be()
+        self.currentv5 = self._io.read_f4le()
         self._debug['currentv5']['end'] = self._io.pos()
 
     class Bme(KaitaiStruct):
-        SEQ_FIELDS = ["temperature", "pressure", "humidity"]
+        SEQ_FIELDS = ["pressure", "temperature", "humidity"]
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -64,14 +64,14 @@ class Icaro(KaitaiStruct):
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
-            self._debug['temperature']['start'] = self._io.pos()
-            self.temperature = self._io.read_f8be()
-            self._debug['temperature']['end'] = self._io.pos()
             self._debug['pressure']['start'] = self._io.pos()
-            self.pressure = self._io.read_f8be()
+            self.pressure = self._io.read_f8le()
             self._debug['pressure']['end'] = self._io.pos()
+            self._debug['temperature']['start'] = self._io.pos()
+            self.temperature = self._io.read_f8le()
+            self._debug['temperature']['end'] = self._io.pos()
             self._debug['humidity']['start'] = self._io.pos()
-            self.humidity = self._io.read_f8be()
+            self.humidity = self._io.read_f8le()
             self._debug['humidity']['end'] = self._io.pos()
 
 
@@ -85,16 +85,16 @@ class Icaro(KaitaiStruct):
 
         def _read(self):
             self._debug['x']['start'] = self._io.pos()
-            self.x = self._io.read_f4be()
+            self.x = self._io.read_f4le()
             self._debug['x']['end'] = self._io.pos()
             self._debug['y']['start'] = self._io.pos()
-            self.y = self._io.read_f4be()
+            self.y = self._io.read_f4le()
             self._debug['y']['end'] = self._io.pos()
             self._debug['z']['start'] = self._io.pos()
-            self.z = self._io.read_f4be()
+            self.z = self._io.read_f4le()
             self._debug['z']['end'] = self._io.pos()
             self._debug['time']['start'] = self._io.pos()
-            self.time = self._io.read_f4be()
+            self.time = self._io.read_f4le()
             self._debug['time']['end'] = self._io.pos()
 
 
@@ -120,13 +120,13 @@ class Icaro(KaitaiStruct):
             self.day = self._io.read_u1()
             self._debug['day']['end'] = self._io.pos()
             self._debug['latitude']['start'] = self._io.pos()
-            self.latitude = self._io.read_f4be()
+            self.latitude = self._io.read_f4le()
             self._debug['latitude']['end'] = self._io.pos()
             self._debug['longitude']['start'] = self._io.pos()
-            self.longitude = self._io.read_f4be()
+            self.longitude = self._io.read_f4le()
             self._debug['longitude']['end'] = self._io.pos()
             self._debug['altitude']['start'] = self._io.pos()
-            self.altitude = self._io.read_f4be()
+            self.altitude = self._io.read_f4le()
             self._debug['altitude']['end'] = self._io.pos()
             self._debug['hour']['start'] = self._io.pos()
             self.hour = self._io.read_u1()
@@ -141,21 +141,8 @@ class Icaro(KaitaiStruct):
             self.dummy = self._io.read_u1()
             self._debug['dummy']['end'] = self._io.pos()
             self._debug['speed']['start'] = self._io.pos()
-            self.speed = self._io.read_f4be()
+            self.speed = self._io.read_f4le()
             self._debug['speed']['end'] = self._io.pos()
 
 
 
-
-if "__main__" == __name__:
-    import sys
-    if len(sys.argv) != 2:
-        print("Usage: python -m test.icaro FILENAME")
-        sys.exit(1)
-
-    with open(sys.argv[1], "rb") as f:
-        data = f.read()
-        io = KaitaiStream(BytesIO(data))
-        instance = Icaro(io)
-        instance._read()
-        print(instance)

@@ -9,6 +9,7 @@ extern "C" {
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <driver/i2c_master.h>
+#include "sensors.h"
 
 
 typedef struct {
@@ -22,10 +23,10 @@ typedef struct {
     uint8_t config;
 } i2cmessages_data;
 
-void i2cmessages_init(i2c_master_dev_handle_t bus);
+void i2cmessages_init(i2c_master_dev_handle_t supplyBus, i2c_master_dev_handle_t commsBus);
 uint8_t i2cmessage_read(i2cmessages_data *data);
 uint8_t i2cmessage_set5v(uint8_t isOn);
-
+uint8_t i2cmessage_sendToLora(SensorData *data);
 
 #ifdef __cplusplus
 }

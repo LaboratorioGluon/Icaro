@@ -28,9 +28,9 @@ seq:
 types:
   bme:
     seq:
-      - id: temperature
-        type: f8
       - id: pressure
+        type: f8
+      - id: temperature
         type: f8
       - id: humidity
         type: f8

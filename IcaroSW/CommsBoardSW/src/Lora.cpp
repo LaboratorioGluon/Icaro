@@ -37,7 +37,8 @@ void Lora::Init()
                                 LoRaSettings.PreambleLength, 
                                 3.3f);*/
     int16_t state = radio.begin();
-                        
+    
+    radio.setOutputPower(20);
     //radio.explicitHeader();
     //radio.forceLDRO(false);
     //radio.setCRC(true);

@@ -158,6 +158,11 @@ extern "C" void app_main() {
                  supplyData.config);
 
         sensorData.timestamp = esp_timer_get_time(); // Get timestamp in milliseconds
+        sensorData.v5voltage = supplyData.v5 ; // Convert to Volts
+        sensorData.v3v3current = supplyData.i33 ; // Convert to Amperes
+        sensorData.v5current = supplyData.i5 ; // Convert to Amperes
+        sensorData.vin = supplyData.vbatt; // Convert to Volts
+
 
         // Temperature, humidity and pressure
         bme280_get_sensor_data(BME280_ALL, &sensorData.bme, &bme280);
@@ -178,6 +183,7 @@ extern "C" void app_main() {
         sdCard.logData(&sensorData);
 
         // Send data to Comms Board
+        i2cmessage_sendToLora(&sensorData);
 
         xTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000)); // Wait 1 second
         ledDelay = (ledDelay == LED_ALWAYS_ON) ? 0 : LED_ALWAYS_ON; // Toggle LED delay

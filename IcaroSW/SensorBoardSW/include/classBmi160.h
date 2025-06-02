@@ -7,8 +7,6 @@
 
 #include "bmi160.h"
 
-
-
 typedef struct {
     spi_host_device_t spidev;
     gpio_num_t mosi;
