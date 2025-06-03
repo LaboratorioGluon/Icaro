@@ -35,4 +35,7 @@ private:
     FILE * eventFile;
 };
 
+
+extern SDCard sdCard;
+
 #endif // SDCARD_H__

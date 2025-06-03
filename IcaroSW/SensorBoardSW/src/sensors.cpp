@@ -3,12 +3,15 @@
 #include "system.h"
 #include "math.h"
 #include <esp_log.h>
+#include "sdcard.h"
 
 SensorData sensorData;
 
 Bmi160 bmi160;
 bme280_dev bme280;
 Bz251 bz251;
+
+
 
 ads1115_t ads1115_cfg = {
     .reg_cfg = ADS1115_CFG_MS_MODE_SS | ADS1115_CFG_LS_DR_128SPS | ADS1115_CFG_MS_MUX_DIFF_AIN0_AIN1 | ADS1115_CFG_MS_PGA_FSR_1_024V,
@@ -162,13 +165,15 @@ void main_bmi_delay(uint32_t period, void *intf_ptr)
     vTaskDelay(pdMS_TO_TICKS(period));
 }
 
-void bmi160_init()
+uint8_t bmi160_init()
 {
-    bmi160.init({SPI2_HOST, GPIO_NUM_23, GPIO_NUM_19, GPIO_NUM_18, GPIO_NUM_5, 1000000});
+    uint8_t ret = bmi160.init({SPI2_HOST, GPIO_NUM_23, GPIO_NUM_19, GPIO_NUM_18, GPIO_NUM_5, 1000000});
     bmi160.calibrate(5000);
+
+    return ret;
 }
 
-void bme280_init()
+int8_t bme280_init()
 {
     int8_t status;
 
@@ -193,6 +198,8 @@ void bme280_init()
     bme280_set_sensor_settings(BME280_SEL_ALL_SETTINGS, &settings, &bme280);
 
     bme280_set_sensor_mode(BME280_POWERMODE_NORMAL, &bme280);
+
+    return status;
 }
 
 esp_err_t bz251_init(void)
@@ -211,9 +218,21 @@ esp_err_t bz251_init(void)
 void sensors_init()
 {
     bz251_init();
-    bme280_init();
-    bmi160_init();
-    ADS1115_initiate(&ads1115_cfg);
+    int8_t ret = bme280_init();
+    uint8_t bmi160_status = bmi160_init();
+    esp_err_t ret_ads1115 = ADS1115_initiate(&ads1115_cfg);
+    sdCard.logEvent("BME280 init status: %d\n", ret);
+    sdCard.logEvent("BME160 init status: %d\n",  bmi160_status);
+    sdCard.logEvent("ADS1115 init status: %d\n", ret_ads1115);
+
+    if( (ret != BME280_OK) || (bmi160_status != 0) || (ret_ads1115 != ESP_OK) )
+    {
+        ESP_LOGE("SENSORS", "Sensors initialization failed");
+        sdCard.logEvent("Sensors initialization failed\n");
+        led_setDelay(LED_ALWAYS_ON);
+        vTaskDelay(pdMS_TO_TICKS(3000));
+        return;
+    }
 }
 
 float sensors_pt100RtoT(float R)

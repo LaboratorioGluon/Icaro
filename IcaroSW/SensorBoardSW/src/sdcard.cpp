@@ -8,6 +8,19 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <dirent.h>
+#include <esp_timer.h>
+
+
+SDCard::SDCardConfig sdCardConfig = {
+    .clk = GPIO_NUM_14,
+    .cmd = GPIO_NUM_15,
+    .data0 = GPIO_NUM_2,
+    .data1 = GPIO_NUM_4,
+    .data2 = GPIO_NUM_12,
+    .data3 = GPIO_NUM_13
+};
+
+SDCard sdCard(sdCardConfig);
 
 SDCard::SDCard(SDCardConfig config)
 {
@@ -114,9 +127,10 @@ esp_err_t SDCard::logEvent(const char *fmt, ...)
     va_list args;
     va_start(args, fmt);
     ESP_LOGI("SDCARD", "Logging event");
+    fprintf(eventFile, "%lld:", esp_timer_get_time()); // Log timestamp in milliseconds
     vfprintf(eventFile, fmt, args);
     va_end(args);
-    fflush(eventFile);
+    ret = fflush(eventFile);
     fsync(fileno(eventFile));
 
 

@@ -26,8 +26,8 @@ typedef struct{
     float v5voltage; // [V]
     float v3v3current; // [A]
     float v5current; // [A]
+    float supplyTemp;
 } SensorData;
-
 
 
 
@@ -36,6 +36,7 @@ extern SensorData sensorData;
 extern Bmi160 bmi160;
 extern bme280_dev bme280;
 extern Bz251 bz251;
+
 
 void sensors_init();
 

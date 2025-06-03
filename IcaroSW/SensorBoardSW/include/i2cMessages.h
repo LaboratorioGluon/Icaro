@@ -24,9 +24,10 @@ typedef struct {
 } i2cmessages_data;
 
 void i2cmessages_init(i2c_master_dev_handle_t supplyBus, i2c_master_dev_handle_t commsBus);
-uint8_t i2cmessage_read(i2cmessages_data *data);
+esp_err_t i2cmessage_read(i2cmessages_data *data);
 uint8_t i2cmessage_set5v(uint8_t isOn);
 uint8_t i2cmessage_sendToLora(SensorData *data);
+esp_err_t i2cmessage_test(void);
 
 #ifdef __cplusplus
 }

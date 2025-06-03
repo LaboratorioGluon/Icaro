@@ -74,6 +74,7 @@ extern "C" void app_main()
 #include <driver/i2c_master.h>
 #include "bz251.h"
 #include "sdcard.h"
+
 extern "C" {
     #include "i2cMessages.h"    
     #include "ADS1115.h"
@@ -83,19 +84,6 @@ extern "C" {
 /** SENSORS **/
 
 Bz251Data bz251Data;
-
-SDCard::SDCardConfig sdCardConfig = {
-    .clk = GPIO_NUM_14,
-    .cmd = GPIO_NUM_15,
-    .data0 = GPIO_NUM_2,
-    .data1 = GPIO_NUM_4,
-    .data2 = GPIO_NUM_12,
-    .data3 = GPIO_NUM_13
-};
-
-SDCard sdCard(sdCardConfig);
-
-
 
 TaskHandle_t taskGPS;
 
@@ -128,7 +116,11 @@ void coreAThread(void *arg)
 extern "C" void app_main() {
     
     sdCard.init();
-
+    
+    ESP_LOGE("MAIN", "Icaro Sonde Started");
+    sdCard.logEvent("Icaro Sonde Started\n");
+    
+    
     system_init();
     sensors_init();
 
@@ -137,10 +129,18 @@ extern "C" void app_main() {
     int32_t ledDelay = LED_ALWAYS_ON;
 
     TickType_t xLastWakeTime = xTaskGetTickCount();
-    ESP_LOGE("MAIN", "Icaro Sonde Started");
 
     i2cmessages_data supplyData;
 
+    // Test comms
+    esp_err_t status = i2cmessage_test();
+    if (status != ESP_OK) {
+        ESP_LOGE("MAIN", "Failed to read i2c Secondaries");
+        sdCard.logEvent("Failed to read i2c Secondaries\n");
+        led_setDelay(100);
+        vTaskDelay(pdMS_TO_TICKS(5000));
+    }
+    
     for(;;)
     {
 
@@ -162,6 +162,7 @@ extern "C" void app_main() {
         sensorData.v3v3current = supplyData.i33 ; // Convert to Amperes
         sensorData.v5current = supplyData.i5 ; // Convert to Amperes
         sensorData.vin = supplyData.vbatt; // Convert to Volts
+        sensorData.supplyTemp = supplyData.temp; // Convert to Celsius
 
 
         // Temperature, humidity and pressure
@@ -176,10 +177,8 @@ extern "C" void app_main() {
         // GPS
         bz251.getData(sensorData.gps);
         
-
         // Store to SD Card
         debugSensorData();
-
         sdCard.logData(&sensorData);
 
         // Send data to Comms Board
