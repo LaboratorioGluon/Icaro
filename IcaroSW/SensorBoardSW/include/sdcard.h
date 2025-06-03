@@ -25,7 +25,7 @@ public:
     esp_err_t init();
     
     esp_err_t logData(SensorData *data);
-    esp_err_t logEvent(const char *event);
+    esp_err_t logEvent(const char *fmt, ...);
     
 private:
 

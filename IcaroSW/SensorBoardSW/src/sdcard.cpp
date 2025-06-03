@@ -6,6 +6,8 @@
 #include <driver/gpio.h>
 #include <esp_log.h>
 #include <unistd.h>
+#include <stdarg.h>
+#include <dirent.h>
 
 SDCard::SDCard(SDCardConfig config)
 {
@@ -51,9 +53,30 @@ esp_err_t SDCard::init()
 
     sdmmc_card_print_info(stdout, card);
 
-    // Create a file system on the SD card
-    dataFile = fopen("/sdcard/data.bin", "wb");
-    eventFile = fopen("/sdcard/event.txt", "w");
+
+    // Create files for logging data and events with the next available number
+    ESP_LOGI("SDCARD", "Creating data and event files");
+    dataFile = NULL;
+    eventFile = NULL;   
+
+    // Find the next available dataN.bin file
+    int fileNumber = 0;
+    char dataFileName[32];
+    
+    while (true) {
+        snprintf(dataFileName, sizeof(dataFileName), "/sdcard/data%d.bin", fileNumber);
+        dataFile = fopen(dataFileName, "r");
+        if (dataFile == NULL) {
+            // File does not exist, we can use this name
+            break;
+        }
+        fclose(dataFile);
+        fileNumber++;
+    }
+
+    dataFile = fopen(dataFileName, "wb");
+    snprintf(dataFileName, sizeof(dataFileName), "/sdcard/event%d.txt", fileNumber);
+    eventFile = fopen(dataFileName, "w");
 
     
 
@@ -79,12 +102,23 @@ esp_err_t SDCard::logData(SensorData *data)
     return ret;
 }
 
-esp_err_t SDCard::logEvent(const char *event)
+esp_err_t SDCard::logEvent(const char *fmt, ...)
 {
     esp_err_t ret = ESP_OK;
-    ESP_LOGI("SDCARD", "Logging event: %s", event);
     
-    // Log event to SD card here
+    if (eventFile == NULL) {
+        ESP_LOGE("SDCARD", "Event file not opened");
+        return ESP_FAIL;
+    }
+
+    va_list args;
+    va_start(args, fmt);
+    ESP_LOGI("SDCARD", "Logging event");
+    vfprintf(eventFile, fmt, args);
+    va_end(args);
+    fflush(eventFile);
+    fsync(fileno(eventFile));
+
 
     return ret;
 }
