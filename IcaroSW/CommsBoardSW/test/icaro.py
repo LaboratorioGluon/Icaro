@@ -9,7 +9,7 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class Icaro(KaitaiStruct):
-    SEQ_FIELDS = ["timestamp", "bme280", "acc", "gyro", "gps", "pt100_ext", "pt100_int", "vin", "v5", "currentv3", "currentv5"]
+    SEQ_FIELDS = ["timestamp", "bme280", "acc", "gyro", "gps", "pt100_ext", "pt100_int", "vin", "v5", "currentv3", "currentv5", "supplytemp"]
     def __init__(self, _io, _parent=None, _root=None):
         self._io = _io
         self._parent = _parent
@@ -54,6 +54,9 @@ class Icaro(KaitaiStruct):
         self._debug['currentv5']['start'] = self._io.pos()
         self.currentv5 = self._io.read_f4le()
         self._debug['currentv5']['end'] = self._io.pos()
+        self._debug['supplytemp']['start'] = self._io.pos()
+        self.supplytemp = self._io.read_u2le()
+        self._debug['supplytemp']['end'] = self._io.pos()
 
     class Bme(KaitaiStruct):
         SEQ_FIELDS = ["pressure", "temperature", "humidity"]

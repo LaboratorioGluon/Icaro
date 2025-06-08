@@ -47,5 +47,5 @@ if "__main__" == __name__:
         print("V5:", instance.v5)
         print("Current V3:", instance.currentv3)
         print("Current V5:", instance.currentv5)
-        print("Supply Temp", instance.supplyTemp)
+        print("Supply Temp", instance.supplytemp)
         

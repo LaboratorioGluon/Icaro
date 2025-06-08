@@ -37,6 +37,12 @@ void Lora::Init()
                                 LoRaSettings.PreambleLength, 
                                 3.3f);*/
     int16_t state = radio.begin();
+    radio.setBandwidth(LoRaSettings.Bandwidth);
+    radio.setSpreadingFactor(LoRaSettings.SpreadFactor);
+    radio.setCodingRate(LoRaSettings.CodeRate);
+    radio.setSyncWord(LoRaSettings.SyncWord);
+    radio.setPreambleLength(LoRaSettings.PreambleLength);
+    
     
     radio.setOutputPower(20);
     //radio.explicitHeader();

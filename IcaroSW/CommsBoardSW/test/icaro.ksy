@@ -24,7 +24,7 @@ seq:
     type: f4
   - id: currentv5
     type: f4 
-  - id: supplyTemp
+  - id: supplytemp
     type: u2 
 
 types:

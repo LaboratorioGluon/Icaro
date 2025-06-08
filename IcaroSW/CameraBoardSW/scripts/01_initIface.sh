@@ -17,7 +17,7 @@ sudo ip link set $INTERFACE up
 # Reconfigure the interface in monitor mode
 #   This helps to allow wireshark to change the channel of the interface
 sudo airmon-ng check kill
-sudo airmon-ng start wlo1
+sudo airmon-ng start $INTERFACE
 
 # Configure channel to ESP32 channel
 sudo iwconfig ${MON_INTERFACE} channel ${CHANNEL}
