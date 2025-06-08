@@ -14,7 +14,7 @@ extern i2c_master_dev_handle_t i2cDeviceBmi160;
 extern i2c_master_dev_handle_t i2cSupplyDev;
 
 
-void system_init();
+esp_err_t system_init();
 
 
 

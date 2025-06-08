@@ -22,15 +22,6 @@ void i2cmessages_init(i2c_master_dev_handle_t supplyBus, i2c_master_dev_handle_t
     i2cComms = commsBus;
 }
 
-esp_err_t i2cmessage_test(void)
-{
-    esp_err_t ret = i2c_master_transmit(i2cBus, 0, 0, 1000);
-    if (ret == ESP_OK)
-    {
-        ret = i2c_master_transmit(i2cComms, 0, 0, 1000);
-    }
-    return ret;
-}
 
 esp_err_t i2cmessage_read(i2cmessages_data *data)
 {

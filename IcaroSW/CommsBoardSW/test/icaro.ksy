@@ -23,8 +23,10 @@ seq:
   - id: currentv3
     type: f4
   - id: currentv5
-    type: f4  
-  
+    type: f4 
+  - id: supplyTemp
+    type: u2 
+
 types:
   bme:
     seq:

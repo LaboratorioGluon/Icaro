@@ -56,6 +56,16 @@ esp_err_t uart_init(void)
 #define I2C_BMI160_ADDR 0x68
 
 
+esp_err_t i2c_test()
+{
+    esp_err_t err;
+
+    err = i2c_master_probe(i2c_busExternal, 0x58, 1000);
+    if (err == ESP_OK) {
+        err = i2c_master_probe(i2c_busExternal, 0x28, 1000);
+    }
+    return err;
+}
 
 void i2c_init()
 {
@@ -98,14 +108,19 @@ void i2c_init()
     ESP_ERROR_CHECK(i2c_master_bus_add_device(i2c_busExternal, &dev_cfg, &i2cCommsDev));
 }
 
-void system_init()
+esp_err_t system_init()
 {
     led_init();
     led_setDelay(250);
     
     uart_init();
     i2c_init();
+
+
+
     i2cmessages_init(i2cSupplyDev, i2cCommsDev);
     i2cmessage_set5v(1); // Enable 5V supply by default
+
+    return i2c_test();
 
 }

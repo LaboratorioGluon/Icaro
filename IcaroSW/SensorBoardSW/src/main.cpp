@@ -121,7 +121,13 @@ extern "C" void app_main() {
     sdCard.logEvent("Icaro Sonde Started\n");
     
     
-    system_init();
+    esp_err_t status = system_init();
+    if (status != ESP_OK) {
+        ESP_LOGE("MAIN", "Failed to read i2c Secondaries");
+        sdCard.logEvent("Failed to read i2c Secondaries\n");
+        led_setDelay(100);
+        vTaskDelay(pdMS_TO_TICKS(5000));
+    }
     sensors_init();
 
     // Status LED Update
@@ -131,15 +137,6 @@ extern "C" void app_main() {
     TickType_t xLastWakeTime = xTaskGetTickCount();
 
     i2cmessages_data supplyData;
-
-    // Test comms
-    esp_err_t status = i2cmessage_test();
-    if (status != ESP_OK) {
-        ESP_LOGE("MAIN", "Failed to read i2c Secondaries");
-        sdCard.logEvent("Failed to read i2c Secondaries\n");
-        led_setDelay(100);
-        vTaskDelay(pdMS_TO_TICKS(5000));
-    }
     
     for(;;)
     {

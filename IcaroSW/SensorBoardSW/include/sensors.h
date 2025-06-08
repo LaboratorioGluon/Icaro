@@ -26,7 +26,7 @@ typedef struct{
     float v5voltage; // [V]
     float v3v3current; // [A]
     float v5current; // [A]
-    float supplyTemp;
+    uint16_t supplyTemp;
 } SensorData;
 
 
