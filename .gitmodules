@@ -1,0 +1,3 @@
+[submodule "IcaroSW/CameraBoardSW/components/esp32-camera"]
+	path = IcaroSW/CameraBoardSW/components/esp32-camera
+	url = https://github.com/espressif/esp32-camera.git

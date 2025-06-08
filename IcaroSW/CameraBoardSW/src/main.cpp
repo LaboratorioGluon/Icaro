@@ -1,0 +1,362 @@
+#include <string>
+#include <string.h>
+#include <time.h>
+#include <memory>
+
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
+#include <esp_log.h>
+#include <esp_timer.h>
+
+#include "systemdef.h"
+// #include "config.h"
+#include "data/systemstatus.h"
+#include "data/externalstatus.h"
+
+// Hardware
+#include "platform.h"
+#include "interboards/i2cslave.h"
+#include "network/wifiraw.h"
+
+// Threads
+#include "storethread.h"
+#include "data/storethreadstatus.h"
+
+#include "streamthread.h"
+#include "data/streamthreadstatus.h"
+
+#include "i2clistenerthread.h"
+#include "data/i2clistenerthreadstatus.h"
+
+// Main dependencies
+#include "mav/mav_system.h"
+
+
+namespace
+{
+const char* MODULE_TAG = "MAIN";
+
+/* Threads status */
+std::shared_ptr<Data::systemStatus_t> systemStatus = std::make_shared<Data::systemStatus_t>();
+std::shared_ptr<const Data::systemStatus_t> c_systemStatus = std::const_pointer_cast<const Data::systemStatus_t>(systemStatus);
+
+std::shared_ptr<Data::storeThreadStatus_t> storeThreadStatus = std::make_shared<Data::storeThreadStatus_t>();
+std::shared_ptr<const Data::storeThreadStatus_t> c_storeThreadStatus = std::const_pointer_cast<const Data::storeThreadStatus_t>(storeThreadStatus);
+
+std::shared_ptr<Data::streamThreadStatus_t> streamThreadStatus = std::make_shared<Data::streamThreadStatus_t>();
+std::shared_ptr<const Data::streamThreadStatus_t> c_streamThreadStatus = std::const_pointer_cast<const Data::streamThreadStatus_t>(streamThreadStatus);
+
+std::shared_ptr<Data::i2cListenerThreadStatus_t> i2cListenerThreadStatus = std::make_shared<Data::i2cListenerThreadStatus_t>();
+std::shared_ptr<const Data::i2cListenerThreadStatus_t> c_i2cListenerThreadStatus = std::const_pointer_cast<const Data::i2cListenerThreadStatus_t>(i2cListenerThreadStatus);
+
+std::shared_ptr<Data::ExternalStatus_t> externalStatus = std::make_shared<Data::ExternalStatus_t>();
+std::shared_ptr<const Data::ExternalStatus_t> c_externalStatus = std::const_pointer_cast<const Data::ExternalStatus_t>(externalStatus);
+
+/* Devices */
+std::shared_ptr<Device::IFileSystem> fs = Platform::buildFileSystem();
+std::shared_ptr<Device::ICamera> camera = Platform::buildCamera();
+
+std::shared_ptr<Network::WiFiRaw> wifi = Platform::buildWiFiRaw();
+std::shared_ptr<InterBoards::I2CSlave> i2cSlave = Platform::buildI2CSlave();
+
+}
+
+bool initialize()
+{
+    bool initialized = true;
+
+    esp_log_level_set(MODULE_TAG, ESP_LOG_NONE);
+
+    ESP_LOGI(MODULE_TAG, "Initializing wifi.");
+    if (!wifi->initialize())
+    {
+        ESP_LOGE(MODULE_TAG, "Failed to initialize wifi.");
+        initialized = false;
+    }
+
+    ESP_LOGI(MODULE_TAG, "Initializing file system.");
+    if (!fs->initialize())
+    {
+        ESP_LOGE(MODULE_TAG, "Failed to initialize file system.");
+        initialized = false;
+    }
+    
+    ESP_LOGI(MODULE_TAG, "Initializing camera.");
+    if (!camera->initialize())
+    {
+        ESP_LOGE(MODULE_TAG, "Failed to initialize camera.");
+        initialized = false;
+    }
+
+    ESP_LOGI(MODULE_TAG, "Initializing i2c slave.");
+    if (!i2cSlave->initialize())
+    {
+        ESP_LOGE(MODULE_TAG, "Failed to initialize i2c slave.");
+        initialized = false;
+    }
+
+    return initialized;
+}
+
+void log(std::string message)
+{
+    const std::string file = "/log.txt";
+
+    #define DATE_SIZE    25
+    char timeBuffer[DATE_SIZE];
+    
+    time_t currentTime = time(nullptr);
+    strftime(timeBuffer, 20, "%d/%m/%Y %H:%M:%S", localtime(&currentTime));
+    
+    #define BUFFER_SIZE    150
+    char buffer[BUFFER_SIZE];
+    sprintf(buffer, "%s:%s\n", timeBuffer, message.substr(0, BUFFER_SIZE-DATE_SIZE).c_str());
+
+    bool writeOk = fs->append(file, (uint8_t*)buffer, strlen(buffer));
+    if (writeOk)
+    {
+        ESP_LOGI(MODULE_TAG, "Logged message: %s", buffer);
+    }
+    else
+    {
+        ESP_LOGE(MODULE_TAG, "Error writting %s file.", file.c_str());
+    }
+}
+
+uint32_t readLastImageIndex(std::shared_ptr<Device::IFileSystem> fs)
+{
+    ESP_LOGD(MODULE_TAG, "Looking for max image index...");
+    uint32_t maxIndex = fs->findMaxImage();
+    ESP_LOGD(MODULE_TAG, "Last image found is %u", static_cast<unsigned>(maxIndex));
+    return maxIndex;
+}
+
+void sendStatusMAV(std::shared_ptr<const Data::ExternalStatus_t> c_externalStatus, MAVLink::MAVSystem& mavSystem)
+{
+    auto now   = static_cast<uint64_t>(time(NULL));
+    const Data::ExternalStatus_t s_externalStatus = *c_externalStatus;
+    const auto& accel   = s_externalStatus.accel;
+    const auto& gyro    = s_externalStatus.gyro;
+    const auto& gps     = s_externalStatus.gps;
+    const auto& power   = s_externalStatus.power;
+    const auto& sensors = s_externalStatus.sensors;
+
+    time_t epoch_us = time(NULL)  * 1000.0;
+    uint32_t boottimems = pdTICKS_TO_MS(xTaskGetTickCount());
+    mavSystem.sendSystemTime(epoch_us, boottimems);
+
+    mavSystem.sendScaledIMU(now, accel.accelX, accel.accelY, accel.accelZ,
+                                gyro.gyroX, gyro.gyroY, gyro.gyroZ);
+    mavSystem.sendGPS(now, gps.latitude, gps.longitude, gps.altitude);
+    mavSystem.sendBattery(power.status3v3, power.status5v, power.batteryLevel);
+
+    constexpr size_t NAME_SIZE = 10;
+    const char nameInternalT[NAME_SIZE] = "InternalT";
+    const char nameExternalT[NAME_SIZE] = "ExternalT";
+    const char nameOnboardT[NAME_SIZE]  = "OnboardT";
+    const char nameHumidity[NAME_SIZE]  = "Humidity";
+    
+    mavSystem.sendNamedFloat(now, nameInternalT, sensors.InternalTemp);
+    mavSystem.sendNamedFloat(now, nameExternalT, sensors.ExternalTemp);
+    mavSystem.sendNamedFloat(now, nameOnboardT,  sensors.OnboardTemp);
+    mavSystem.sendNamedFloat(now, nameHumidity,  sensors.Humidity);
+}
+
+extern "C"
+void app_main()
+{
+    ESP_LOGI(MODULE_TAG, "Hello Icaro.");
+    systemStatus->state = Data::AppState::BOOTING;
+
+    // Initialization
+    systemStatus->state = Data::AppState::INITIALIZING;
+    if (initialize())
+    {
+        ESP_LOGI(MODULE_TAG, "System initialized.");
+    }
+    else
+    {
+        systemStatus->state = Data::AppState::TOTAL_FAILURE;
+        ESP_LOGE(MODULE_TAG, "Initialization failed.");
+        return;
+    }
+
+    MAVLink::MAVSystem mavSystem(SYSTEM_ID,
+                            COMP_ID_CAMERABOARD,
+                            MAV_TYPE_FREE_BALLOON,
+                            wifi->create80211Link(Network::Link::RAW_LINK_ID::MAV_STATUS));
+
+    // Send 5 hearbeats in booting sequence
+    for (int i=0; i<=5; i++)
+    {
+        mavSystem.sendHeartBeat(MAV_STATE_BOOT, static_cast<uint32_t>(systemStatus->state));
+        vTaskDelay(pdMS_TO_TICKS(200));
+    }
+
+    // Read initialization files
+    // readConfigFile(systemStatus);
+    
+    storeThreadStatus->captureCount = fs->findMaxImage();
+
+    // Create threads
+    {
+        static streamThreadArg_t streamArgs {
+            .systemStatus   = c_systemStatus,
+            .externalStatus = c_externalStatus,
+            .wifiraw        = wifi,
+            .camera         = camera,
+            .threadStatus   = streamThreadStatus,
+        };
+        
+        static storeThreadArg_t storeArgs {
+            .systemStatus   = c_systemStatus,
+            .externalStatus = c_externalStatus,
+            .wifiraw        = wifi,
+            .camera         = camera,
+            .fs             = fs,
+            .threadStatus   = storeThreadStatus,
+        };
+
+        static i2cListenerThreadArg_t i2cListenerArgs {
+            .systemStatus   = c_systemStatus,
+            .wifiraw        = wifi,
+            .i2cSlave       = i2cSlave,
+            .threadStatus   = i2cListenerThreadStatus,
+            .externalStatus = externalStatus,
+        };
+                
+        xTaskCreatePinnedToCore(
+            streamThreadFunc, // Función de la tarea
+            "StreamTask",     // Nombre de la tarea
+            4096,             // Tamaño de la pila
+            &streamArgs,      // Parámetros de la tarea
+            1,                // Prioridad de la tarea
+            NULL,             // Handler de la tarea
+            0                 // Núcleo al que se asigna la tarea (0 o 1)
+        );
+        
+        xTaskCreatePinnedToCore(
+            storeThreadFunc, // Función de la tarea
+            "StoreTask",     // Nombre de la tarea
+            4096,            // Tamaño de la pila
+            &storeArgs,      // Parámetros de la tarea
+            1,               // Prioridad de la tarea
+            NULL,            // Handler de la tarea
+            0                // Núcleo al que se asigna la tarea (0 o 1)
+        );
+
+        xTaskCreatePinnedToCore(
+            i2cListenerThreadFunc, // Función de la tarea
+            "i2cListenerTask",     // Nombre de la tarea
+            4096,                  // Tamaño de la pila
+            &i2cListenerArgs,      // Parámetros de la tarea
+            1,                     // Prioridad de la tarea
+            NULL,                  // Handler de la tarea
+            0                      // Núcleo al que se asigna la tarea (0 o 1)
+        );
+    }
+
+    // Start
+    systemStatus->state = Data::AppState::FULL_POWER;
+    mavSystem.sendHeartBeat(MAV_STATE_BOOT, static_cast<uint32_t>(systemStatus->state));
+
+    // State machine controller
+    while(1)
+    {
+        int delayMS = 500;
+        switch(systemStatus->state)
+        {            
+            case Data::AppState::FULL_POWER:
+                mavSystem.sendHeartBeat(MAV_STATE_ACTIVE, static_cast<uint32_t>(systemStatus->state));
+                
+                // Configure threads
+                systemStatus->streamingEnabled = true;
+                systemStatus->capturingEnabled = true;
+                systemStatus->i2cListenEnabled = true;
+
+                // Do actions
+                sendStatusMAV(c_externalStatus, mavSystem);
+
+                // Check transitions
+                if (false) // TODO: Condition for transition
+                {
+                    systemStatus->state = Data::AppState::POWER_SAVE;
+                }
+            break;
+
+            case Data::AppState::POWER_SAVE:
+                // Send 2 hearbeats 
+                for (int i=0; i<=2; i++)
+                {
+                    mavSystem.sendHeartBeat(MAV_STATE_ACTIVE, static_cast<uint32_t>(systemStatus->state));
+                }
+
+                // Configure threads
+                systemStatus->streamingEnabled = false;
+                systemStatus->capturingEnabled = true;
+                systemStatus->i2cListenEnabled = true;
+
+                // Do actions
+                delayMS = 1000;
+
+                // Check transitions
+                if (false) // TODO: Condition for transition
+                {
+                    systemStatus->state = Data::AppState::FULL_POWER;
+                }
+                else if (false) // TODO: Condition for transition
+                {
+                    systemStatus->state = Data::AppState::BEACON;
+                }
+            break;
+
+            case Data::AppState::BEACON:
+                // Send 10 hearbeats 
+                for (int i=0; i<=10; i++)
+                {
+                    mavSystem.sendHeartBeat(MAV_STATE_ACTIVE, static_cast<uint32_t>(systemStatus->state));
+                }
+
+                // Do actions
+                delayMS = 5000;
+
+                // Check transitions
+                if (false) // TODO: Condition for transition
+                {
+                    systemStatus->state = Data::AppState::FULL_POWER;
+                }
+                else if (false) // TODO: Condition for transition
+                {
+                    systemStatus->state = Data::AppState::POWER_SAVE;
+                }
+                break;
+
+            case Data::AppState::RECOVERY:
+            default:
+                mavSystem.sendHeartBeat(MAV_STATE_CRITICAL, static_cast<uint32_t>(systemStatus->state));
+
+                // Do actions
+
+                // Check transitions
+                if (false) // TODO: Condition for transition
+                {
+                    systemStatus->state = Data::AppState::FULL_POWER;
+                }
+                else if (false) // TODO: Condition for transition
+                {
+                    systemStatus->state = Data::AppState::POWER_SAVE;
+                }
+                else 
+                {
+                    systemStatus->state = Data::AppState::BEACON;
+                }
+            break;
+        }
+
+        // Delay between transition checks
+        static TickType_t lastWakeUpTime = 0;
+        xTaskDelayUntil(&lastWakeUpTime, pdMS_TO_TICKS(delayMS));
+    }
+}
+
