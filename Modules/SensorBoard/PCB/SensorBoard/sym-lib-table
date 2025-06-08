@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "IcaroLib")(type "KiCad")(uri "/media/labgluon/LaboratorioGluon/LaboratorioGluon/Proyectos/036.Icaro/Modules/Common/Kicad/IcaroLib.kicad_sym")(options "")(descr ""))
+  (lib (name "Espressif")(type "KiCad")(uri "/media/labgluon/LaboratorioGluon/LaboratorioGluon/Proyectos/0000.Common/KicadLibs/kicad-libraries/libraries/Espressif.kicad_sym")(options "")(descr ""))
+)

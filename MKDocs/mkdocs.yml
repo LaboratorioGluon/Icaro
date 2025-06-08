@@ -1,0 +1,121 @@
+site_name: Project Ícaro
+site_url: !ENV [SITE_URL]
+
+nav:
+  - Home: index.md
+  - Supply Board:
+      - Hardware: supplyBoard/hardware.md
+      - Software: supplyBoard/software.md
+  - Sensor Board:
+      - Hardware: sensorBoard/hardware.md
+  - Camera Board:
+      - Hardware: camBoard/hardware.md
+
+extra_css:
+  - style.css
+
+theme:
+  name: material
+  logo: assets/icaro_logo.png
+  favicon: assets/icaro_logo.png
+  language: en
+  features:
+    # - navigation.instant
+    - header.autohide
+    - navigation.tabs
+    - navigation.path
+    - navigation.footer
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: "rgb(245, 195, 99)"
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: orange
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+extra:
+  # Remove made with MK Docs
+  generator: false
+  # Add social
+  social:
+    # Github
+    - icon: fontawesome/brands/github
+      link: https://github.com/LaboratorioGluon/Icaro
+      name: Ícaro Project on Github
+    # Twitch
+    - icon: fontawesome/brands/twitch
+      link: https://www.twitch.tv/labgluon
+      name: Ícaro Project on Twitch
+    # Twitter
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/labgluon
+      name: Laboratorio Gluón on Twitter
+    # Bluesky
+    - icon: fontawesome/brands/bluesky
+      link: https://bsky.app/profile/labgluon.bsky.social
+      name: Laboratorio Gluón on Bluesky
+    # Mastodon
+    - icon: fontawesome/brands/mastodon
+      link: https://mastodon.world/@labgluon
+      name: Laboratorio Gluón on Mastodon
+  tags:
+    HTML5: html
+    JavaScript: js
+    CSS: css
+
+copyright: GPLv3 2025 Laboratorio Gluón
+
+plugins:
+  - search
+  - tags
+  - macros
+  - i18n:
+      docs_structure: suffix
+      reconfigure_material: true
+      languages:
+        - locale: en
+          name: English
+          site_name: "Project Ícaro"
+          build: true
+          default: true
+        - locale: es
+          name: Español
+          site_name: "Proyecto Ícaro"
+          build: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
