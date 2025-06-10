@@ -7,6 +7,7 @@ from mjpeg_streamer import MjpegServer, Stream
 from PIL import Image
 import numpy as np
 
+
 # This script listens to the interface <arg1> and receives the Images sent by the ESP32
 # in custom raw format, then provides these images in a mjpeg stream server.
 
@@ -173,7 +174,6 @@ def image_forwarder():
 def interface_sniffer():
     print(f"📡 Listening to {iface}...")
     sniff(iface=iface, prn=packet_handler, store=0, filter=f"ether src {target_mac}")
-
 
 # Start program
 if __name__=="__main__":

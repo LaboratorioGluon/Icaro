@@ -4,9 +4,19 @@ import threading
 import queue
 import struct
 import socket
-from mjpeg_streamer import MjpegServer, Stream
+#from mjpeg_streamer import MjpegServer, Stream
 from PIL import Image
 import numpy as np
+from crcmod.predefined import mkCrcFun
+
+from local_mavlink import *
+
+import serial
+import kaitaistruct
+from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
+import collections
+
+from icaro import Icaro
 
 # This script listens to the interface <arg1> and receives the MAV messages sent by the ESP32
 # in custom raw format, then forwards the MAV message to a TCP server.
@@ -32,9 +42,9 @@ import numpy as np
 #   - (e.g link id 0 is for testing purposes,
 
 # Check script requirements
-if os.geteuid() != 0:
-    print("This script shall be run as root")
-    sys.exit(1)
+#if os.geteuid() != 0:
+#    print("This script shall be run as root")
+#    sys.exit(1)
 
 if len(sys.argv) < 2:
     print(f"Usage: python {sys.argv[0]} interface")
@@ -170,9 +180,9 @@ def packet_assembler():
 
 # Image streaming server
 last_image = None
-stream = Stream("icaro_camera", size=(640, 480), quality=50, fps=20)
-image_server = MjpegServer("localhost", 48485)
-image_server.add_stream(stream)
+#stream = Stream("icaro_camera", size=(640, 480), quality=50, fps=20)
+#image_server = MjpegServer("localhost", 48485)
+#image_server.add_stream(stream)
 
 # Thread to update the latest received image and provide it to the streaming server
 def image_forwarder():
@@ -223,24 +233,105 @@ def interface_sniffer():
     # sniff(iface=iface, prn=packet_handler, store=0)
     sniff(iface=iface, prn=packet_handler, store=0, filter=f"ether src {target_mac}")
 
+
+
+def interface_lora():
+    alldata = []
+    packet = None
+    onlyone = True
+
+    with open("icaro.bin","wb") as f:
+        with serial.Serial('/dev/ttyACM0', 115200, timeout=1) as ser:
+            while True:
+                
+                alldata.append(ser.read())            
+
+                line = b''.join(alldata)
+                        
+                if b"Radio Data:\t\t" in line and b"Radio RSSI:" in line.split(b"Radio Data:\t\t")[1]:
+                    packet = line.split(b"Radio Data:\t\t")[1].split(b"Radio RSSI:")[0].strip()
+
+                if packet:
+                    alldata = []
+                    print(line)
+                    #f.write(packet)
+
+                    io = KaitaiStream(BytesIO(packet))
+                    instance = Icaro(io)
+                    instance._read()
+
+                    print("Timestamp:", instance.timestamp)
+                    print("BME280 Temperature:", instance.bme280.temperature)
+                    print("BME280 Pressure:", instance.bme280.pressure)
+                    print("BME280 Humidity:", instance.bme280.humidity)
+                    print("Accelerometer X:", instance.acc.x)
+                    print("Accelerometer Y:", instance.acc.y)
+                    print("Accelerometer Z:", instance.acc.z)
+                    print("Gyroscope X:", instance.gyro.x)
+
+                    print("Gyroscope Y:", instance.gyro.y)
+                    print("Gyroscope Z:", instance.gyro.z)
+                    print("GPS Valid:", instance.gps.valid)
+                    print("GPS Year:", instance.gps.year)
+                    print("GPS Month:", instance.gps.month)
+                    print("GPS Day:", instance.gps.day)
+                    print("GPS Latitude:", instance.gps.latitude)
+                    print("GPS Longitude:", instance.gps.longitude)
+                    print("GPS Altitude:", instance.gps.altitude)
+                    print("GPS Hour:", instance.gps.hour)
+                    print("GPS Minute:", instance.gps.minute)
+                    print("GPS Satellite:", instance.gps.satellite)
+                    print("GPS Dummy:", instance.gps.dummy)
+                    print("GPS Speed:", instance.gps.speed)
+                    print("PT100 External:", instance.pt100_ext)
+                    print("PT100 Internal:", instance.pt100_int)
+                    print("VIN:", instance.vin)
+                    print("V5:", instance.v5)
+                    print("Current V3:", instance.currentv3)
+                    print("Current V5:", instance.currentv5)
+                    print("Supply Temp", instance.supplytemp)
+
+                    link = MAVLink(f)  # RAW_IMU message id is 27
+                    rawimu = MAVLink_raw_imu_message(instance.timestamp,
+                                                     int(instance.acc.x*1000.0),
+                                                     int(instance.acc.y*1000.0),
+                                                     int(instance.acc.z*1000.0),
+                                                     int(instance.gyro.x*1000.0),
+                                                     int(instance.gyro.y*1000.0),
+                                                     int(instance.gyro.z*1000.0),
+                                                     0, 0, 0,  # Magnetometer data set to zero)
+                    )
+                    mavDataQueue.put(rawimu.pack(link))
+
+                    gps_fix = 3 if instance.gps.valid == 1 else 0
+                    gps2 = MAVLink_gps2_raw_message(instance.timestamp, gps_fix, instance.gps.latitude,
+                                             instance.gps.longitude, instance.gps.altitude,
+                                             0xFFFF, 0xFFFF, instance.gps.speed, instance.gps.satellite,
+                                             0, 0)
+                    mavDataQueue.put(gps2.pack(link))
+                    packet = None
+
+
     
 # Start program
 if __name__=="__main__":
     # Initialize threads
     threads = {}
 
-    threads["image_forwarder"] = threading.Thread(target=image_forwarder, daemon=True)
+    #threads["image_forwarder"] = threading.Thread(target=image_forwarder, daemon=True)
     threads["mav_forwarder"] = threading.Thread(target=mav_forwarder, daemon=True)
     threads["packet_assembler"] = threading.Thread(target=packet_assembler, daemon=True)
     threads["interface_sniffer"] = threading.Thread(target=interface_sniffer, daemon=True)
+    threads["interface_lora"] = threading.Thread(target=interface_lora, daemon=True)
     
-    threads["image_forwarder"].start()
+    #threads["image_forwarder"].start()
     threads["mav_forwarder"].start()
     threads["packet_assembler"].start()
     threads["interface_sniffer"].start()
+    threads["interface_lora"].start()
 
     # Start streaming server
-    image_server.start()
+    #image_server.start()
 
     # Supervise threads to keep them running
     while True:
@@ -248,14 +339,16 @@ if __name__=="__main__":
             if not thread.is_alive():
                 print(f"Thread '{name}' stopped. Restarting...")
     
-                if name == "image_forwarder":
-                    threads[name] = threading.Thread(target=image_forwarder, daemon=True)
-                elif name == "mav_forwarder":
+                #if name == "image_forwarder":
+                #    threads[name] = threading.Thread(target=image_forwarder, daemon=True)
+                if name == "mav_forwarder":
                     threads[name] = threading.Thread(target=mav_forwarder, daemon=True)
                 elif name == "packet_assembler":
                     threads[name] = threading.Thread(target=packet_assembler, daemon=True)
                 elif name == "interface_sniffer":
                     threads[name] = threading.Thread(target=interface_sniffer, daemon=True)
+                elif name == "interface_lora":
+                    threads[name] = threading.Thread(target=interface_lora, daemon=True)
 
                 threads[name].start()
                 print(f"Restarted thread: {name}")
