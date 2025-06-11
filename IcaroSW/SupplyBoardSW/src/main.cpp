@@ -217,36 +217,39 @@ int main()
 
     ADC_HandleTypeDef adcHandle = supplyBoard.hAdc;    
 
-    uint16_t tempSensor;
-    uint16_t adcValues[7];
-    uint16_t values[7];
-    
+    volatile uint16_t tempSensor;
+    uint16_t adcValues[8];
+    volatile uint16_t values[8];
+    float internalTemp = 0.0f;
     for(;;)
     {
 
         HAL_NVIC_DisableIRQ(I2C1_IRQn);
-            HAL_ADC_Start_DMA(&adcHandle, (uint32_t*)adcValues, 7);
+            HAL_ADC_Start_DMA(&adcHandle, (uint32_t*)adcValues, 8);
             HAL_ADC_PollForConversion(&adcHandle, HAL_MAX_DELAY);
             HAL_ADC_Stop_DMA(&adcHandle);
         HAL_NVIC_EnableIRQ(I2C1_IRQn);
 
 
         /* Vin Voltage */
-        values[0] = adcValues[0] * (3300.0f / 4096.0f) * (14.7f / 10.0f);
+        values[0] = supplyBoard.convertAdcVoltage(adcValues[0])  * (14700.0f / 10.0f);
 
         /* 5V Voltage*/
-        values[1] = adcValues[1] * 3300.0f / 4096.0f * 2.0f;
+        values[1] = supplyBoard.convertAdcVoltage(adcValues[1])  * 2000.0f;
 
         /* 3v3 Current */
-        values[2] = adcValues[2] * (3300.0f / 4096.0f) / (200.0f * 0.01f);
+        values[2] = supplyBoard.convertAdcVoltage(adcValues[2])*1000.0f  / (200.0f * 0.01f);
 
         /* 5v Current */
-        values[3] = adcValues[3] * (3300.0f / 4096.0f) / (200.0f * 0.1f);
+        values[3] = supplyBoard.convertAdcVoltage(adcValues[3])*1000.0f / (200.0f * 0.1f);
+
         
         /* In Current */ 
         // TODO: values[4]
         /* Bypass Current*/
         // TODO: values[5]
+
+        supplyBoard.convertAdcTemperature(adcValues[7], &internalTemp);
 
         dataMap[DATAMAP_V5_OFFSET] = values[1] & 0xFF;
         dataMap[DATAMAP_V5_OFFSET+1] = (values[1]>>8) & 0xFF;
@@ -261,9 +264,13 @@ int main()
         dataMap[DATAMAP_I5_OFFSET+1] = (values[3]>>8) & 0xFF;
 
 
-        tempSensor = (adcValues[6] - 620)*81;
+        //tempSensor = (adcValues[6] - 620)*81;
+        tempSensor = (supplyBoard.convertAdcVoltage(adcValues[6])*1000.0f-500.0f)/10.0f*1000.0f;
         dataMap[DATAMAP_TEMP_OFFSET  ] = tempSensor & 0xFF;
         dataMap[DATAMAP_TEMP_OFFSET+1] = (tempSensor>>8) & 0xFF;
+
+        dataMap[DATAMAP_INTERNAL_TEMP_OFFSET  ] = (uint16_t)(internalTemp*1000.0f) & 0xFF;
+        dataMap[DATAMAP_INTERNAL_TEMP_OFFSET+1] = ((uint16_t)(internalTemp*1000.0f)>>8) & 0xFF;
 
         HAL_Delay(500);
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, dataMap[DATAMAP_CONFIG_OFFSET] & 0x01 ? GPIO_PIN_SET : GPIO_PIN_RESET);

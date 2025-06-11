@@ -153,10 +153,20 @@ void SupplyBoard::initAdcDma()
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_DMA1_CLK_ENABLE();
 
+
+    tempCalibrationData.T1_CAL = *(uint16_t *)((uint32_t)0x1FF8007A);
+    tempCalibrationData.T1_CAL_TEMP = 30;
+    tempCalibrationData.T2_CAL = *(uint16_t *)((uint32_t)0x1FF8007E);
+    tempCalibrationData.T2_CAL_TEMP = 130;
+
+    vddaCalibrationData.VREF_CAL_REF = *(uint16_t *)((uint32_t)0x1FF80078);
+    vddaCalibrationData.VREF_CAL_VALUE = 3;
+    
+
     // ADC_HandleTypeDef adcHandle;
     hAdc.Instance = ADC1;
     hAdc.State = 0;
-    hAdc.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV1;
+    hAdc.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
     hAdc.Init.Resolution = ADC_RESOLUTION12b;
     hAdc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
     hAdc.Init.ScanConvMode = ENABLE;
@@ -171,7 +181,8 @@ void SupplyBoard::initAdcDma()
     hAdc.Init.DMAContinuousRequests = DISABLE;
     hAdc.Init.Overrun = DISABLE;
     hAdc.Init.LowPowerFrequencyMode = DISABLE;
-    hAdc.Init.SamplingTime = ADC_SAMPLETIME_79CYCLES_5;
+    //hAdc.Init.SamplingTime = ADC_SAMPLETIME_79CYCLES_5;
+    hAdc.Init.SamplingTime = ADC_SAMPLETIME_160CYCLES_5;
     hAdc.Init.OversamplingMode = DISABLE;
 
     HAL_StatusTypeDef status = HAL_ADC_Init(&hAdc);
@@ -180,28 +191,51 @@ void SupplyBoard::initAdcDma()
         isAdcInitialized = 1;
     }
 
+    
     ADC_ChannelConfTypeDef adcChan;
 
-    adcChan.Channel = ADC_CHANNEL_0;
+    adcChan.Channel = ADC_CHANNEL_VREFINT; // VREFINT
+    adcChan.Rank = ADC_RANK_CHANNEL_NUMBER;
+    HAL_ADC_ConfigChannel(&hAdc, &adcChan);
+    uint32_t vrefIntValue = 0;
+    volatile uint16_t test = 0;
+    for( uint32_t i = 0; i < 100; i++)
+    {
+        HAL_ADC_Start(&hAdc);
+        HAL_ADC_PollForConversion(&hAdc, HAL_MAX_DELAY);
+        test = HAL_ADC_GetValue(&hAdc);
+        vrefIntValue += test; // To avoid optimization
+        HAL_ADC_Stop(&hAdc);
+    }
+    vrefIntValue /= 100;
+    vdda = ((float)vddaCalibrationData.VREF_CAL_REF* vddaCalibrationData.VREF_CAL_VALUE) / (float)vrefIntValue ;
+    vdda = 3.256f;
+    adcChan.Rank = ADC_RANK_NONE;
+    HAL_ADC_ConfigChannel(&hAdc, &adcChan);
+
+    adcChan.Channel = ADC_CHANNEL_0; // Vin Voltage
     adcChan.Rank = ADC_RANK_CHANNEL_NUMBER;
     HAL_ADC_ConfigChannel(&hAdc, &adcChan);
 
-    adcChan.Channel = ADC_CHANNEL_1;
+    adcChan.Channel = ADC_CHANNEL_1; // 5V Voltage
     HAL_ADC_ConfigChannel(&hAdc, &adcChan);
 
-    adcChan.Channel = ADC_CHANNEL_2;
+    adcChan.Channel = ADC_CHANNEL_2; // 3v3 Current
     HAL_ADC_ConfigChannel(&hAdc, &adcChan);
 
-    adcChan.Channel = ADC_CHANNEL_3;
+    adcChan.Channel = ADC_CHANNEL_3; // 5v Current
     HAL_ADC_ConfigChannel(&hAdc, &adcChan);
 
-    adcChan.Channel = ADC_CHANNEL_4;
+    adcChan.Channel = ADC_CHANNEL_4; // In Current
     HAL_ADC_ConfigChannel(&hAdc, &adcChan);
 
-    adcChan.Channel = ADC_CHANNEL_5;
+    adcChan.Channel = ADC_CHANNEL_5; // Bypass Current
     HAL_ADC_ConfigChannel(&hAdc, &adcChan);
 
-    adcChan.Channel = ADC_CHANNEL_6;
+    adcChan.Channel = ADC_CHANNEL_6; // PCB Temp Sensor
+    HAL_ADC_ConfigChannel(&hAdc, &adcChan);
+
+    adcChan.Channel = ADC_CHANNEL_TEMPSENSOR; // Internal Temp Sensor
     HAL_ADC_ConfigChannel(&hAdc, &adcChan);
 
     HAL_ADCEx_Calibration_Start(&hAdc, ADC_SINGLE_ENDED);
@@ -223,6 +257,13 @@ void SupplyBoard::initAdcDma()
     HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 }
+
+void SupplyBoard::convertAdcTemperature(uint16_t adcValue, float *temperature)
+{
+    *temperature = ((float)(tempCalibrationData.T2_CAL_TEMP - tempCalibrationData.T1_CAL_TEMP)/(
+    tempCalibrationData.T2_CAL - tempCalibrationData.T1_CAL))*((adcValue*vdda/3.0f) - tempCalibrationData.T1_CAL) + tempCalibrationData.T1_CAL_TEMP;
+}
+
 
 SupplyErr SupplyBoard::i2cSlaveStart()
 {

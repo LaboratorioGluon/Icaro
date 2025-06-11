@@ -11,10 +11,13 @@
 #define DATAMAP_I5_OFFSET 0x8
 #define DATAMAP_TEMP_OFFSET 0xA
 #define DATAMAP_CONFIG_OFFSET 0xC
+#define DATAMAP_INTERNAL_TEMP_OFFSET 0x10
 
-#define DATAMAP_SIZE 0xE
+#define DATAMAP_SIZE 0x20
 
-uint8_t dataMap[DATAMAP_SIZE] = {0x01, 0,0,0,0,0,0,0,0,0,0,0,0};
+uint8_t dataMap[DATAMAP_SIZE] = {0x01, 0,0,0,0,0,0,0,0,0,0,0,0,
+                                  0,0,0,0,0,0,0,0,0,0,0,0,
+                                  0,0,0,0};
 
 
 

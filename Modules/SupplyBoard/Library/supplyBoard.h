@@ -81,10 +81,16 @@ public:
 
     SupplyErr i2cSlaveStart();
 
+    void convertAdcTemperature(uint16_t adcValue, float *temperature);
 
     void updateAdcValues();
 
     void enable5vOutput(uint8_t enable);
+
+    inline float convertAdcVoltage(uint16_t adcValue)
+    {
+        return (float)adcValue * vdda / 4095.0f;
+    }
 
 
     ADC_HandleTypeDef hAdc;
@@ -100,6 +106,20 @@ private:
     SupplyBoardHardware hwConfig;
 
     uint16_t adcRawData[7];
+
+    struct {
+        uint16_t T1_CAL;
+        uint16_t T1_CAL_TEMP;
+        uint16_t T2_CAL;
+        uint16_t T2_CAL_TEMP;
+    } tempCalibrationData;
+
+    struct {
+        uint16_t VREF_CAL_REF;
+        float VREF_CAL_VALUE;
+    } vddaCalibrationData;
+
+    float vdda;
 
 };
 
