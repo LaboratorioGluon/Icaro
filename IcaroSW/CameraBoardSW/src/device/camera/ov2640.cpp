@@ -9,6 +9,7 @@ namespace
 {
 const char* MODULE_TAG = "OV2640";
 
+#ifndef CAM32
 // Camera pins
 constexpr int CAM_PIN_PWDN  = -1;
 constexpr int CAM_PIN_RESET = -1;
@@ -26,6 +27,24 @@ constexpr int CAM_PIN_D4    = 12;
 constexpr int CAM_PIN_D5    = 18;
 constexpr int CAM_PIN_D6    = 17;
 constexpr int CAM_PIN_D7    = 16;
+#else
+constexpr int CAM_PIN_PWDN  = 32;
+constexpr int CAM_PIN_RESET = -1;
+constexpr int CAM_PIN_VSYNC = 25;
+constexpr int CAM_PIN_HREF  = 23;
+constexpr int CAM_PIN_PCLK  = 22;
+constexpr int CAM_PIN_XCLK  = 0;
+constexpr int CAM_PIN_SIOD  = 26;
+constexpr int CAM_PIN_SIOC  = 27;
+constexpr int CAM_PIN_D0    = 5;
+constexpr int CAM_PIN_D1    = 18;
+constexpr int CAM_PIN_D2    = 19;
+constexpr int CAM_PIN_D3    = 21;
+constexpr int CAM_PIN_D4    = 36; //VP
+constexpr int CAM_PIN_D5    = 39; //VN
+constexpr int CAM_PIN_D6    = 34;
+constexpr int CAM_PIN_D7    = 35;
+#endif
 }
 
 namespace Device::Camera
@@ -70,8 +89,8 @@ bool OV2640::initialize()
     config.frame_size = FRAMESIZE_VGA;        // Note: Do not use sizes above QVGA when not JPEG. The performance of the ESP32-S series has improved a lot, but JPEG mode always gives better frame rates.
     
     config.jpeg_quality = 12;                 // Note: 0-63, for OV series camera sensors, lower number means higher quality
-    config.fb_count = 4;                      // Note: When jpeg mode is used, if fb_count more than one, the driver will work in continuous mode.
-    config.fb_location = CAMERA_FB_IN_PSRAM;
+    config.fb_count = 1;                      // Note: When jpeg mode is used, if fb_count more than one, the driver will work in continuous mode.
+    config.fb_location = CAMERA_FB_IN_DRAM;
     config.grab_mode      = CAMERA_GRAB_LATEST;
 
     esp_err_t err = esp_camera_init(&config);

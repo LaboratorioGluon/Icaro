@@ -36,8 +36,14 @@ std::shared_ptr<InterBoards::I2CSlave> buildI2CSlave()
 {
     constexpr i2c_port_t i2cSlave  = I2C_NUM_0;
     constexpr uint16_t   slaveAddr = 0x90;
+    #ifndef CAM32
     constexpr gpio_num_t sdaPin    = GPIO_NUM_47;
     constexpr gpio_num_t sclPin    = GPIO_NUM_21;
+    #else
+    constexpr gpio_num_t sdaPin    = GPIO_NUM_12;
+    constexpr gpio_num_t sclPin    = GPIO_NUM_13;
+
+    #endif
     constexpr uint32_t   clkSpeed  = 100000;
     return std::make_shared<InterBoards::I2CSlave>(i2cSlave, slaveAddr, sdaPin, sclPin, clkSpeed);
 }

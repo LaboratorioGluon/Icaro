@@ -4,7 +4,7 @@ import threading
 import queue
 import struct
 import socket
-#from mjpeg_streamer import MjpegServer, Stream
+from mjpeg_streamer import MjpegServer, Stream
 from PIL import Image
 import numpy as np
 from crcmod.predefined import mkCrcFun
@@ -180,9 +180,9 @@ def packet_assembler():
 
 # Image streaming server
 last_image = None
-#stream = Stream("icaro_camera", size=(640, 480), quality=50, fps=20)
-#image_server = MjpegServer("localhost", 48485)
-#image_server.add_stream(stream)
+stream = Stream("icaro_camera", size=(640, 480), quality=50, fps=20)
+image_server = MjpegServer("localhost", 48485)
+image_server.add_stream(stream)
 
 # Thread to update the latest received image and provide it to the streaming server
 def image_forwarder():
@@ -318,20 +318,20 @@ if __name__=="__main__":
     # Initialize threads
     threads = {}
 
-    #threads["image_forwarder"] = threading.Thread(target=image_forwarder, daemon=True)
+    threads["image_forwarder"] = threading.Thread(target=image_forwarder, daemon=True)
     threads["mav_forwarder"] = threading.Thread(target=mav_forwarder, daemon=True)
     threads["packet_assembler"] = threading.Thread(target=packet_assembler, daemon=True)
     threads["interface_sniffer"] = threading.Thread(target=interface_sniffer, daemon=True)
     threads["interface_lora"] = threading.Thread(target=interface_lora, daemon=True)
     
-    #threads["image_forwarder"].start()
+    threads["image_forwarder"].start()
     threads["mav_forwarder"].start()
     threads["packet_assembler"].start()
     threads["interface_sniffer"].start()
     threads["interface_lora"].start()
 
     # Start streaming server
-    #image_server.start()
+    image_server.start()
 
     # Supervise threads to keep them running
     while True:
@@ -339,8 +339,8 @@ if __name__=="__main__":
             if not thread.is_alive():
                 print(f"Thread '{name}' stopped. Restarting...")
     
-                #if name == "image_forwarder":
-                #    threads[name] = threading.Thread(target=image_forwarder, daemon=True)
+                if name == "image_forwarder":
+                    threads[name] = threading.Thread(target=image_forwarder, daemon=True)
                 if name == "mav_forwarder":
                     threads[name] = threading.Thread(target=mav_forwarder, daemon=True)
                 elif name == "packet_assembler":

@@ -56,7 +56,7 @@ void storeThreadFunc (void* arg)
             
             // 2.3 Store frame            
             sprintf(imagefile, "/%04d", frameCounter/1000);
-            int ret = fs->makedir(imagefile);
+            fs->makedir(imagefile);
             sprintf(imagefile, "/%04d/%03d.jpg", frameCounter/1000, frameCounter%1000);
             ESP_LOGD(MODULE_TAG, "Generated name for : %d - %s", frameCounter, imagefile);
             bool imageStored = fs->write(imagefile, frame->buf, frame->len);

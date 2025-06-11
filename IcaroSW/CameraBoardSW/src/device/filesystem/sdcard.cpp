@@ -19,10 +19,18 @@ const esp_log_level_t MODULE_LOG_LEVEL = ESP_LOG_DEBUG;
 const char* MOUNT_POINT = "/sdcard";
 
 // Bus definition
+#ifndef CAM32
 constexpr int SD_BUS_WIDTH = 1; 
 constexpr gpio_num_t SD_PIN_CLK = GPIO_NUM_39;
 constexpr gpio_num_t SD_PIN_CMD = GPIO_NUM_38;
 constexpr gpio_num_t SD_PIN_D0 = GPIO_NUM_40;
+#else
+
+constexpr int SD_BUS_WIDTH = 1; 
+constexpr gpio_num_t SD_PIN_CLK = GPIO_NUM_14;
+constexpr gpio_num_t SD_PIN_CMD = GPIO_NUM_15;
+constexpr gpio_num_t SD_PIN_D0 = GPIO_NUM_2;
+#endif
 
 }
 
