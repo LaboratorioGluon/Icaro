@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:icaro_app/common/services/mavservice.dart';
 import 'package:icaro_app/common/widgets/humiditywidget.dart';
 import 'package:icaro_app/common/widgets/powerwidget.dart';
+import 'package:icaro_app/common/widgets/statuswidget.dart';
 import 'package:icaro_app/common/widgets/temperaturewidget.dart';
 import 'package:icaro_app/common/widgets/threeaxiswidget.dart';
 
@@ -23,6 +24,7 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
   late StreamSubscription<MAVBatteryStatus> _mavBatteryStatusSub;
   late StreamSubscription<MAVSensorsStatus> _mavSensorsStatusSub;
   late StreamSubscription<DateTime>         _mavTimestampStatusSub;
+  late StreamSubscription<Map<int, MAVCameraStatus>> _mavCameraSub;
 
   double           linkCoverage    = 0;
   MAVGPSStatus     gpsStatus       = MAVGPSStatus();
@@ -30,6 +32,12 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
   MAVBatteryStatus batteryStatus   = MAVBatteryStatus();
   MAVSensorsStatus sensorsStatus   = MAVSensorsStatus();
   DateTime         timestampStatus = DateTime.now();
+  Map<int, MAVCameraStatus> cameras = {};
+
+  //Get the first cameras value
+
+
+  int lastCameraCount = 0;
 
   // Initial state
   @override
@@ -77,6 +85,13 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
         timestampStatus = newStatus;
       });
     });
+
+    // MAV link cameras data
+    _mavCameraSub = MAVService().cameraStatusStream.listen((newCameras) {
+      setState((){
+        cameras = newCameras;
+      });
+    });
   }
 
   @override
@@ -87,23 +102,38 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
     _mavBatteryStatusSub.cancel();
     _mavSensorsStatusSub.cancel();
     _mavTimestampStatusSub.cancel();
+    _mavCameraSub.cancel();
     super.dispose();
   }
 
   Widget buildContent(BuildContext context) {
-    final theme = Theme.of(context);
-    final style = theme.textTheme.displayMedium!.copyWith(
-       color: theme.colorScheme.onPrimary,
-       );
 
-    var accel = ThreeAxisWidget(label: "Accelerometer", threeAxis: imuStatus.accel);
-    var gyro = ThreeAxisWidget(label: "Gyroscope", threeAxis: imuStatus.gyro);
-    
-    var humidity = HumidityWidget(label: "Humidity", value: sensorsStatus.humidity);
+    bool statusGPS = gpsStatus.altitude != 0.0 &&
+                     gpsStatus.latitude != 0.0 &&
+                     gpsStatus.longitude != 0.0;
 
-    var power = Powerwidget(
-      label: "Battery", 
-      value: batteryStatus.batteryPercentage,
+    bool cameraStatus = cameras.isNotEmpty &&
+                        cameras.values.first.imageCaptureCount > lastCameraCount &&
+                        cameras.values.first.imageCaptureCount != 0;
+
+    bool statusSensor = sensorsStatus.internalTemp != 0.0 &&
+                        sensorsStatus.externalTemp != 0.0 &&
+                        sensorsStatus.onboardTemp != 0.0 &&
+                        sensorsStatus.humidity != 0.0;
+
+    lastCameraCount = cameras.isEmpty ? 0 : cameras.values.first.imageCaptureCount;
+
+    var accel    = ThreeAxisWidget(label: "Accelerometer", threeAxis: imuStatus.accel);
+    var gyro     = ThreeAxisWidget(label: "Gyroscope", threeAxis: imuStatus.gyro);
+    var humidity = HumidityWidget (label: "Humidity", value: sensorsStatus.humidity);
+
+    var status = Statuswidget(
+      label: "System status", 
+      statusLora: false,
+      statusWifi: false,
+      statusGPS: statusGPS,
+      statusCamera: cameraStatus,
+      statusSensors: statusSensor,
       status3v3: batteryStatus.status3v3,
       status5v0: batteryStatus.status5v0,
     );
@@ -135,7 +165,7 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
                     accel,
                     gyro,
                     humidity,
-                    power,
+                    status,
                   ],
                 ),
               ],
@@ -156,7 +186,7 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
                 Row(
                   children: [
                     humidity,
-                    power,
+                    status,
                   ],
                 ),
               ],
@@ -171,7 +201,7 @@ class _IcaroMAVSensorsPageState extends State<IcaroMAVSensorsPage> {
                 accel,
                 gyro,
                 humidity,
-                power,
+                status,
               ],
             );
           }

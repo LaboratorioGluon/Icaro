@@ -14,7 +14,7 @@ class MAVCameraStatus
     int storedImagesCount            = 0;
     int imageCapturedErrors          = 0;
     int lastImageCapturedIndex       = 0;
-    double latitute                  = 0.0;
+    double latitude                  = 0.0;
     double longitude                 = 0.0;
     double altitude                  = 0.0;
     List<char> lastImageCapturedName = [];
@@ -22,7 +22,7 @@ class MAVCameraStatus
 
 class MAVGPSStatus
 {
-  double latitute  = 0.0;
+  double latitude  = 0.0;
   double longitude = 0.0;
   double altitude  = 0.0;
 }
@@ -159,13 +159,13 @@ class MAVService {
         camera.imageCapturedErrors++;
       }
 
-      camera.latitute  = cic.lat.toDouble() / 1E7;
+      camera.latitude  = cic.lat.toDouble() / 1E7;
       camera.longitude = cic.lon.toDouble() / 1E7;
       camera.altitude  = cic.alt.toDouble() / 1E3;
 
       if (camera.imageCaptureCount % 10 == 0)
       {
-        LogService().i("Cam ${cic.cameraId}: Captured image ${camera.imageCaptureCount} at (${camera.latitute},${camera.longitude},${camera.altitude})!");
+        LogService().i("Cam ${cic.cameraId}: Captured image ${camera.imageCaptureCount} at (${camera.latitude},${camera.longitude},${camera.altitude})!");
       }
     }
   }
@@ -174,7 +174,7 @@ class MAVService {
   {
     final double e7 = 10000000.0;
     final double e3 = 1000.0;
-    gpsStatus.latitute  = gpi.lat.toDouble() / e7;
+    gpsStatus.latitude  = gpi.lat.toDouble() / e7;
     gpsStatus.longitude = gpi.lon.toDouble() / e7;
     gpsStatus.altitude  = gpi.alt.toDouble() / e3;
   }

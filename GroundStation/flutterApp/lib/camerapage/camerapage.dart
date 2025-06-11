@@ -210,12 +210,12 @@ class _IcaroCameraPageState extends State<IcaroCameraPage> {
 
     // Position widgets
     List<Widget> posWidgets = [];
-    if (cameraInfo.latitute  != 0.0 &&
+    if (cameraInfo.latitude  != 0.0 &&
         cameraInfo.longitude != 0.0 && 
         cameraInfo.altitude  != 0.0)
     {
       posWidgets = [
-        Text("Latitude: ${cameraInfo.latitute.toString()}"),
+        Text("Latitude: ${cameraInfo.latitude.toString()}"),
         Text("Longitude: ${cameraInfo.longitude.toString()}"),
         Text("Altitude: ${cameraInfo.altitude.toString()}"),
       ];

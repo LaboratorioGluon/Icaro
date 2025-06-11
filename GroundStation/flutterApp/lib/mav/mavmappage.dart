@@ -26,7 +26,7 @@ class _IcaroMAVMapPageState extends State<IcaroMAVMapPage> with TickerProviderSt
     _mavGPSStatusSub = MAVService().gpsStatusStream.listen((newStatus) {
       setState((){
         // gpsStatus = newStatus;
-        _setPosition(LatLng(newStatus.latitute, newStatus.longitude));
+        _setPosition(LatLng(newStatus.latitude, newStatus.longitude));
       });
     });
   }
