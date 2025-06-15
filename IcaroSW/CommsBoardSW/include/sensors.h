@@ -14,8 +14,8 @@ typedef struct {
     float altitude;     /* Antenna altitude above/below mean sea level (meters) */
     uint8_t hour;       /* hh */
     uint8_t minute;     /* mm */
+    uint8_t seconds;      /* ss.sss */;
     uint8_t satellites; /* Number of satellites in use. May be different to the number in view */
-    uint8_t dummy;
     float speedKmh;     /* Speed over ground, kms */
 } Bz251Data;
 
@@ -47,12 +47,13 @@ typedef struct{
     Bz251Data gps;  
     float pt100_1; // [C]
     float pt100_2; // [C]
-    float vin; // [V]
-    float v5voltage; // [V]
-    float v3v3current; // [A]
-    float v5current; // [A]
-    uint16_t supplyTemp;
+    uint16_t vin; // [mV]
+    uint16_t v5voltage; // [mV]
+    uint16_t v3v3current; // [mA]
+    uint16_t v5current; // [mA]
+    uint16_t supplyPcbTemp; // [C*1000]
+    uint16_t supplyMCUTemp; // [C*1000]
+    uint16_t id; // Sensor ID
 } SensorDataLora;
-
 
 #endif // SENSORS_H__

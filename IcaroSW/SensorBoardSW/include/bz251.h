@@ -6,6 +6,8 @@
 #include <driver/gpio.h>
 #include <driver/uart.h>
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
 
 typedef struct {
     uart_port_t uartNum;    /* UART port number, can be UART_NUM_0 ~ (UART_NUM_MAX -1) */
@@ -38,8 +40,8 @@ typedef struct {
     float altitude;     /* Antenna altitude above/below mean sea level (meters) */
     uint8_t hour;       /* hh */
     uint8_t minute;     /* mm */
+    uint8_t seconds;      /* ss */
     uint8_t satellites; /* Number of satellites in use. May be different to the number in view */
-    uint8_t dummy;
     float speedKmh;     /* Speed over ground, kms */
 } Bz251Data;
 
@@ -54,7 +56,7 @@ class Bz251
         uint8_t read(void);
         uint8_t getPosition(float &latitude, float &longitude);
         uint8_t getAltitude(float &altitude);
-        uint8_t getTime(uint8_t &hour, uint8_t &minute);
+        uint8_t getTime(uint8_t &hour, uint8_t &minute, uint8_t &second);
         uint8_t getDate(uint8_t &day, uint8_t &month, uint8_t &year);
         uint8_t getSpeed(float &speed);
         uint8_t getSatellites(uint8_t &satellites);
@@ -69,7 +71,7 @@ class Bz251
     private:
 
         struct rmcData{
-            uint32_t utc;           /* hhmmss.sss */
+            uint32_t utc;           /* hhmmss.ss */
             uint8_t pos_status;     /* A=data valid or V=data not valid */
             float latitude;         /* ddmm.mmmm */
             uint8_t lat_dir;        /* N=north or S=south */
@@ -131,7 +133,9 @@ class Bz251
 
         uint8_t alldata[2512];
         uint32_t alldataLen = 0;
-        
+
+
+        SemaphoreHandle_t gpsMutex;
 };
 
 

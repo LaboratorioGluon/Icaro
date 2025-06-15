@@ -131,8 +131,8 @@ const int PT100_TABLE_MAXIDX = ((sizeof(Pt100_table) / sizeof(uint16_t)) - 1) ;
 
 BME280_INTF_RET_TYPE main_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *intf_ptr)
 {
-    ESP_ERROR_CHECK(i2c_master_transmit(i2cDeviceBme280, &reg_addr, 1, -1));
-    ESP_ERROR_CHECK(i2c_master_receive(i2cDeviceBme280, reg_data, len, -1));
+    ESP_ERROR_CHECK(i2c_master_transmit(i2cDeviceBme280, &reg_addr, 1, pdMS_TO_TICKS(1000)));
+    ESP_ERROR_CHECK(i2c_master_receive(i2cDeviceBme280, reg_data, len, pdMS_TO_TICKS(1000)));
 
     return BME280_INTF_RET_SUCCESS;
 }
@@ -147,7 +147,7 @@ BME280_INTF_RET_TYPE main_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, u
     esp_err_t err = i2c_master_transmit(i2cDeviceBme280,
                                         buf,
                                         len + 1,
-                                        -1);
+                                        pdMS_TO_TICKS(1000));
 
     if (err == ESP_OK)
     {

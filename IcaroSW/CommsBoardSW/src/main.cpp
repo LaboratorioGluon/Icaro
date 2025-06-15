@@ -76,16 +76,17 @@ void app_main(void)
   //Initialize radio
   LoraModule.ResetRadio();
   LoraModule.Init();
-
+  uint8_t newData = 0;
   //Start loop
   for(;;){
-    for (int i=1; i <= LORA_REPEATS; i++)
+    
+    if (newData == 1) 
     {
-      //LoraModule.BuildMessage();
       LoraModule.SendMessage();
+      gpio_set_level(GPIO_NUM_27, !gpio_get_level(GPIO_NUM_27)); // Set GPIO 15 low
+      newData = 0; // Reset newData flag after sending
     }
     vTaskDelay(pdMS_TO_TICKS(LORA_LOOPTIME * 1000));
-    gpio_set_level(GPIO_NUM_27, !gpio_get_level(GPIO_NUM_27)); // Set GPIO 15 low
 
     if (datareceived)
     {
@@ -99,6 +100,7 @@ void app_main(void)
       }
       printf("\n");*/
       datareceived = false; // Reset the flag
+      newData = 1; // Set newData flag to indicate new data received
     }
   }
 }

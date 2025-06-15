@@ -38,8 +38,8 @@ if "__main__" == __name__:
         print("GPS Altitude:", instance.gps.altitude)
         print("GPS Hour:", instance.gps.hour)
         print("GPS Minute:", instance.gps.minute)
+        print("GPS Seconds:", instance.gps.seconds)
         print("GPS Satellite:", instance.gps.satellite)
-        print("GPS Dummy:", instance.gps.dummy)
         print("GPS Speed:", instance.gps.speed)
         print("PT100 External:", instance.pt100_ext)
         print("PT100 Internal:", instance.pt100_int)
@@ -47,5 +47,7 @@ if "__main__" == __name__:
         print("V5:", instance.v5)
         print("Current V3:", instance.currentv3)
         print("Current V5:", instance.currentv5)
-        print("Supply Temp", instance.supplytemp)
+        print("Supply Board Temp", instance.supplyboardtemp)
+        print("Supply MCU Temp", instance.supplymcutemp)
+        print("Id", instance.increment)
         

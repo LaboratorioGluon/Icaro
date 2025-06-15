@@ -99,7 +99,7 @@ static esp_err_t i2c_handle_write(uint8_t dev_adr, uint8_t w_adr, uint8_t w_len,
   return  i2c_master_transmit(i2cDeviceAds1115,
     buf,
     w_len+1,
-    1000);
+    pdMS_TO_TICKS(1000));
 
 }
 
@@ -107,8 +107,7 @@ static esp_err_t i2c_handle_read(uint8_t dev_adr, uint8_t r_adr, uint8_t r_len, 
 {
   memset(buff, 0, ADS_RW_BUFF_SIZE);
 
-  i2c_master_transmit(i2cDeviceAds1115, &r_adr, 1, -1);
-  return i2c_master_receive(i2cDeviceAds1115, buff, r_len, -1);
+  i2c_master_transmit(i2cDeviceAds1115, &r_adr, 1, pdMS_TO_TICKS(1000));
+  return i2c_master_receive(i2cDeviceAds1115, buff, r_len, pdMS_TO_TICKS(1000));
 
 }
-

@@ -17,15 +17,19 @@ seq:
   - id: pt100_int
     type: f4
   - id: vin
-    type: f4
+    type: u2
   - id: v5
-    type: f4
+    type: u2
   - id: currentv3
-    type: f4
+    type: u2
   - id: currentv5
-    type: f4 
-  - id: supplytemp
     type: u2 
+  - id: supplyboardtemp
+    type: u2
+  - id: supplymcutemp
+    type: u2
+  - id: increment
+    type: u2
 
 types:
   bme:
@@ -66,9 +70,9 @@ types:
         type: u1
       - id: minute
         type: u1
-      - id: satellite
+      - id: seconds
         type: u1
-      - id: dummy
+      - id: satellite
         type: u1
       - id: speed
         type: f4

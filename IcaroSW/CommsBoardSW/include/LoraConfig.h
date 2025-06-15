@@ -19,7 +19,7 @@
 //#define LORA_FREQUENCY  432.662      // in MHz
 #define LORA_FREQUENCY  434.0f      // in MHz
 #define LORA_REPEATS 1               // number of LoRa transmits during a cycle
-#define LORA_LOOPTIME 15            // Transmit LoRa every xx seconds
+#define LORA_LOOPTIME 5           // Transmit LoRa every xx seconds
 
 /***********************************************************************************
 * TRANSMISSIONS SETTINGS

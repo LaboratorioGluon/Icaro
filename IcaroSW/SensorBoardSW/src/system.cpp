@@ -116,8 +116,6 @@ esp_err_t system_init()
     uart_init();
     i2c_init();
 
-
-
     i2cmessages_init(i2cSupplyDev, i2cCommsDev);
     i2cmessage_set5v(1); // Enable 5V supply by default
 

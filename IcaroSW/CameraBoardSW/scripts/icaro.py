@@ -9,7 +9,7 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class Icaro(KaitaiStruct):
-    SEQ_FIELDS = ["timestamp", "bme280", "acc", "gyro", "gps", "pt100_ext", "pt100_int", "vin", "v5", "currentv3", "currentv5", "supplytemp"]
+    SEQ_FIELDS = ["timestamp", "bme280", "acc", "gyro", "gps", "pt100_ext", "pt100_int", "vin", "v5", "currentv3", "currentv5", "supplyboardtemp", "supplymcutemp", "increment"]
     def __init__(self, _io, _parent=None, _root=None):
         self._io = _io
         self._parent = _parent
@@ -43,20 +43,26 @@ class Icaro(KaitaiStruct):
         self.pt100_int = self._io.read_f4le()
         self._debug['pt100_int']['end'] = self._io.pos()
         self._debug['vin']['start'] = self._io.pos()
-        self.vin = self._io.read_f4le()
+        self.vin = self._io.read_u2le()
         self._debug['vin']['end'] = self._io.pos()
         self._debug['v5']['start'] = self._io.pos()
-        self.v5 = self._io.read_f4le()
+        self.v5 = self._io.read_u2le()
         self._debug['v5']['end'] = self._io.pos()
         self._debug['currentv3']['start'] = self._io.pos()
-        self.currentv3 = self._io.read_f4le()
+        self.currentv3 = self._io.read_u2le()
         self._debug['currentv3']['end'] = self._io.pos()
         self._debug['currentv5']['start'] = self._io.pos()
-        self.currentv5 = self._io.read_f4le()
+        self.currentv5 = self._io.read_u2le()
         self._debug['currentv5']['end'] = self._io.pos()
-        self._debug['supplytemp']['start'] = self._io.pos()
-        self.supplytemp = self._io.read_u2le()
-        self._debug['supplytemp']['end'] = self._io.pos()
+        self._debug['supplyboardtemp']['start'] = self._io.pos()
+        self.supplyboardtemp = self._io.read_u2le()
+        self._debug['supplyboardtemp']['end'] = self._io.pos()
+        self._debug['supplymcutemp']['start'] = self._io.pos()
+        self.supplymcutemp = self._io.read_u2le()
+        self._debug['supplymcutemp']['end'] = self._io.pos()
+        self._debug['increment']['start'] = self._io.pos()
+        self.increment = self._io.read_u2le()
+        self._debug['increment']['end'] = self._io.pos()
 
     class Bme(KaitaiStruct):
         SEQ_FIELDS = ["pressure", "temperature", "humidity"]
@@ -102,7 +108,7 @@ class Icaro(KaitaiStruct):
 
 
     class Gps(KaitaiStruct):
-        SEQ_FIELDS = ["valid", "year", "month", "day", "latitude", "longitude", "altitude", "hour", "minute", "satellite", "dummy", "speed"]
+        SEQ_FIELDS = ["valid", "year", "month", "day", "latitude", "longitude", "altitude", "hour", "minute", "seconds", "satellite", "speed"]
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -137,12 +143,12 @@ class Icaro(KaitaiStruct):
             self._debug['minute']['start'] = self._io.pos()
             self.minute = self._io.read_u1()
             self._debug['minute']['end'] = self._io.pos()
+            self._debug['seconds']['start'] = self._io.pos()
+            self.seconds = self._io.read_u1()
+            self._debug['seconds']['end'] = self._io.pos()
             self._debug['satellite']['start'] = self._io.pos()
             self.satellite = self._io.read_u1()
             self._debug['satellite']['end'] = self._io.pos()
-            self._debug['dummy']['start'] = self._io.pos()
-            self.dummy = self._io.read_u1()
-            self._debug['dummy']['end'] = self._io.pos()
             self._debug['speed']['start'] = self._io.pos()
             self.speed = self._io.read_f4le()
             self._debug['speed']['end'] = self._io.pos()

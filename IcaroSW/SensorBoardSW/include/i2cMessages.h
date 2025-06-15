@@ -21,6 +21,8 @@ typedef struct {
     uint16_t i5;
     uint16_t temp;
     uint8_t config;
+    uint8_t reserved[3]; // Reserved for future use
+    uint16_t internalTemp; // Internal temperature of the supply board
 } i2cmessages_data;
 
 void i2cmessages_init(i2c_master_dev_handle_t supplyBus, i2c_master_dev_handle_t commsBus);

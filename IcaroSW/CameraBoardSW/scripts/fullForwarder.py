@@ -281,7 +281,6 @@ def interface_lora():
                     print("GPS Hour:", instance.gps.hour)
                     print("GPS Minute:", instance.gps.minute)
                     print("GPS Satellite:", instance.gps.satellite)
-                    print("GPS Dummy:", instance.gps.dummy)
                     print("GPS Speed:", instance.gps.speed)
                     print("PT100 External:", instance.pt100_ext)
                     print("PT100 Internal:", instance.pt100_int)
@@ -289,7 +288,6 @@ def interface_lora():
                     print("V5:", instance.v5)
                     print("Current V3:", instance.currentv3)
                     print("Current V5:", instance.currentv5)
-                    print("Supply Temp", instance.supplytemp)
 
                     link = MAVLink(f)  # RAW_IMU message id is 27
                     rawimu = MAVLink_raw_imu_message(instance.timestamp,
@@ -304,11 +302,13 @@ def interface_lora():
                     mavDataQueue.put(rawimu.pack(link))
 
                     gps_fix = 3 if instance.gps.valid == 1 else 0
-                    gps2 = MAVLink_gps2_raw_message(instance.timestamp, gps_fix, instance.gps.latitude,
+                    """gps2 = MAVLink_gps2_raw_message(instance.timestamp, gps_fix, instance.gps.latitude,
                                              instance.gps.longitude, instance.gps.altitude,
                                              0xFFFF, 0xFFFF, instance.gps.speed, instance.gps.satellite,
                                              0, 0)
+                                        
                     mavDataQueue.put(gps2.pack(link))
+                    """
                     packet = None
 
 

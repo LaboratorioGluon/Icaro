@@ -11,6 +11,7 @@ static const char *TAG = "BZ251";
 
 void Bz251::init(Bz251Config config)
 {
+    gpsMutex = xSemaphoreCreateMutex();
     uartNum = config.uartNum;
     timeZone = config.timeZone;
     if(config.hasGps!=CFG_SIGNAL_GPS_ENA_DEFAULT)
@@ -62,13 +63,15 @@ void Bz251::init(Bz251Config config)
 
 uint8_t Bz251::getData(Bz251Data &dev)
 {
+    xSemaphoreTake(gpsMutex, pdTICKS_TO_MS(10000));
     getPosition(dev.latitude, dev.longitude);
     getAltitude(dev.altitude);
-    getTime(dev.hour, dev.minute);
+    getTime(dev.hour, dev.minute, dev.seconds);
     getDate(dev.day, dev.month, dev.year);
     getSpeed(dev.speedKmh);
     getSatellites(dev.satellites);
-    dev.valid =this->rmc.track_true; 
+    dev.valid =this->rmc.track_true;
+    xSemaphoreGive(gpsMutex);
 
     return 0;
 }
@@ -83,7 +86,7 @@ uint8_t Bz251::parse_NMEA(char *data)
         return 1;
     }
 
-    ESP_LOGE("BZ251", "Parsing NMEA: %s", data);
+    //ESP_LOGE("BZ251", "Parsing NMEA: %s", data);
     // Check if data is RMC or GGA
     if (data[3] == 'R' && data[4] == 'M' && data[5] == 'C')
     {
@@ -194,6 +197,7 @@ uint8_t Bz251::parse_RMC(char *data)
 
 uint8_t Bz251::read(void)
 {
+    
     uint32_t len = uart_read_bytes(uartNum, &alldata[alldataLen], 512, 0);
     //ESP_LOGE("BZ251", "Read %lu bytes", len);
     while(len){
@@ -201,6 +205,7 @@ uint8_t Bz251::read(void)
         len = uart_read_bytes(uartNum, &alldata[alldataLen], 512, 0);
     }
     
+    xSemaphoreTake(gpsMutex, pdTICKS_TO_MS(10000));
     // Find dolar sign and end
     uint32_t dFound=0, eFound=0, lasteFound = 0;
     for( uint32_t i = 0; i < alldataLen; i++)
@@ -224,6 +229,7 @@ uint8_t Bz251::read(void)
             }
         }
     }
+    xSemaphoreGive(gpsMutex);
 
     if (lasteFound)
     {
@@ -233,6 +239,7 @@ uint8_t Bz251::read(void)
             alldata[i] = alldata[lasteFound + i];
         }
     }
+
 
     return 0;
 }
@@ -361,7 +368,7 @@ uint8_t Bz251::sync(uint32_t &rawTime, uint32_t &rawDate)
 }
 /* Update time and date with TimeZone */
 
-uint8_t Bz251::getTime(uint8_t &hour, uint8_t &minute)
+uint8_t Bz251::getTime(uint8_t &hour, uint8_t &minute, uint8_t &second)
 {
     if( this->rmc.pos_status == 65)
     {
@@ -371,11 +378,13 @@ uint8_t Bz251::getTime(uint8_t &hour, uint8_t &minute)
         {
             hour = stoi(strRawTime.substr(0,2));
             minute = stoi(strRawTime.substr(2,2));
+            second = stoi(strRawTime.substr(4,2));
         }
         else
         {
             hour = strRawTime[0];
             minute = stoi(strRawTime.substr(1,2));
+            second = stoi(strRawTime.substr(3,2));
         }
     }
     return 0;
